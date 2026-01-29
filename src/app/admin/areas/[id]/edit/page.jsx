@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import '../../../../styles/admin.css';
+import '../../../../../styles/admin.css';
 
 export default function EditAreaPage() {
     const router = useRouter();

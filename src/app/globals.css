@@ -228,12 +228,12 @@ body {
 .contact {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-inline: auto;
+  align-items: flex-start;
+  /* margin-inline: auto; Removed for left alignment */
 }
 
 .contact button {
-  margin-top: 30px;
+  margin-top: 10px;
   background: var(--primary-orange);
   border-radius: 50px;
   width: 290px;
@@ -267,7 +267,7 @@ body {
 }
 
 .contact-button {
-  text-align: center;
+  text-align: left;
   width: 100%;
   white-space: nowrap;
 }
