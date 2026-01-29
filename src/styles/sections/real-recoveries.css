@@ -1,0 +1,84 @@
+.real-recoveries {
+    padding: 80px 5%;
+    background-color: #f9f9f9;
+}
+
+.real-recoveries h2 {
+    text-align: center;
+    color: var(--primary-orange);
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 60px;
+    margin-bottom: 50px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.recoveries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.recovery-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid var(--primary-orange);
+    transition: transform 0.3s ease;
+}
+
+.recovery-card:hover {
+    transform: translateY(-5px);
+}
+
+.recovery-header {
+    margin-bottom: 15px;
+}
+
+.recovery-tag {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--primary-orange);
+    background: #fff0eb;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: inline-block;
+}
+
+.recovery-card h3 {
+    font-size: 1.2rem;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+}
+
+.recovery-card p {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.recovery-meta {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dotted #eee;
+    font-size: 0.85rem;
+    color: #888;
+    display: flex;
+    justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+    .real-recoveries h2 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+
+    .recoveries-grid {
+        grid-template-columns: 1fr;
+    }
+}

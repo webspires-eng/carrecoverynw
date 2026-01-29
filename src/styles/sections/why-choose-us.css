@@ -1,0 +1,72 @@
+/* Why Choose Us Styles */
+.layout-6 {
+    padding: 80px 5%;
+    background-color: #f8f9fa;
+}
+
+.layout-6 h2 {
+    text-align: center;
+    color: var(--primary-orange);
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 50px;
+}
+
+.wcu-container {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 60px;
+    max-width: 1400px;
+    margin: 0 auto;
+    align-items: center;
+}
+
+.wcu-image-mockup {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+.wcu-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.wcu-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.wcu-item h3 {
+    color: var(--primary-blue);
+    font-size: 1.1rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wcu-item p {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+@media (max-width: 992px) {
+    .wcu-container {
+        grid-template-columns: 1fr;
+    }
+
+    .wcu-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .layout-6 h2 {
+        font-size: 2rem;
+    }
+}

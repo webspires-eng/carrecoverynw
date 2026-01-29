@@ -1,0 +1,116 @@
+/* Hero Section Styles */
+.layout1 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 60px 5%;
+    margin: 5% auto;
+    gap: 2rem;
+    max-width: 1400px;
+}
+
+.title-info {
+    max-width: 650px;
+}
+
+.title-info h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #121212;
+    margin-bottom: 20px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.title-info h1 span {
+    color: var(--primary-orange);
+}
+
+.hero-description {
+    font-size: 1.3rem;
+    color: var(--primary-blue);
+    font-weight: 600;
+    margin-bottom: 25px;
+}
+
+.hero-proof-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 10px 15px;
+    background: #f8f8f8;
+    border-radius: 50px;
+    display: inline-flex;
+}
+
+.rating-stars {
+    color: #ffb400;
+    font-weight: 800;
+}
+
+.hero-cta-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.hero-btn {
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.hero-btn.call {
+    background: var(--primary-orange);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.hero-btn.whatsapp {
+    background: #25d366;
+    color: #fff;
+}
+
+.hero-btn:hover {
+    transform: scale(1.05);
+}
+
+.btn-subtext-hero {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.dispatch-info {
+    margin-top: 20px;
+    font-size: 0.95rem;
+    color: #555;
+    font-style: italic;
+}
+
+@media (max-width: 1024px) {
+    .layout1 {
+        flex-direction: column-reverse;
+        text-align: center;
+    }
+
+    .hero-proof-row {
+        justify-content: center;
+    }
+
+    .hero-cta-group {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .title-info h1 {
+        font-size: 2.2rem;
+    }
+}

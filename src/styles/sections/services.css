@@ -1,0 +1,70 @@
+/* Services Section Styles */
+.layout4 {
+    padding: 80px 5%;
+    background-color: #fff;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.layout4 h2 {
+    text-align: center;
+    color: var(--primary-orange);
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 50px;
+}
+
+.services-grid-main {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.service-card-premium {
+    background: #fdfdfd;
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.service-card-premium:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border-color: var(--primary-orange);
+}
+
+.service-card-premium h3 {
+    color: var(--primary-blue);
+    font-size: 1.3rem;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-card-premium p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.service-boundary {
+    background: #fdf2f0;
+    padding: 25px;
+    border-radius: 15px;
+    border-left: 5px solid var(--primary-orange);
+    margin-top: 20px;
+    font-size: 1rem;
+    color: var(--dark-text);
+}
+
+@media (max-width: 768px) {
+    .layout4 h2 {
+        font-size: 2rem;
+    }
+}

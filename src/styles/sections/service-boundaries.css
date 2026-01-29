@@ -1,0 +1,64 @@
+.service-boundaries {
+    padding: 80px 5%;
+    background-color: #fff;
+}
+
+.service-boundaries h2 {
+    text-align: center;
+    color: var(--primary-orange);
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 60px;
+    margin-bottom: 50px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.boundaries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.boundary-card {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 15px;
+    border-top: 4px solid var(--primary-blue);
+}
+
+.boundary-card h3 {
+    color: var(--primary-blue);
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.boundary-card ul {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+.boundary-card ul li {
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.boundary-footer {
+    margin-top: 40px;
+    text-align: center;
+    background: #fdf2f0;
+    padding: 25px;
+    border-radius: 12px;
+    max-width: 1000px;
+    margin-inline: auto;
+}
+
+@media (max-width: 768px) {
+    .service-boundaries h2 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+}

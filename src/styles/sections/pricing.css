@@ -1,0 +1,105 @@
+.pricing-section {
+    padding: 80px 5%;
+    background-color: #fff;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.pricing-section h2 {
+    text-align: center;
+    color: var(--primary-orange);
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 60px;
+    margin-bottom: 40px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.pricing-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.pricing-info h3 {
+    color: var(--primary-blue);
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.factors-list {
+    list-style: none;
+    padding: 0;
+}
+
+.factors-list li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: var(--dark-text);
+}
+
+.factors-list li span {
+    color: var(--primary-orange);
+    font-weight: bold;
+}
+
+.whatsapp-quote-box {
+    background: #e7f5ed;
+    padding: 40px;
+    border-radius: 20px;
+    border: 2px dashed #25d366;
+    text-align: center;
+}
+
+.whatsapp-quote-box h4 {
+    color: #075e54;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+}
+
+.quote-steps {
+    text-align: left;
+    margin: 20px 0;
+    padding-left: 20px;
+}
+
+.quote-steps li {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.whatsapp-btn-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #25d366;
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.whatsapp-btn-large:hover {
+    transform: scale(1.05);
+}
+
+@media (max-width: 992px) {
+    .pricing-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .pricing-section h2 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+}

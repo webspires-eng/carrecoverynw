@@ -1,0 +1,98 @@
+.final-cta {
+    padding: 100px 5%;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #1a2a6c 100%);
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.final-cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('/car3-DFpW1pNg.webp') no-repeat center center / cover;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.final-cta-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.final-cta h2 {
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 60px;
+    color: var(--primary-orange);
+    margin-bottom: 20px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.final-cta p {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    opacity: 0.9;
+}
+
+.cta-buttons-large {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.cta-btn-main {
+    padding: 20px 40px;
+    border-radius: 50px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.cta-btn-main.call {
+    background: var(--primary-orange);
+    color: #fff;
+}
+
+.cta-btn-main.whatsapp {
+    background: #25d366;
+    color: #fff;
+}
+
+.cta-btn-main:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.final-proof {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.proof-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .final-cta h2 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+
+    .cta-btn-main {
+        width: 100%;
+    }
+}

@@ -1,0 +1,67 @@
+/* Steps Section Styles */
+.layout2 {
+    padding: 80px 5%;
+    text-align: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.layout2 h2 {
+    color: var(--primary-orange);
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+}
+
+.layout2 h3 {
+    color: var(--primary-blue);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 50px;
+}
+
+.service-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.step-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.step-card h4 {
+    color: var(--primary-orange);
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.step-card p {
+    color: var(--dark-text);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.content-gap-win {
+    margin-top: 20px;
+    font-size: 0.9rem;
+    color: var(--primary-blue);
+    font-weight: 600;
+}
+
+@media (max-width: 992px) {
+    .service-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .layout2 h2 {
+        font-size: 2rem;
+    }
+}

@@ -1,0 +1,167 @@
+.areas-archive {
+    min-height: 100vh;
+}
+
+.areas-hero {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #fff;
+    padding: 80px 5% 60px;
+    text-align: center;
+}
+
+.areas-hero h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.areas-hero p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 30px;
+}
+
+.areas-search {
+    display: flex;
+    max-width: 500px;
+    margin: 0 auto;
+    gap: 10px;
+}
+
+.areas-search input {
+    flex: 1;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.areas-search button {
+    padding: 15px 30px;
+    background: var(--primary-orange, #ED4705);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.areas-search button:hover {
+    transform: scale(1.05);
+}
+
+.areas-container {
+    padding: 50px 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.areas-stats {
+    margin-bottom: 20px;
+    color: #666;
+}
+
+.letter-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: #f5f7fa;
+    border-radius: 10px;
+}
+
+.letter-nav a {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: var(--primary-blue, #1a1a2e);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+.letter-nav a:hover {
+    background: var(--primary-orange, #ED4705);
+    color: #fff;
+}
+
+.letter-group {
+    margin-bottom: 40px;
+}
+
+.letter-group h2 {
+    font-size: 1.5rem;
+    color: var(--primary-orange, #ED4705);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+.areas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.area-link {
+    display: flex;
+    flex-direction: column;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.area-link:hover {
+    background: #fff;
+    border-color: var(--primary-orange, #ED4705);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.area-name {
+    font-weight: 600;
+    color: var(--primary-blue, #1a1a2e);
+}
+
+.area-county {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 3px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-results a {
+    color: var(--primary-orange, #ED4705);
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .areas-hero h1 {
+        font-size: 2rem;
+    }
+
+    .areas-search {
+        flex-direction: column;
+    }
+
+    .letter-nav a {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+}

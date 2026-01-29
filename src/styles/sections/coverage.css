@@ -1,0 +1,106 @@
+.coverage-section {
+    padding: 60px 5%;
+    background-color: #fff;
+    text-align: center;
+}
+
+.coverage-section h2 {
+    color: var(--primary-orange);
+    font-size: 40px;
+    font-weight: 800;
+    line-height: 60px;
+    margin-bottom: 30px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.coverage-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.coverage-text {
+    font-size: 1.1rem;
+    color: var(--dark-text);
+    margin-bottom: 40px;
+    line-height: 1.6;
+}
+
+.priority-areas {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 40px;
+}
+
+.area-tag {
+    background: #f8f8f8;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: var(--primary-blue);
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.area-tag:hover {
+    background: var(--primary-blue);
+    color: #fff;
+}
+
+.roads-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid #eee;
+}
+
+.road-badge {
+    background: #000;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+
+.stranded-mini-list {
+    margin-top: 40px;
+    background: #fdf2f0;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.stranded-mini-list h4 {
+    color: var(--primary-orange);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.stranded-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.stranded-item {
+    font-size: 0.9rem;
+    color: #555;
+    background: #fff;
+    padding: 5px 15px;
+    border-radius: 20px;
+}
+
+@media (max-width: 768px) {
+    .coverage-section h2 {
+        font-size: 2.2rem;
+        line-height: 1.2;
+    }
+
+    .priority-areas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
