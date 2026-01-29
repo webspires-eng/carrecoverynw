@@ -380,3 +380,125 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Autosave Styles */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.autosave-status {
+    font-size: 0.85rem;
+    color: #2e7d32;
+    background: #e8f5e9;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-clear-draft {
+    padding: 12px 20px;
+    background: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffcc80;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-clear-draft:hover {
+    background: #e65100;
+    color: #fff;
+    border-color: #e65100;
+}
+
+/* Draft Banner */
+.draft-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border: 1px solid #ffcc80;
+    border-left: 4px solid #ff9800;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.draft-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.draft-icon {
+    font-size: 1.5rem;
+}
+
+.draft-info strong {
+    display: block;
+    color: #e65100;
+    font-size: 0.95rem;
+}
+
+.draft-name {
+    color: #666;
+    font-size: 0.85rem;
+    display: block;
+    margin-top: 2px;
+}
+
+.draft-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-continue-draft {
+    padding: 10px 20px;
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-continue-draft:hover {
+    background: #f57c00;
+    transform: translateY(-2px);
+}
+
+.btn-discard-draft {
+    padding: 10px 20px;
+    background: transparent;
+    color: #c62828;
+    border: 1px solid #c62828;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-discard-draft:hover {
+    background: #c62828;
+    color: #fff;
+}

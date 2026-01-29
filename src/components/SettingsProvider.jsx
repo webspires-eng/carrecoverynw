@@ -3,10 +3,10 @@
 import { createContext, useContext } from 'react';
 
 const SettingsContext = createContext({
-    business_name: 'ABZ Car Recovery',
+    business_name: 'Car Recovery UK',
     phone: '07360544819',
     whatsapp: '447360544819',
-    email: 'info@abzcarrecovery.co.uk',
+    email: 'info@carrecoveryuk.co.uk',
     address: 'West Midlands, UK'
 });
 

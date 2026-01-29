@@ -77,7 +77,7 @@ export async function POST(request) {
                 name,
                 county,
                 region,
-                meta_title || `24/7 Car Recovery in ${name} | ABZ Car Recovery`,
+                meta_title || `24/7 Car Recovery in ${name} | Car Recovery UK`,
                 meta_description || `Fast and reliable car recovery services in ${name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
                 h1_title || `24/7 Car Recovery & Emergency Towing in ${name}`,
                 intro_text,

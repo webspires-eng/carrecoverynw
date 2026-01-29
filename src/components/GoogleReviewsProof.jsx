@@ -22,7 +22,7 @@ export default function GoogleReviewsProof() {
 
             <div className="review-samples">
                 <div className="review-sample-card">
-                    <p>"Excellent service. Arrived in 20 mins as promised. Very professional and polite. Highly recommend ABZ Car Recovery."</p>
+                    <p>"Excellent service. Arrived in 20 mins as promised. Very professional and polite. Highly recommend Car Recovery UK."</p>
                     <span className="review-author">— Sarah J., Birmingham</span>
                 </div>
                 <div className="review-sample-card">
@@ -30,7 +30,7 @@ export default function GoogleReviewsProof() {
                     <span className="review-author">— Michael T., Coventry</span>
                 </div>
                 <div className="review-sample-card">
-                    <p>"Best prices in the West Midlands. I called around 4 places and ABZ was the most honest and fastest."</p>
+                    <p>"Best prices in the West Midlands. I called around 4 places and Car Recovery UK was the most honest and fastest."</p>
                     <span className="review-author">— Dave R., Wolverhampton</span>
                 </div>
             </div>

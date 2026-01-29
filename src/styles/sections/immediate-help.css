@@ -28,10 +28,45 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
+.process-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-orange) 0%, #ff6b35 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.process-icon svg {
+    color: white;
+    width: 28px;
+    height: 28px;
+}
+
 .process-card h3 {
     color: var(--primary-blue);
     font-size: 1.3rem;
     margin-bottom: 15px;
+}
+
+.process-card p {
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.phone-link {
+    color: var(--primary-orange);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.phone-link:hover {
+    color: var(--primary-blue);
+    text-decoration: underline;
 }
 
 .needs-list-box {

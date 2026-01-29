@@ -51,8 +51,7 @@ export default function HeroSection({ location = "West Midlands" }) {
                         <span className="subtext">24/7 Service • Call Now</span>
                     </div>
                 </Link>
-                <p className="eta">Arrive in less than 15 Mins</p>
-                <p style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>*Arrival times depend on traffic and exact location.</p>
+
             </div>
 
             {/* Hero Section */}
@@ -81,7 +80,7 @@ export default function HeroSection({ location = "West Midlands" }) {
                             <p>Arrive in less than 15 Mins</p>
                             <p style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>*Arrival times depend on traffic and exact location.</p>
                         </div>
-                        <div style={{ marginTop: '5px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="reviews-wrapper">
                             <span style={{ color: '#ffb400', fontSize: '18px' }}>★★★★★</span>
                             <span style={{ fontWeight: '700', color: 'var(--primary-blue)' }}>5.0</span>
                             <span style={{ color: '#666', fontSize: '14px' }}>| 407 Google Reviews</span>

@@ -1,94 +1,315 @@
 .pricing-section {
-    padding: 80px 5%;
-    background-color: #fff;
+    padding: 100px 5%;
+    background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
     max-width: 1400px;
     margin: 0 auto;
 }
 
-.pricing-section h2 {
+.pricing-header {
     text-align: center;
-    color: var(--primary-orange);
-    font-size: 40px;
+    max-width: 700px;
+    margin: 0 auto 60px;
+}
+
+.pricing-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--green) 0%, #2ecc71 100%);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+}
+
+.pricing-section h2 {
+    color: var(--primary-blue);
+    font-size: 42px;
     font-weight: 800;
-    line-height: 60px;
-    margin-bottom: 40px;
+    line-height: 1.2;
+    margin-bottom: 15px;
     font-family: 'Rubik', sans-serif;
+}
+
+.pricing-subtitle {
+    color: #64748b;
+    font-size: 1.15rem;
+    line-height: 1.6;
 }
 
 .pricing-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 50px;
-    align-items: center;
+    align-items: start;
 }
 
-.pricing-info h3 {
-    color: var(--primary-blue);
-    font-size: 1.5rem;
+.pricing-info {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.pricing-card {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.pricing-card.includes {
+    border-left: 4px solid var(--green);
+}
+
+.pricing-card.affects {
+    border-left: 4px solid var(--primary-orange);
+}
+
+.pricing-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     margin-bottom: 20px;
+    color: var(--primary-blue);
+}
+
+.pricing-card-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
 }
 
 .factors-list {
     list-style: none;
     padding: 0;
+    margin: 0;
 }
 
 .factors-list li {
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-    color: var(--dark-text);
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 1rem;
+    color: #475569;
 }
 
-.factors-list li span {
-    color: var(--primary-orange);
-    font-weight: bold;
+.factors-list li:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 
-.whatsapp-quote-box {
-    background: #e7f5ed;
-    padding: 40px;
-    border-radius: 20px;
-    border: 2px dashed #25d366;
-    text-align: center;
-}
-
-.whatsapp-quote-box h4 {
-    color: #075e54;
-    font-size: 1.4rem;
-    margin-bottom: 20px;
-}
-
-.quote-steps {
-    text-align: left;
-    margin: 20px 0;
-    padding-left: 20px;
-}
-
-.quote-steps li {
-    margin-bottom: 10px;
-    font-weight: 500;
-}
-
-.whatsapp-btn-large {
+.factor-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    background: #25d366;
+    flex-shrink: 0;
+}
+
+.factor-icon.success {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: var(--green);
+}
+
+.factor-icon.warning {
+    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+    color: var(--primary-orange);
+}
+
+.factor-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.factor-content strong {
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.factor-content span {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.price-guarantee {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #1a2a6c 100%);
+    padding: 25px 30px;
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.price-guarantee::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
+}
+
+.guarantee-badge {
+    display: inline-block;
+    background: var(--primary-orange);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.price-guarantee p {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin: 0;
+    font-family: 'Rubik', sans-serif;
+    position: relative;
+    z-index: 1;
+}
+
+.whatsapp-quote-box {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    padding: 40px;
+    border-radius: 24px;
+    border: 2px solid #86efac;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.whatsapp-quote-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(37, 211, 102, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.whatsapp-header {
+    margin-bottom: 30px;
+    position: relative;
+    z-index: 1;
+}
+
+.whatsapp-icon {
+    color: #25d366;
+    margin-bottom: 15px;
+}
+
+.whatsapp-quote-box h4 {
+    color: #166534;
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.whatsapp-quote-box>p,
+.whatsapp-header>p {
+    color: #15803d;
+    font-size: 1rem;
+}
+
+.quote-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 30px;
+    text-align: left;
+    position: relative;
+    z-index: 1;
+}
+
+.quote-steps li {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #166534;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.quote-steps li:hover {
+    transform: translateX(5px);
+}
+
+.quote-steps li:last-child {
+    margin-bottom: 0;
+}
+
+.step-number {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.step-icon {
+    color: #25d366;
+    flex-shrink: 0;
+}
+
+.whatsapp-btn-large {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
     color: #fff;
-    padding: 15px 30px;
+    padding: 18px 40px;
     border-radius: 50px;
     text-decoration: none;
     font-weight: 700;
     font-size: 1.2rem;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.35);
+    position: relative;
+    z-index: 1;
 }
 
 .whatsapp-btn-large:hover {
-    transform: scale(1.05);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(37, 211, 102, 0.45);
+}
+
+.response-time {
+    color: #15803d;
+    font-size: 0.85rem;
+    margin-top: 15px;
+    font-weight: 500;
+    position: relative;
+    z-index: 1;
 }
 
 @media (max-width: 992px) {
@@ -98,8 +319,21 @@
 }
 
 @media (max-width: 768px) {
+    .pricing-section {
+        padding: 70px 5%;
+    }
+
     .pricing-section h2 {
-        font-size: 2.2rem;
-        line-height: 1.2;
+        font-size: 1.85rem;
+        line-height: 1.25;
+    }
+
+    .whatsapp-quote-box {
+        padding: 30px 20px;
+    }
+
+    .quote-steps li {
+        padding: 12px 15px;
+        font-size: 0.9rem;
     }
 }

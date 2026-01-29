@@ -90,7 +90,7 @@ export default function SettingsPage() {
                                 type="text"
                                 value={settings.business_name}
                                 onChange={(e) => setSettings({ ...settings, business_name: e.target.value })}
-                                placeholder="ABZ Car Recovery"
+                                placeholder="Car Recovery UK"
                             />
                         </div>
 
@@ -134,7 +134,7 @@ export default function SettingsPage() {
                                 type="email"
                                 value={settings.email}
                                 onChange={(e) => setSettings({ ...settings, email: e.target.value })}
-                                placeholder="info@abzcarrecovery.co.uk"
+                                placeholder="info@carrecoveryuk.co.uk"
                             />
                         </div>
                     </div>

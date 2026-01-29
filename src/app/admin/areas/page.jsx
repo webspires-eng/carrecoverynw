@@ -4,12 +4,40 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import '../../../styles/admin.css';
 
+const AUTOSAVE_KEY = 'area_form_autosave';
+
 export default function AdminDashboard() {
     const [areas, setAreas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
+    const [hasDraft, setHasDraft] = useState(false);
+    const [draftName, setDraftName] = useState('');
+
+    // Check for saved draft
+    useEffect(() => {
+        const savedData = localStorage.getItem(AUTOSAVE_KEY);
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                if (parsed.name || parsed.slug) {
+                    setHasDraft(true);
+                    setDraftName(parsed.name || 'Untitled');
+                }
+            } catch (e) {
+                console.error('Failed to parse draft');
+            }
+        }
+    }, []);
+
+    const clearDraft = () => {
+        if (confirm('Are you sure you want to discard this draft?')) {
+            localStorage.removeItem(AUTOSAVE_KEY);
+            setHasDraft(false);
+            setDraftName('');
+        }
+    };
 
     const fetchAreas = async () => {
         setLoading(true);
@@ -60,6 +88,27 @@ export default function AdminDashboard() {
                     <button onClick={handleLogout} className="btn-logout">Logout</button>
                 </div>
             </header>
+
+            {/* Draft Banner */}
+            {hasDraft && (
+                <div className="draft-banner">
+                    <div className="draft-info">
+                        <span className="draft-icon">📝</span>
+                        <div>
+                            <strong>You have an unsaved draft</strong>
+                            <span className="draft-name">"{draftName}"</span>
+                        </div>
+                    </div>
+                    <div className="draft-actions">
+                        <Link href="/admin/areas/add" className="btn-continue-draft">
+                            Continue Editing
+                        </Link>
+                        <button onClick={clearDraft} className="btn-discard-draft">
+                            Discard
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="admin-controls">
                 <input

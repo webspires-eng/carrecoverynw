@@ -1,84 +1,233 @@
 .real-recoveries {
-    padding: 80px 5%;
-    background-color: #f9f9f9;
+    padding: 100px 5%;
+    background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+}
+
+.recoveries-header {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto 60px;
+}
+
+.recoveries-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #4a5dd4 100%);
+    color: white;
+    padding: 8px 24px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
 }
 
 .real-recoveries h2 {
-    text-align: center;
-    color: var(--primary-orange);
-    font-size: 40px;
+    color: var(--primary-blue);
+    font-size: 42px;
     font-weight: 800;
-    line-height: 60px;
-    margin-bottom: 50px;
+    line-height: 1.2;
+    margin-bottom: 15px;
     font-family: 'Rubik', sans-serif;
+}
+
+.recoveries-subtitle {
+    color: #64748b;
+    font-size: 1.15rem;
+    line-height: 1.6;
 }
 
 .recoveries-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 25px;
     max-width: 1400px;
     margin: 0 auto;
 }
 
 .recovery-card {
-    background: #fff;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-    border-left: 5px solid var(--primary-orange);
-    transition: transform 0.3s ease;
+    background: #ffffff;
+    padding: 0;
+    border-radius: 20px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .recovery-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+.recovery-icon-wrapper {
+    display: flex;
+    align-items: stretch;
+    padding: 25px 20px;
+}
+
+.recovery-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.icon-yellow {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    box-shadow: 0 6px 20px rgba(251, 191, 36, 0.3);
+}
+
+.icon-blue {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #4a5dd4 100%);
+    box-shadow: 0 6px 20px rgba(37, 61, 152, 0.3);
+}
+
+.icon-orange {
+    background: linear-gradient(135deg, var(--primary-orange) 0%, #ff6b35 100%);
+    box-shadow: 0 6px 20px rgba(237, 71, 5, 0.3);
+}
+
+.icon-green {
+    background: linear-gradient(135deg, var(--green) 0%, #2ecc71 100%);
+    box-shadow: 0 6px 20px rgba(62, 197, 108, 0.3);
+}
+
+.icon-red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
+}
+
+.icon-purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+}
+
+.recovery-content {
+    flex: 1;
+    padding: 25px 25px 25px 5px;
+    display: flex;
+    flex-direction: column;
 }
 
 .recovery-header {
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .recovery-tag {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    color: var(--primary-orange);
-    background: #fff0eb;
-    padding: 4px 12px;
-    border-radius: 4px;
-    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+    padding: 5px 12px;
+    border-radius: 6px;
     display: inline-block;
+    margin-bottom: 10px;
+}
+
+.tag-yellow {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.tag-blue {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+.tag-orange {
+    background: #ffedd5;
+    color: #9a3412;
+}
+
+.tag-green {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.tag-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.tag-purple {
+    background: #ede9fe;
+    color: #5b21b6;
 }
 
 .recovery-card h3 {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     color: var(--primary-blue);
-    margin-bottom: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.location-icon {
+    color: var(--primary-orange);
 }
 
 .recovery-card p {
-    font-size: 0.95rem;
-    color: #666;
-    line-height: 1.5;
+    font-size: 0.92rem;
+    color: #64748b;
+    line-height: 1.6;
+    flex: 1;
 }
 
 .recovery-meta {
     margin-top: 15px;
     padding-top: 15px;
-    border-top: 1px dotted #eee;
-    font-size: 0.85rem;
-    color: #888;
+    border-top: 1px solid #f1f5f9;
     display: flex;
     justify-content: space-between;
+    gap: 10px;
+}
+
+.recovery-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.recovery-meta .status {
+    color: var(--primary-blue);
+}
+
+.recovery-meta .verified {
+    color: var(--green);
 }
 
 @media (max-width: 768px) {
+    .real-recoveries {
+        padding: 70px 5%;
+    }
+
     .real-recoveries h2 {
-        font-size: 2.2rem;
-        line-height: 1.2;
+        font-size: 1.85rem;
+        line-height: 1.25;
     }
 
     .recoveries-grid {
         grid-template-columns: 1fr;
+    }
+
+    .recovery-card {
+        flex-direction: column;
+    }
+
+    .recovery-icon-wrapper {
+        padding: 20px 25px 0;
+    }
+
+    .recovery-content {
+        padding: 20px 25px 25px;
     }
 }

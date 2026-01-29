@@ -51,12 +51,12 @@ export async function generateMetadata({ params }) {
 
     if (!area) {
         return {
-            title: 'Area Not Found | ABZ Car Recovery',
+            title: 'Area Not Found | Car Recovery UK',
         };
     }
 
     return {
-        title: area.meta_title || `24/7 Car Recovery in ${area.name} | ABZ Car Recovery`,
+        title: area.meta_title || `24/7 Car Recovery in ${area.name} | Car Recovery UK`,
         description: area.meta_description || `Fast and reliable car recovery services in ${area.name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
         openGraph: {
             title: area.meta_title || `24/7 Car Recovery in ${area.name}`,

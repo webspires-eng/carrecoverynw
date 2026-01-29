@@ -4,10 +4,10 @@ export async function getSettings() {
     try {
         const [rows] = await pool.execute('SELECT setting_key, setting_value FROM settings');
         const settings = {
-            business_name: 'ABZ Car Recovery',
+            business_name: 'Car Recovery UK',
             phone: '07360544819',
             whatsapp: '447360544819',
-            email: 'info@abzcarrecovery.co.uk',
+            email: 'info@carrecoveryuk.co.uk',
             address: 'West Midlands, UK'
         };
 
@@ -21,10 +21,10 @@ export async function getSettings() {
     } catch (error) {
         console.error('Database error fetching settings:', error);
         return {
-            business_name: 'ABZ Car Recovery',
+            business_name: 'Car Recovery UK',
             phone: '07360544819',
             whatsapp: '447360544819',
-            email: 'info@abzcarrecovery.co.uk',
+            email: 'info@carrecoveryuk.co.uk',
             address: 'West Midlands, UK'
         };
     }

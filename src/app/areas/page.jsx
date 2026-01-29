@@ -23,7 +23,7 @@ async function getAreas(search = '') {
 }
 
 export const metadata = {
-    title: 'Areas We Cover | ABZ Car Recovery',
+    title: 'Areas We Cover | Car Recovery UK',
     description: 'Find car recovery services in your area. We cover Birmingham, Coventry, Wolverhampton, and 4000+ locations across the West Midlands.'
 };
 

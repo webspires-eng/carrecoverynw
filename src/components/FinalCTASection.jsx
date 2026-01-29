@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, MessageSquare, Star } from "lucide-react";
+import { Phone, MessageSquare, Star, Clock, Shield, MapPin } from "lucide-react";
 import "../styles/sections/final-cta.css";
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -12,33 +12,60 @@ export default function FinalCTASection() {
 
     return (
         <section className="final-cta">
+            <div className="cta-bg-overlay"></div>
             <div className="final-cta-content">
-                <h2>Need 24/7 Car Recovery in West Midlands? Call Now</h2>
-                <p>Fast, reliable recovery when you’re stuck — day or night. Send your location pin on WhatsApp and we’ll dispatch the nearest truck.</p>
+                <div className="cta-badge-row">
+                    <span className="cta-badge">
+                        <Clock size={16} />
+                        24/7 Available
+                    </span>
+                    <span className="cta-badge">
+                        <Shield size={16} />
+                        Fully Insured
+                    </span>
+                    <span className="cta-badge">
+                        <MapPin size={16} />
+                        West Midlands
+                    </span>
+                </div>
+
+                <h2>Need 24/7 Car Recovery in West Midlands?</h2>
+                <p>Fast, reliable recovery when you're stuck — day or night. Send your location pin and we'll dispatch the nearest truck.</p>
 
                 <div className="cta-buttons-large">
                     <Link href={`tel:${linkPhone}`} className="cta-btn-main call">
-                        <Phone size={24} style={{ display: 'inline', marginRight: '10px' }} />
-                        Call Now: {displayPhone}
+                        <div className="btn-icon">
+                            <Phone size={28} />
+                        </div>
+                        <div className="btn-text">
+                            <span className="btn-label">Call Now</span>
+                            <span className="btn-number">{displayPhone}</span>
+                        </div>
                     </Link>
                     <Link href={`https://wa.me/${whatsapp}`} target="_blank" className="cta-btn-main whatsapp">
-                        <MessageSquare size={24} style={{ display: 'inline', marginRight: '10px' }} />
-                        WhatsApp Location
+                        <div className="btn-icon">
+                            <MessageSquare size={28} />
+                        </div>
+                        <div className="btn-text">
+                            <span className="btn-label">WhatsApp</span>
+                            <span className="btn-number">Send Location</span>
+                        </div>
                     </Link>
                 </div>
 
                 <div className="final-proof">
-                    <div className="proof-item">
-                        <Star fill="#fffd00" color="#fffd00" />
-                        <span>5.0 Google Rating</span>
+                    <div className="proof-stars">
+                        {[...Array(5)].map((_, i) => (
+                            <Star key={i} size={20} fill="#fffd00" color="#fffd00" />
+                        ))}
                     </div>
-                    <div className="proof-item">
-                        <span>407+ Reviews</span>
+                    <div className="proof-text">
+                        <span className="rating">5.0</span>
+                        <span className="reviews">407+ Google Reviews</span>
                     </div>
                 </div>
-                <div style={{ marginTop: '20px', fontSize: '0.9rem', opacity: '0.7' }}>
-                    *ETA depends on traffic & exact location.
-                </div>
+
+                <p className="cta-disclaimer">*ETA depends on traffic & exact location</p>
             </div>
         </section>
     );

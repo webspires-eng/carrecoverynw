@@ -21,7 +21,7 @@ export default function MapSection() {
                         <div className="icon-circle"><Building2 size={24} /></div>
                         <div>
                             <h4>Business Name</h4>
-                            <p>{business_name || 'ABZ Car Recovery Services Ltd'}</p>
+                            <p>{business_name || 'Car Recovery UK Services Ltd'}</p>
                         </div>
                     </div>
 

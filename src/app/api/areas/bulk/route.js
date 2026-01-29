@@ -27,7 +27,7 @@ export async function POST(request) {
                         area.name,
                         area.county || null,
                         area.region || 'West Midlands',
-                        area.meta_title || `24/7 Car Recovery in ${area.name} | ABZ Car Recovery`,
+                        area.meta_title || `24/7 Car Recovery in ${area.name} | Car Recovery UK`,
                         area.meta_description || `Fast and reliable car recovery services in ${area.name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
                         area.h1_title || `24/7 Car Recovery & Emergency Towing in ${area.name}`,
                         area.intro_text || `Professional car recovery and breakdown assistance in ${area.name}. Our recovery team is on standby 24/7 to assist with all your vehicle needs.`,

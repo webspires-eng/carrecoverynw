@@ -164,7 +164,7 @@ body {
 .title-info p {
   color: #253D98;
   font-size: 26px;
-  line-height: 44.2px;
+  line-height: 24px;
   font-weight: 700;
   font-family: 'Rubik', sans-serif;
   text-decoration: none;
@@ -499,6 +499,7 @@ body {
   text-align: center;
   margin: 20px auto;
   max-width: 1400px;
+
 }
 
 .layout5 h4 {
@@ -678,21 +679,24 @@ body {
 
 .container-6 {
   display: flex;
-  justify-content: space-evenly;
-  padding: 4% 8% 0;
-  gap: 2%;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+  gap: 60px;
   flex-wrap: wrap;
-  max-width: 1400px;
+  max-width: 1200px;
   margin-inline: auto;
 }
 
 .text-container {
-  width: 40vw;
-  min-width: 300px;
+  flex: 1;
+  min-width: 320px;
+  max-width: 550px;
+  width: auto;
 }
 
 .text-container p {
-  margin-left: 7%;
+  margin-left: 40px;
   color: var(--dark-text);
   font-size: 1.2rem;
   margin-bottom: 4%;
@@ -1003,8 +1007,30 @@ body {
   }
 }
 
+/* Reviews Wrapper */
+.reviews-wrapper {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Mobile Large (Max 768px) */
 @media screen and (max-width: 768px) {
+  .contact {
+    align-items: center;
+    width: 100%;
+  }
+
+  .contact-button {
+    text-align: center;
+  }
+
+  .reviews-wrapper {
+    justify-content: center;
+    margin-top: 2px;
+  }
+
   .call-banner {
     display: none;
     padding: 15px;
@@ -1089,7 +1115,7 @@ body {
 
   .layout5 {
     margin: 0 auto;
-    padding-top: 0;
+    padding: 20px 0 20px 0;
   }
 
   .layout1 .title-info h1 {

@@ -59,14 +59,14 @@ export default function StepsSection() {
                 ))}
             </div>
 
-            <div className="contact" style={{ marginTop: '30px' }}>
+            <div className="contact" style={{ marginTop: '30px', alignItems: 'center' }}>
                 <Link href={`tel:${linkPhone}`}>
                     <button>
                         {displayPhone}
                         <span>24/7 Service • Call Now</span>
                     </button>
                 </Link>
-                <div className="contact-button">
+                <div className="contact-button" style={{ textAlign: 'center' }}>
                     <p>Arrive in less than 15 Mins</p>
                     <p style={{ fontSize: '10px', color: '#666', marginTop: '2px' }}>*Arrival times depend on traffic and exact location.</p>
                 </div>

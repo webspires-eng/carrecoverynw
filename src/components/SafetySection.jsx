@@ -1,44 +1,90 @@
 "use client";
 
-import { AlertTriangle, MapPin, PhoneCall, Shield } from "lucide-react";
+import { AlertTriangle, MapPin, Shield, CheckCircle2, Lightbulb } from "lucide-react";
 import "../styles/sections/safety.css";
+
+const safetySteps = [
+    {
+        icon: AlertTriangle,
+        number: "1",
+        title: "Stay Visible",
+        color: "yellow",
+        points: [
+            "Turn on your hazard lights immediately",
+            "Keep side lights on if visibility is poor",
+            "Wear a reflective vest if available"
+        ]
+    },
+    {
+        icon: Shield,
+        number: "2",
+        title: "Get Safe",
+        color: "blue",
+        points: [
+            "Move away from passing traffic",
+            "Stand behind the crash barrier on motorways",
+            "Never stand between car and traffic"
+        ]
+    },
+    {
+        icon: MapPin,
+        number: "3",
+        title: "Share Location",
+        color: "orange",
+        points: [
+            "Note landmarks or road names",
+            "Share your exact location pin via WhatsApp",
+            "Keep your phone charged and accessible"
+        ],
+        highlight: 1
+    }
+];
 
 export default function SafetySection() {
     return (
         <section className="safety-section">
-            <h2>What To Do If Your Car Breaks Down (Quick Safety Guide)</h2>
-
-            <div className="safety-grid">
-                <div className="safety-card">
-                    <h3><AlertTriangle /> 1. Stay Visible</h3>
-                    <ul>
-                        <li>Turn on your hazard lights immediately.</li>
-                        <li>If it's dark or visability is poor, keep your side lights on.</li>
-                        <li>Wear a reflective vest if you have one.</li>
-                    </ul>
+            <div className="safety-bg-pattern"></div>
+            <div className="safety-container">
+                <div className="safety-header">
+                    <span className="safety-badge">Stay Safe</span>
+                    <h2>What To Do If Your Car Breaks Down</h2>
+                    <p className="safety-subtitle">Quick Safety Guide — Follow these steps while waiting for recovery</p>
                 </div>
 
-                <div className="safety-card">
-                    <h3><Shield /> 2. Get Safe</h3>
-                    <ul>
-                        <li>Move to a safe place away from passing traffic.</li>
-                        <li>If on a motorway, stand behind the crash barrier if possible.</li>
-                        <li>Never stand between your car and oncoming traffic.</li>
-                    </ul>
+                <div className="safety-grid">
+                    {safetySteps.map((step, index) => {
+                        const IconComponent = step.icon;
+                        return (
+                            <div key={index} className={`safety-card card-${step.color}`}>
+                                <div className="card-top">
+                                    <div className={`step-icon icon-${step.color}`}>
+                                        <IconComponent size={28} />
+                                    </div>
+                                    <span className="step-number">{step.number}</span>
+                                </div>
+                                <h3>{step.title}</h3>
+                                <ul>
+                                    {step.points.map((point, pIndex) => (
+                                        <li key={pIndex} className={step.highlight === pIndex ? 'highlighted' : ''}>
+                                            <CheckCircle2 size={16} className="check-icon" />
+                                            <span>{point}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                    })}
                 </div>
 
-                <div className="safety-card">
-                    <h3><MapPin /> 3. Share Location</h3>
-                    <ul>
-                        <li>Check for landmarks, road names, or junction numbers.</li>
-                        <li><strong>Share your exact location pin via WhatsApp</strong> for the fastest arrival.</li>
-                        <li>Keep your phone charged and stay near it.</li>
-                    </ul>
+                <div className="safety-tip">
+                    <div className="tip-icon">
+                        <Lightbulb size={28} />
+                    </div>
+                    <div className="tip-content">
+                        <h4>Pro Tip</h4>
+                        <p>On a motorway? Exit via the <strong>left-hand door</strong> and wait behind the safety barrier.</p>
+                    </div>
                 </div>
-            </div>
-
-            <div className="safety-tip">
-                <p><strong>Win Featured Snippets:</strong> Always stay safe while waiting for recovery. If you are on the motorway, exit via the left-hand door and wait behind the barrier.</p>
             </div>
         </section>
     );

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, CheckCircle2, Clock, MapPin, CarFront, AlertTriangle, Home, Shield, Banknote } from "lucide-react";
 import "../styles/sections/pricing.css";
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -10,42 +10,116 @@ export default function PricingSection() {
 
     return (
         <section className="pricing-section">
-            <h2>Transparent Pricing — Know the Cost Before We Tow</h2>
+            <div className="pricing-header">
+                <span className="pricing-badge">No Hidden Fees</span>
+                <h2>Transparent Pricing — Know the Cost Before We Tow</h2>
+                <p className="pricing-subtitle">We believe in upfront, honest pricing. Get your quote before we lift a wheel.</p>
+            </div>
 
             <div className="pricing-container">
                 <div className="pricing-info">
-                    <h3>What your quote includes:</h3>
-                    <ul className="factors-list" style={{ marginBottom: '30px' }}>
-                        <li><span>✔</span> On-site arrival & secure loading</li>
-                        <li><span>✔</span> Full damage-free recovery to your destination</li>
-                        <li><span>✔</span> Fully insured vehicle transport</li>
-                    </ul>
+                    <div className="pricing-card includes">
+                        <div className="pricing-card-header">
+                            <Shield size={24} />
+                            <h3>What Your Quote Includes</h3>
+                        </div>
+                        <ul className="factors-list">
+                            <li>
+                                <div className="factor-icon success">
+                                    <CheckCircle2 size={18} />
+                                </div>
+                                <span>On-site arrival & secure loading</span>
+                            </li>
+                            <li>
+                                <div className="factor-icon success">
+                                    <CheckCircle2 size={18} />
+                                </div>
+                                <span>Full damage-free recovery to your destination</span>
+                            </li>
+                            <li>
+                                <div className="factor-icon success">
+                                    <CheckCircle2 size={18} />
+                                </div>
+                                <span>Fully insured vehicle transport</span>
+                            </li>
+                        </ul>
+                    </div>
 
-                    <h3>What can affect the price:</h3>
-                    <ul className="factors-list">
-                        <li><span>Distance:</span> Fixed mileage rates apply.</li>
-                        <li><span>Time:</span> Late-night/early-morning call-outs.</li>
-                        <li><span>Complexity:</span> Stuck in gear, mud, or off-road recoveries.</li>
-                    </ul>
+                    <div className="pricing-card affects">
+                        <div className="pricing-card-header">
+                            <Banknote size={24} />
+                            <h3>What Can Affect the Price</h3>
+                        </div>
+                        <ul className="factors-list">
+                            <li>
+                                <div className="factor-icon warning">
+                                    <MapPin size={18} />
+                                </div>
+                                <div className="factor-content">
+                                    <strong>Distance</strong>
+                                    <span>Fixed mileage rates apply</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="factor-icon warning">
+                                    <Clock size={18} />
+                                </div>
+                                <div className="factor-content">
+                                    <strong>Time</strong>
+                                    <span>Late-night/early-morning call-outs</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div className="factor-icon warning">
+                                    <AlertTriangle size={18} />
+                                </div>
+                                <div className="factor-content">
+                                    <strong>Complexity</strong>
+                                    <span>Stuck in gear, mud, or off-road</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
 
-                    <p style={{ marginTop: '20px', fontWeight: '800', color: 'var(--primary-blue)' }}>
-                        “No work starts until you approve the price.”
-                    </p>
+                    <div className="price-guarantee">
+                        <span className="guarantee-badge">Our Promise</span>
+                        <p>"No work starts until you approve the price."</p>
+                    </div>
                 </div>
 
                 <div className="whatsapp-quote-box">
-                    <h4>Get a Fast Quote via WhatsApp</h4>
-                    <p>Send these 4 details for an instant estimate:</p>
+                    <div className="whatsapp-header">
+                        <MessageSquare size={40} className="whatsapp-icon" />
+                        <h4>Get a Fast Quote via WhatsApp</h4>
+                        <p>Send these 4 details for an instant estimate:</p>
+                    </div>
                     <ul className="quote-steps">
-                        <li>1. Your Location (Pin/Postcode)</li>
-                        <li>2. Vehicle Type</li>
-                        <li>3. Issue (Won't start / Accident / Flat tyre)</li>
-                        <li>4. Destination (Home / Garage)</li>
+                        <li>
+                            <span className="step-number">1</span>
+                            <MapPin size={20} className="step-icon" />
+                            <span>Your Location (Pin/Postcode)</span>
+                        </li>
+                        <li>
+                            <span className="step-number">2</span>
+                            <CarFront size={20} className="step-icon" />
+                            <span>Vehicle Type</span>
+                        </li>
+                        <li>
+                            <span className="step-number">3</span>
+                            <AlertTriangle size={20} className="step-icon" />
+                            <span>Issue (Won't start / Accident / Flat)</span>
+                        </li>
+                        <li>
+                            <span className="step-number">4</span>
+                            <Home size={20} className="step-icon" />
+                            <span>Destination (Home / Garage)</span>
+                        </li>
                     </ul>
                     <Link href={`https://wa.me/${whatsapp}`} target="_blank" className="whatsapp-btn-large">
                         <MessageSquare size={24} />
                         WhatsApp Instant Quote
                     </Link>
+                    <p className="response-time">Average response: Under 2 minutes</p>
                 </div>
             </div>
         </section>

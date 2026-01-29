@@ -1,13 +1,17 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import '../../../styles/admin.css';
+import '../../../../styles/admin.css';
+
+const AUTOSAVE_KEY = 'area_form_autosave';
+const AUTOSAVE_DELAY = 1000; // 1 second debounce
 
 export default function AddAreaPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
+    const [autoSaveStatus, setAutoSaveStatus] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
@@ -22,6 +26,41 @@ export default function AddAreaPage() {
         latitude: '',
         longitude: ''
     });
+
+    // Load autosaved data on mount
+    useEffect(() => {
+        const savedData = localStorage.getItem(AUTOSAVE_KEY);
+        if (savedData) {
+            try {
+                const parsed = JSON.parse(savedData);
+                setFormData(parsed);
+                setAutoSaveStatus('Draft restored');
+                setTimeout(() => setAutoSaveStatus(''), 3000);
+            } catch (e) {
+                console.error('Failed to parse autosaved data');
+            }
+        }
+    }, []);
+
+    // Autosave with debounce
+    useEffect(() => {
+        const hasContent = formData.name || formData.slug || formData.intro_text;
+        if (!hasContent) return;
+
+        setAutoSaveStatus('Saving...');
+        const timeoutId = setTimeout(() => {
+            localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(formData));
+            setAutoSaveStatus('Draft saved');
+            setTimeout(() => setAutoSaveStatus(''), 2000);
+        }, AUTOSAVE_DELAY);
+
+        return () => clearTimeout(timeoutId);
+    }, [formData]);
+
+    // Clear autosave data
+    const clearAutosave = useCallback(() => {
+        localStorage.removeItem(AUTOSAVE_KEY);
+    }, []);
 
     const generateSlug = (name) => {
         return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -46,6 +85,7 @@ export default function AddAreaPage() {
             const data = await res.json();
 
             if (data.success) {
+                clearAutosave(); // Clear autosave on successful submission
                 router.push('/admin/areas');
             } else {
                 alert(data.error);
@@ -57,6 +97,28 @@ export default function AddAreaPage() {
         setLoading(false);
     };
 
+    const handleClearDraft = () => {
+        if (confirm('Are you sure you want to clear the saved draft?')) {
+            clearAutosave();
+            setFormData({
+                name: '',
+                slug: '',
+                county: '',
+                region: 'West Midlands',
+                postcode_prefix: '',
+                h1_title: '',
+                intro_text: '',
+                meta_title: '',
+                meta_description: '',
+                major_roads: '',
+                latitude: '',
+                longitude: ''
+            });
+            setAutoSaveStatus('Draft cleared');
+            setTimeout(() => setAutoSaveStatus(''), 2000);
+        }
+    };
+
     return (
         <div className="admin-dashboard">
             <header className="admin-header">
@@ -64,7 +126,12 @@ export default function AddAreaPage() {
                     <h1>Add New Area</h1>
                     <p>Create a new location page</p>
                 </div>
-                <Link href="/admin/areas" className="btn-back">← Back to List</Link>
+                <div className="header-actions">
+                    {autoSaveStatus && (
+                        <span className="autosave-status">{autoSaveStatus}</span>
+                    )}
+                    <Link href="/admin/areas" className="btn-back">← Back to List</Link>
+                </div>
             </header>
 
             <form onSubmit={handleSubmit} className="area-form">
@@ -84,7 +151,7 @@ export default function AddAreaPage() {
                                     name: e.target.value,
                                     slug: generateSlug(e.target.value),
                                     h1_title: `24/7 Car Recovery & Emergency Towing in ${e.target.value}`,
-                                    meta_title: `24/7 Car Recovery in ${e.target.value} | ABZ Car Recovery`,
+                                    meta_title: `24/7 Car Recovery in ${e.target.value} | Car Recovery UK`,
                                     meta_description: `Fast and reliable car recovery services in ${e.target.value}. Available 24/7 for breakdowns, accidents, and vehicle transport.`
                                 })}
                                 placeholder="e.g., Birmingham"
@@ -141,32 +208,7 @@ export default function AddAreaPage() {
                     </div>
                 </div>
 
-                {/* Location Coordinates */}
-                <div className="form-section">
-                    <h2>Location Coordinates</h2>
-                    <p className="section-desc">Optional - Used for map display</p>
 
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label>Latitude</label>
-                            <input
-                                type="text"
-                                value={formData.latitude}
-                                onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                                placeholder="e.g., 52.4862"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Longitude</label>
-                            <input
-                                type="text"
-                                value={formData.longitude}
-                                onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                                placeholder="e.g., -1.8904"
-                            />
-                        </div>
-                    </div>
-                </div>
 
                 {/* SEO Settings */}
                 <div className="form-section">
@@ -234,6 +276,9 @@ export default function AddAreaPage() {
                 </div>
 
                 <div className="form-actions">
+                    <button type="button" className="btn-clear-draft" onClick={handleClearDraft}>
+                        Clear Draft
+                    </button>
                     <Link href="/admin/areas" className="btn-cancel">Cancel</Link>
                     <button type="submit" className="btn-primary" disabled={loading}>
                         {loading ? 'Creating...' : 'Create Area'}
