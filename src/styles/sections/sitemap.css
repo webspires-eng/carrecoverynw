@@ -1,0 +1,80 @@
+.sitemap-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    font-family: 'Rubik', sans-serif;
+}
+
+.sitemap-h1 {
+    text-align: center;
+    color: var(--primary-blue);
+    font-size: 3rem;
+    margin-bottom: 50px;
+    font-weight: 800;
+}
+
+.sitemap-section {
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.sitemap-h2 {
+    font-size: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    color: var(--primary-blue);
+    font-weight: 700;
+}
+
+.sitemap-links {
+    list-style: none;
+    padding: 0;
+}
+
+.sitemap-links li {
+    margin-bottom: 12px;
+}
+
+.sitemap-links a {
+    color: #555;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    display: inline-block;
+}
+
+.sitemap-links a:hover {
+    color: var(--primary-orange);
+    transform: translateX(5px);
+}
+
+.sitemap-areas-grid {
+    column-count: 3;
+    column-gap: 40px;
+}
+
+.letter-group {
+    break-inside: avoid;
+    margin-bottom: 30px;
+}
+
+.letter-group h3 {
+    color: #ddd;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+@media (max-width: 768px) {
+    .sitemap-areas-grid {
+        column-count: 1;
+    }
+
+    .sitemap-h1 {
+        font-size: 2.2rem;
+    }
+}
