@@ -75,18 +75,18 @@ export async function POST(request) {
             [
                 slug,
                 name,
-                county,
+                county || null,
                 region,
                 meta_title || `24/7 Car Recovery in ${name} | Car Recovery UK`,
                 meta_description || `Fast and reliable car recovery services in ${name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
                 h1_title || `24/7 Car Recovery & Emergency Towing in ${name}`,
-                intro_text,
-                latitude,
-                longitude,
-                postcode_prefix,
+                intro_text || null,
+                latitude || null,
+                longitude || null,
+                postcode_prefix || null,
                 JSON.stringify(nearby_areas || []),
                 JSON.stringify(major_roads || []),
-                custom_services,
+                custom_services || null,
                 JSON.stringify(custom_faqs || [])
             ]
         );

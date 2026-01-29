@@ -4,28 +4,27 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const testimonials = [
-    {
-        image: "/testimonial-1.jpg",
-        name: "James Harrison",
-        rating: 5,
-        text: "Incredible response time! I was stranded in the rain and they were there in 15 minutes. Professional, safe, and very fairly priced."
-    },
-    {
-        image: "/testimonial_woman_white.png",
-        name: "Sarah Jenkins",
-        rating: 5,
-        text: "Absolutely brilliant service. The driver was very helpful and got my car to the garage without any hassle. Highly recommend to everyone!"
-    },
-    {
-        image: "/profile-2-Cyl0lhX-.jpeg",
-        name: "David Miller",
-        rating: 5,
-        text: "Top notch recovery service. Transparent about the cost from the start and no hidden fees. Definitely the best in the West Midlands."
-    }
-];
-
-export default function TestimonialsSection() {
+export default function TestimonialsSection({ location = "West Midlands" }) {
+    const testimonials = [
+        {
+            image: "/testimonial-1.jpg",
+            name: "James Harrison",
+            rating: 5,
+            text: "Incredible response time! I was stranded in the rain and they were there in 15 minutes. Professional, safe, and very fairly priced."
+        },
+        {
+            image: "/testimonial_woman_white.png",
+            name: "Sarah Jenkins",
+            rating: 5,
+            text: "Absolutely brilliant service. The driver was very helpful and got my car to the garage without any hassle. Highly recommend to everyone!"
+        },
+        {
+            image: "/profile-2-Cyl0lhX-.jpeg",
+            name: "David Miller",
+            rating: 5,
+            text: `Top notch recovery service. Transparent about the cost from the start and no hidden fees. Definitely the best in ${location}.`
+        }
+    ];
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
 

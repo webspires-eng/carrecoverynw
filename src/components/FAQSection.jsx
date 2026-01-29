@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import "../styles/sections/faq.css";
 
-const faqs = [
+const defaultFaqs = [
     {
         q: "How fast can you reach me in West Midlands?",
         a: "We typically arrive within 15 to 30 minutes depending on your location. Our local dispatch system ensures the nearest driver is sent to you immediately."
@@ -59,8 +59,11 @@ const faqs = [
     }
 ];
 
-export default function FAQSection() {
+export default function FAQSection({ customFaqs = [] }) {
     const [activeIndex, setActiveIndex] = useState(null);
+
+    const normalizedCustom = customFaqs.map(f => ({ q: f.question, a: f.answer }));
+    const displayFaqs = normalizedCustom.length > 0 ? normalizedCustom : defaultFaqs;
 
     const toggleFAQ = (index) => {
         setActiveIndex(activeIndex === index ? null : index);
@@ -69,7 +72,7 @@ export default function FAQSection() {
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "mainEntity": faqs.map(faq => ({
+        "mainEntity": displayFaqs.map(faq => ({
             "@type": "Question",
             "name": faq.q,
             "acceptedAnswer": {
@@ -87,7 +90,7 @@ export default function FAQSection() {
             />
             <h2>Car Recovery & Towing FAQs</h2>
             <div className="faq-container">
-                {faqs.map((faq, index) => (
+                {displayFaqs.map((faq, index) => (
                     <div key={index} className={`faq-item ${activeIndex === index ? 'active' : ''}`}>
                         <button className="faq-question" onClick={() => toggleFAQ(index)}>
                             {faq.q}

@@ -16,16 +16,17 @@ export default function EditAreaPage() {
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
-        county: '',
-        region: 'West Midlands',
-        postcode_prefix: '',
+        slug: '',
         h1_title: '',
         intro_text: '',
         meta_title: '',
         meta_description: '',
         major_roads: '',
         latitude: '',
-        longitude: ''
+        latitude: '',
+        longitude: '',
+        nearby_areas: '',
+        custom_faqs: []
     });
 
     useEffect(() => {
@@ -44,16 +45,36 @@ export default function EditAreaPage() {
                 setFormData({
                     name: area.name || '',
                     slug: area.slug || '',
-                    county: area.county || '',
-                    region: area.region || 'West Midlands',
-                    postcode_prefix: area.postcode_prefix || '',
                     h1_title: area.h1_title || '',
                     intro_text: area.intro_text || '',
                     meta_title: area.meta_title || '',
                     meta_description: area.meta_description || '',
-                    major_roads: Array.isArray(area.major_roads) ? area.major_roads.join(', ') : '',
+                    major_roads: (() => {
+                        try {
+                            const roads = typeof area.major_roads === 'string' && area.major_roads.startsWith('[')
+                                ? JSON.parse(area.major_roads)
+                                : area.major_roads;
+                            return Array.isArray(roads) ? roads.join(', ') : (roads || '');
+                        } catch { return area.major_roads || ''; }
+                    })(),
                     latitude: area.latitude || '',
-                    longitude: area.longitude || ''
+                    latitude: area.latitude || '',
+                    longitude: area.longitude || '',
+                    nearby_areas: (() => {
+                        try {
+                            const areas = typeof area.nearby_areas === 'string' && area.nearby_areas.startsWith('[')
+                                ? JSON.parse(area.nearby_areas)
+                                : area.nearby_areas;
+                            return Array.isArray(areas) ? areas.join(', ') : (areas || '');
+                        } catch { return area.nearby_areas || ''; }
+                    })(),
+                    custom_faqs: (() => {
+                        try {
+                            return typeof area.custom_faqs === 'string'
+                                ? JSON.parse(area.custom_faqs)
+                                : (area.custom_faqs || []);
+                        } catch { return []; }
+                    })()
                 });
             } else {
                 alert('Area not found');
@@ -78,7 +99,9 @@ export default function EditAreaPage() {
                     ...formData,
                     major_roads: formData.major_roads.split(',').map(r => r.trim()).filter(Boolean),
                     latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-                    longitude: formData.longitude ? parseFloat(formData.longitude) : null
+                    latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+                    longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+                    nearby_areas: formData.nearby_areas ? formData.nearby_areas.split(',').map(r => r.trim()).filter(Boolean) : []
                 })
             });
 
@@ -132,30 +155,8 @@ export default function EditAreaPage() {
                                 required
                             />
                         </div>
-                        <div className="form-group">
-                            <label>County</label>
-                            <input
-                                type="text"
-                                value={formData.county}
-                                onChange={(e) => setFormData({ ...formData, county: e.target.value })}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Region</label>
-                            <input
-                                type="text"
-                                value={formData.region}
-                                onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Postcode Prefix</label>
-                            <input
-                                type="text"
-                                value={formData.postcode_prefix}
-                                onChange={(e) => setFormData({ ...formData, postcode_prefix: e.target.value })}
-                            />
-                        </div>
+
+
                         <div className="form-group">
                             <label>Major Roads</label>
                             <input
@@ -164,31 +165,18 @@ export default function EditAreaPage() {
                                 onChange={(e) => setFormData({ ...formData, major_roads: e.target.value })}
                             />
                         </div>
+                        <div className="form-group">
+                            <label>Nearby Areas (comma-separated)</label>
+                            <input
+                                type="text"
+                                value={formData.nearby_areas}
+                                onChange={(e) => setFormData({ ...formData, nearby_areas: e.target.value })}
+                            />
+                        </div>
                     </div>
                 </div>
 
-                {/* Location Coordinates */}
-                <div className="form-section">
-                    <h2>Location Coordinates</h2>
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label>Latitude</label>
-                            <input
-                                type="text"
-                                value={formData.latitude}
-                                onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Longitude</label>
-                            <input
-                                type="text"
-                                value={formData.longitude}
-                                onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
-                            />
-                        </div>
-                    </div>
-                </div>
+
 
                 {/* SEO Settings */}
                 <div className="form-section">
@@ -228,6 +216,74 @@ export default function EditAreaPage() {
                             onChange={(e) => setFormData({ ...formData, intro_text: e.target.value })}
                             rows={4}
                         />
+                    </div>
+                </div>
+
+                <div className="form-section">
+                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2>FAQs</h2>
+                            <p className="section-desc">Add area-specific frequently asked questions</p>
+                        </div>
+                        <button type="button" className="btn-secondary" onClick={() => setFormData({
+                            ...formData,
+                            custom_faqs: [...formData.custom_faqs, { question: '', answer: '' }]
+                        })}>
+                            + Add FAQ
+                        </button>
+                    </div>
+
+                    <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+                        {formData.custom_faqs.map((faq, index) => (
+                            <details key={index} className="faq-item" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', overflow: 'hidden' }}>
+                                <summary style={{ padding: '15px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#e9ecef' }}>
+                                    <span>{faq.question || `FAQ #${index + 1}`}</span>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault(); // Prevent details toggle
+                                            if (confirm('Delete this FAQ?')) {
+                                                const newFaqs = formData.custom_faqs.filter((_, i) => i !== index);
+                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                            }
+                                        }}
+                                        style={{ background: '#dc3545', border: 'none', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem' }}
+                                        title="Remove FAQ"
+                                    >
+                                        ×
+                                    </button>
+                                </summary>
+                                <div style={{ padding: '20px' }}>
+                                    <div className="form-group full-width">
+                                        <label>Question</label>
+                                        <input
+                                            type="text"
+                                            value={faq.question}
+                                            onChange={(e) => {
+                                                const newFaqs = [...formData.custom_faqs];
+                                                newFaqs[index].question = e.target.value;
+                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="form-group full-width" style={{ marginTop: '15px' }}>
+                                        <label>Answer</label>
+                                        <textarea
+                                            value={faq.answer}
+                                            onChange={(e) => {
+                                                const newFaqs = [...formData.custom_faqs];
+                                                newFaqs[index].answer = e.target.value;
+                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                            }}
+                                            rows={3}
+                                        />
+                                    </div>
+                                </div>
+                            </details>
+                        ))}
+                        {formData.custom_faqs.length === 0 && (
+                            <p style={{ color: '#6c757d', fontStyle: 'italic', textAlign: 'center' }}>No FAQs added yet.</p>
+                        )}
                     </div>
                 </div>
 

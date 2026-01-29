@@ -15,16 +15,17 @@ export default function AddAreaPage() {
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
-        county: '',
-        region: 'West Midlands',
-        postcode_prefix: '',
+        slug: '',
         h1_title: '',
         intro_text: '',
         meta_title: '',
         meta_description: '',
         major_roads: '',
         latitude: '',
-        longitude: ''
+        latitude: '',
+        longitude: '',
+        nearby_areas: '',
+        custom_faqs: []
     });
 
     // Load autosaved data on mount
@@ -78,7 +79,9 @@ export default function AddAreaPage() {
                     ...formData,
                     major_roads: formData.major_roads.split(',').map(r => r.trim()).filter(Boolean),
                     latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-                    longitude: formData.longitude ? parseFloat(formData.longitude) : null
+                    latitude: formData.latitude ? parseFloat(formData.latitude) : null,
+                    longitude: formData.longitude ? parseFloat(formData.longitude) : null,
+                    nearby_areas: formData.nearby_areas ? formData.nearby_areas.split(',').map(r => r.trim()).filter(Boolean) : []
                 })
             });
 
@@ -103,16 +106,16 @@ export default function AddAreaPage() {
             setFormData({
                 name: '',
                 slug: '',
-                county: '',
-                region: 'West Midlands',
-                postcode_prefix: '',
+                slug: '',
                 h1_title: '',
                 intro_text: '',
                 meta_title: '',
                 meta_description: '',
                 major_roads: '',
                 latitude: '',
-                longitude: ''
+                longitude: '',
+                nearby_areas: '',
+                custom_faqs: []
             });
             setAutoSaveStatus('Draft cleared');
             setTimeout(() => setAutoSaveStatus(''), 2000);
@@ -169,33 +172,8 @@ export default function AddAreaPage() {
                             />
                             <span className="input-hint">URL: /area/{formData.slug || 'slug'}</span>
                         </div>
-                        <div className="form-group">
-                            <label>County</label>
-                            <input
-                                type="text"
-                                value={formData.county}
-                                onChange={(e) => setFormData({ ...formData, county: e.target.value })}
-                                placeholder="e.g., West Midlands"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Region</label>
-                            <input
-                                type="text"
-                                value={formData.region}
-                                onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-                                placeholder="e.g., West Midlands"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Postcode Prefix</label>
-                            <input
-                                type="text"
-                                value={formData.postcode_prefix}
-                                onChange={(e) => setFormData({ ...formData, postcode_prefix: e.target.value })}
-                                placeholder="e.g., B, CV, WV"
-                            />
-                        </div>
+
+
                         <div className="form-group">
                             <label>Major Roads (comma-separated)</label>
                             <input
@@ -203,6 +181,15 @@ export default function AddAreaPage() {
                                 value={formData.major_roads}
                                 onChange={(e) => setFormData({ ...formData, major_roads: e.target.value })}
                                 placeholder="e.g., M6, M5, A38"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Nearby Areas (comma-separated)</label>
+                            <input
+                                type="text"
+                                value={formData.nearby_areas}
+                                onChange={(e) => setFormData({ ...formData, nearby_areas: e.target.value })}
+                                placeholder="e.g., Solihull, Sutton Coldfield"
                             />
                         </div>
                     </div>
@@ -258,20 +245,75 @@ export default function AddAreaPage() {
                     </div>
                 </div>
 
-                {/* Section Customization - Placeholder */}
-                <div className="form-section coming-soon">
-                    <h2>Section Customization</h2>
-                    <p className="section-desc">Configure which sections to show and customize content</p>
 
-                    <div className="placeholder-box">
-                        <p><strong>Coming Soon:</strong> Once you specify which sections should be dynamic vs static, we'll add controls here for:</p>
-                        <ul>
-                            <li>Toggle sections on/off per area</li>
-                            <li>Custom content for dynamic sections</li>
-                            <li>Area-specific FAQs</li>
-                            <li>Custom testimonials by area</li>
-                            <li>Nearby areas linking</li>
-                        </ul>
+                {/* FAQs Section */}
+                <div className="form-section">
+                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2>FAQs</h2>
+                            <p className="section-desc">Add area-specific frequently asked questions</p>
+                        </div>
+                        <button type="button" className="btn-secondary" onClick={() => setFormData({
+                            ...formData,
+                            custom_faqs: [...formData.custom_faqs, { question: '', answer: '' }]
+                        })}>
+                            + Add FAQ
+                        </button>
+                    </div>
+
+                    <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
+                        {formData.custom_faqs.map((faq, index) => (
+                            <details key={index} className="faq-item" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', overflow: 'hidden' }}>
+                                <summary style={{ padding: '15px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#e9ecef' }}>
+                                    <span>{faq.question || `FAQ #${index + 1}`}</span>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault(); // Prevent details toggle
+                                            if (confirm('Delete this FAQ?')) {
+                                                const newFaqs = formData.custom_faqs.filter((_, i) => i !== index);
+                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                            }
+                                        }}
+                                        style={{ background: '#dc3545', border: 'none', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem' }}
+                                        title="Remove FAQ"
+                                    >
+                                        ×
+                                    </button>
+                                </summary>
+                                <div style={{ padding: '20px' }}>
+                                    <div className="form-group full-width">
+                                        <label>Question</label>
+                                        <input
+                                            type="text"
+                                            value={faq.question}
+                                            onChange={(e) => {
+                                                const newFaqs = [...formData.custom_faqs];
+                                                newFaqs[index].question = e.target.value;
+                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                            }}
+                                            placeholder="e.g. How much does recovery cost?"
+                                        />
+                                    </div>
+                                    <div className="form-group full-width" style={{ marginTop: '15px' }}>
+                                        <label>Answer</label>
+                                        <textarea
+                                            value={faq.answer}
+                                            onChange={(e) => {
+                                                const newFaqs = [...formData.custom_faqs];
+                                                newFaqs[index].answer = e.target.value;
+                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                            }}
+                                            placeholder="Enter the answer..."
+                                            rows={3}
+                                        />
+                                    </div>
+                                </div>
+                            </details>
+                        ))}
+                        {formData.custom_faqs.length === 0 && (
+                            <p style={{ color: '#6c757d', fontStyle: 'italic', textAlign: 'center' }}>No FAQs added yet.</p>
+                        )}
                     </div>
                 </div>
 

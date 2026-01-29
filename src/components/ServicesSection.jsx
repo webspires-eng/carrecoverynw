@@ -2,7 +2,11 @@
 
 import { CircleCheck } from "lucide-react";
 
-export default function ServicesSection({ location = "West Midlands" }) {
+export default function ServicesSection({ location = "West Midlands", majorRoads = [] }) {
+    const majorRoadsStr = (majorRoads && majorRoads.length > 0)
+        ? majorRoads.slice(0, 3).join('/')
+        : "M6/M5/M42";
+
     const services = [
         {
             title: "Emergency Breakdown Recovery",
@@ -25,7 +29,7 @@ export default function ServicesSection({ location = "West Midlands" }) {
             description: "Specialist flatbed trucks and ramps for sports cars, lowered vehicles, and luxury cars — damage-free guaranteed."
         },
         {
-            title: "Motorway Recovery (M6/M5/M42)",
+            title: `Motorway Recovery (${majorRoadsStr})`,
             description: "Priority dispatch for motorway breakdowns. We understand the urgency and safety risks involved."
         }
     ];

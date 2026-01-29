@@ -115,6 +115,15 @@
     color: rgba(255, 255, 255, 0.1);
     font-family: 'Rubik', sans-serif;
     line-height: 1;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.step-number::before,
+.step-number::after {
+    display: none !important;
+    content: none !important;
 }
 
 .safety-card h3 {

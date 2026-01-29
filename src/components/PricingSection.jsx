@@ -95,22 +95,22 @@ export default function PricingSection() {
                     </div>
                     <ul className="quote-steps">
                         <li>
-                            <span className="step-number">1</span>
+                            <span className="quote-step-number">1</span>
                             <MapPin size={20} className="step-icon" />
                             <span>Your Location (Pin/Postcode)</span>
                         </li>
                         <li>
-                            <span className="step-number">2</span>
+                            <span className="quote-step-number">2</span>
                             <CarFront size={20} className="step-icon" />
                             <span>Vehicle Type</span>
                         </li>
                         <li>
-                            <span className="step-number">3</span>
+                            <span className="quote-step-number">3</span>
                             <AlertTriangle size={20} className="step-icon" />
                             <span>Issue (Won't start / Accident / Flat)</span>
                         </li>
                         <li>
-                            <span className="step-number">4</span>
+                            <span className="quote-step-number">4</span>
                             <Home size={20} className="step-icon" />
                             <span>Destination (Home / Garage)</span>
                         </li>

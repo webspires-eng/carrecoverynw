@@ -5,7 +5,7 @@ import { Phone, MessageSquare, Star, Clock, Shield, MapPin } from "lucide-react"
 import "../styles/sections/final-cta.css";
 import { useSettings } from "@/components/SettingsProvider";
 
-export default function FinalCTASection() {
+export default function FinalCTASection({ location = "West Midlands" }) {
     const { phone, whatsapp } = useSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
@@ -25,11 +25,11 @@ export default function FinalCTASection() {
                     </span>
                     <span className="cta-badge">
                         <MapPin size={16} />
-                        West Midlands
+                        {location}
                     </span>
                 </div>
 
-                <h2>Need 24/7 Car Recovery in West Midlands?</h2>
+                <h2>Need 24/7 Car Recovery in {location}?</h2>
                 <p>Fast, reliable recovery when you're stuck — day or night. Send your location pin and we'll dispatch the nearest truck.</p>
 
                 <div className="cta-buttons-large">

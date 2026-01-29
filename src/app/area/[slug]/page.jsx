@@ -75,6 +75,11 @@ export default async function AreaPage({ params }) {
 
     const location = area.name;
 
+    const majorRoads = area.major_roads ? (typeof area.major_roads === 'string' ? JSON.parse(area.major_roads) : area.major_roads) : [];
+    const nearbyAreas = area.nearby_areas ? (typeof area.nearby_areas === 'string' ? JSON.parse(area.nearby_areas) : area.nearby_areas) : [];
+    const customFaqs = area.custom_faqs ? (typeof area.custom_faqs === 'string' ? JSON.parse(area.custom_faqs) : area.custom_faqs) : [];
+
+
     return (
         <main>
             {/* 1. HERO + CTAs + Trust strip */}
@@ -87,16 +92,16 @@ export default async function AreaPage({ params }) {
             <StepsSection />
 
             {/* 4. Services - What we do */}
-            <ServicesSection location={location} />
+            <ServicesSection location={location} majorRoads={majorRoads} />
 
             {/* 5. Areas We Cover */}
-            <CoverageSection />
+            <CoverageSection location={location} majorRoads={majorRoads} nearbyAreas={nearbyAreas} />
 
             {/* 6. Map + NAP */}
-            <MapSection />
+            <MapSection location={location} />
 
             {/* 7. Reviews + Testimonials (unified) */}
-            <TestimonialsSection />
+            <TestimonialsSection location={location} />
 
             {/* 8. Why Choose Us */}
             <WhyChooseUsSection />
@@ -117,10 +122,10 @@ export default async function AreaPage({ params }) {
             <SafetySection />
 
             {/* 14. FAQs */}
-            <FAQSection />
+            <FAQSection customFaqs={customFaqs} />
 
             {/* 15. Final CTA */}
-            <FinalCTASection />
+            <FinalCTASection location={location} />
 
             <Footer />
         </main>
