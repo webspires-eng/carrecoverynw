@@ -70,8 +70,8 @@ export async function POST(request) {
         }
 
         const [result] = await pool.execute(
-            `INSERT INTO areas (slug, name, county, region, meta_title, meta_description, h1_title, intro_text, latitude, longitude, postcode_prefix, nearby_areas, major_roads, custom_services, custom_faqs) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO areas (slug, name, county, region, meta_title, meta_description, h1_title, intro_text, latitude, longitude, postcode_prefix, nearby_areas, major_roads, custom_services, custom_faqs, is_active) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
             [
                 slug,
                 name,
