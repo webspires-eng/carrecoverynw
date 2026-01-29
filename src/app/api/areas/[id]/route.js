@@ -44,6 +44,12 @@ export async function PUT(request, { params }) {
             }
         }
 
+        // Default is_active to 1 if not provided (ensures areas are active by default when editing)
+        if (body.is_active === undefined) {
+            fields.push('is_active = ?');
+            values.push(1);
+        }
+
         if (fields.length === 0) {
             return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 });
         }
