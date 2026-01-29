@@ -2,8 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useSettings } from "@/components/SettingsProvider";
 
 export default function StepsSection() {
+    const { phone } = useSettings();
+    const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
+    const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
+
     const steps = [
         {
             icon: "/call-3-CKgjkqAH.png",
@@ -55,9 +60,9 @@ export default function StepsSection() {
             </div>
 
             <div className="contact" style={{ marginTop: '30px' }}>
-                <Link href="tel:07360544819">
+                <Link href={`tel:${linkPhone}`}>
                     <button>
-                        0736 054 4819
+                        {displayPhone}
                         <span>24/7 Service • Call Now</span>
                     </button>
                 </Link>

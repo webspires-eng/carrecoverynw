@@ -2,8 +2,13 @@
 
 import Link from "next/link";
 import { CircleCheck } from "lucide-react";
+import { useSettings } from "@/components/SettingsProvider";
 
 export default function WhyChooseUsSection() {
+    const { phone } = useSettings();
+    const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
+    const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
+
     const features = [
         {
             title: "Swift Response",
@@ -43,9 +48,9 @@ export default function WhyChooseUsSection() {
                     ))}
 
                     <div className="contact">
-                        <Link href="tel:07360544819">
+                        <Link href={`tel:${linkPhone}`}>
                             <button>
-                                0736 054 4819
+                                {displayPhone}
                                 <span>24/7 Service • Call Now</span>
                             </button>
                         </Link>

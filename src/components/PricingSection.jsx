@@ -3,8 +3,11 @@
 import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import "../styles/sections/pricing.css";
+import { useSettings } from "@/components/SettingsProvider";
 
 export default function PricingSection() {
+    const { whatsapp } = useSettings();
+
     return (
         <section className="pricing-section">
             <h2>Transparent Pricing — Know the Cost Before We Tow</h2>
@@ -39,7 +42,7 @@ export default function PricingSection() {
                         <li>3. Issue (Won't start / Accident / Flat tyre)</li>
                         <li>4. Destination (Home / Garage)</li>
                     </ul>
-                    <Link href="https://wa.me/447360544819" target="_blank" className="whatsapp-btn-large">
+                    <Link href={`https://wa.me/${whatsapp}`} target="_blank" className="whatsapp-btn-large">
                         <MessageSquare size={24} />
                         WhatsApp Instant Quote
                     </Link>
