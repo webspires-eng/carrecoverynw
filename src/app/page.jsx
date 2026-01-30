@@ -17,10 +17,13 @@ import Footer from "@/components/Footer";
 
 import { getServices } from "@/lib/services";
 
+import { getRecoveries } from "@/lib/recoveries";
+
 export default async function Home({ searchParams }) {
   const params = await searchParams;
   const location = params.loc || "West Midlands";
   const services = await getServices();
+  const recoveries = await getRecoveries();
 
   return (
     <main>
@@ -55,7 +58,7 @@ export default async function Home({ searchParams }) {
       <PricingSection />
 
       {/* 11. Real Recoveries */}
-      <RealRecoveriesSection />
+      <RealRecoveriesSection location={location} recoveries={recoveries} />
 
       {/* 12. Damage-Free Recovery */}
       <DamageFreeSection />

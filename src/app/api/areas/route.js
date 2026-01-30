@@ -62,7 +62,8 @@ export async function POST(request) {
             nearby_areas,
             major_roads,
             custom_services,
-            custom_faqs
+            custom_faqs,
+            custom_recoveries
         } = body;
 
         if (!slug || !name) {
@@ -70,8 +71,8 @@ export async function POST(request) {
         }
 
         const [result] = await pool.execute(
-            `INSERT INTO areas (slug, name, county, region, meta_title, meta_description, h1_title, intro_text, latitude, longitude, postcode_prefix, nearby_areas, major_roads, custom_services, custom_faqs, is_active) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
+            `INSERT INTO areas (slug, name, county, region, meta_title, meta_description, h1_title, intro_text, latitude, longitude, postcode_prefix, nearby_areas, major_roads, custom_services, custom_faqs, custom_recoveries, is_active) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
             [
                 slug,
                 name,
@@ -87,7 +88,8 @@ export async function POST(request) {
                 JSON.stringify(nearby_areas || []),
                 JSON.stringify(major_roads || []),
                 custom_services || null,
-                JSON.stringify(custom_faqs || [])
+                JSON.stringify(custom_faqs || []),
+                custom_recoveries || null
             ]
         );
 

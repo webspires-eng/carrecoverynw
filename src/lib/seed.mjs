@@ -79,6 +79,41 @@ async function seed() {
         await connection.query(insertServices);
     }
 
+    // 4. Create and populate the Recoveries table
+    const recoveriesSchema = `
+    CREATE TABLE IF NOT EXISTS recoveries (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        type VARCHAR(255) NOT NULL,
+        location_text VARCHAR(255) NOT NULL,
+        description TEXT NOT NULL,
+        status_text VARCHAR(255) NOT NULL,
+        icon_name VARCHAR(50) DEFAULT 'Truck',
+        color_theme VARCHAR(50) DEFAULT 'blue',
+        display_order INT DEFAULT 0,
+        is_active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+    `;
+    console.log('Executing recoveries schema...');
+    await connection.query(recoveriesSchema);
+
+    // Check if recoveries exist before inserting
+    const [recoveryRows] = await connection.query('SELECT COUNT(*) as count FROM recoveries');
+    if (recoveryRows[0].count === 0) {
+        console.log('Inserting default recoveries...');
+        const insertRecoveries = `
+        INSERT INTO recoveries (type, location_text, description, status_text, icon_name, color_theme, display_order) VALUES
+        ('Flat Battery', 'Birmingham City Centre', 'Jump start provided for a stranded driver in a multi-storey car park. Recovery to local garage completed within 45 mins.', 'Updates via WhatsApp', 'Battery', 'yellow', 1),
+        ('Low Clearance', 'Coventry', 'Specialized flatbed recovery for a sports car with low ground clearance. Damage-free loading guaranteed.', 'Secure Transport', 'Car', 'blue', 2),
+        ('Motorway Breakdown', 'M6 (Junction 6)', 'Emergency recovery from a live lane on the M6. Location pin confirmed and truck dispatched immediately.', 'Safe Destination', 'Route', 'orange', 3),
+        ('Locked Wheels', 'Wolverhampton', 'Recovered a vehicle with seized brakes using specialized skates. Professional handling from start to finish.', 'Damage-Free', 'Lock', 'green', 4),
+        ('Accident Recovery', 'Walsall', 'Post-accident vehicle recovery to a secure storage facility. Coordinated with emergency services.', '24/7 Response', 'TriangleAlert', 'red', 5),
+        ('Transport', 'Solihull to London', 'Pre-booked vehicle transportation for a classic car. Door-to-door service with full insurance coverage.', 'Pre-booked', 'Truck', 'purple', 6);
+        `;
+        await connection.query(insertRecoveries);
+    }
+
     console.log('Database seeded successfully!');
     await connection.end();
 }

@@ -1,5 +1,6 @@
 import pool from '@/lib/db';
 import { getServices } from "@/lib/services";
+import { getRecoveries } from "@/lib/recoveries";
 import { notFound } from 'next/navigation';
 import HeroSection from "@/components/HeroSection";
 import ImmediateHelpSection from "@/components/ImmediateHelpSection";
@@ -70,6 +71,7 @@ export default async function AreaPage({ params }) {
     const { slug } = await params;
     const area = await getAreaBySlug(slug);
     const services = await getServices();
+    const recoveries = await getRecoveries();
 
     if (!area) {
         notFound();
@@ -85,7 +87,6 @@ export default async function AreaPage({ params }) {
     const displayServices = area.custom_services
         ? (typeof area.custom_services === 'string' ? JSON.parse(area.custom_services) : area.custom_services)
         : services;
-
 
     return (
         <main>
@@ -120,7 +121,7 @@ export default async function AreaPage({ params }) {
             <PricingSection />
 
             {/* 11. Real Recoveries */}
-            <RealRecoveriesSection />
+            <RealRecoveriesSection location={location} recoveries={recoveries} />
 
             {/* 12. Damage-Free Recovery */}
             <DamageFreeSection />

@@ -17,6 +17,15 @@ const DEFAULT_SERVICES_LIST = [
     { title: "Motorway Recovery ({{majorRoads}})", description: "Priority dispatch for motorway breakdowns. We understand the urgency and safety risks involved." }
 ];
 
+const DEFAULT_RECOVERIES_LIST = [
+    { type: "Flat Battery", location_text: "{{location}} City Centre", description: "Jump start provided for a stranded driver. Recovery to local garage completed within 45 mins.", status_text: "Updates via WhatsApp", icon_name: "Battery", color_theme: "yellow" },
+    { type: "Low Clearance", location_text: "{{location}}", description: "Specialized flatbed recovery for a sports car with low ground clearance. Damage-free loading guaranteed.", status_text: "Secure Transport", icon_name: "Car", color_theme: "blue" },
+    { type: "Motorway Breakdown", location_text: "{{majorRoads}}", description: "Emergency recovery from a live lane. Location pin confirmed and truck dispatched immediately.", status_text: "Safe Destination", icon_name: "Route", color_theme: "orange" },
+    { type: "Locked Wheels", location_text: "{{location}}", description: "Recovered a vehicle with seized brakes using specialized skates. Professional handling from start to finish.", status_text: "Damage-Free", icon_name: "Lock", color_theme: "green" },
+    { type: "Accident Recovery", location_text: "{{location}}", description: "Post-accident vehicle recovery to a secure storage facility. Coordinated with emergency services.", status_text: "24/7 Response", icon_name: "TriangleAlert", color_theme: "red" },
+    { type: "Transport", location_text: "{{location}} to London", description: "Pre-booked vehicle transportation for a classic car. Door-to-door service with full insurance coverage.", status_text: "Pre-booked", icon_name: "Truck", color_theme: "purple" }
+];
+
 export default function AddAreaPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -33,7 +42,8 @@ export default function AddAreaPage() {
         longitude: '',
         nearby_areas: '',
         custom_faqs: [],
-        custom_services: []
+        custom_services: [],
+        custom_recoveries: []
     });
 
     // Load autosaved data on mount
@@ -90,7 +100,8 @@ export default function AddAreaPage() {
                     latitude: formData.latitude ? parseFloat(formData.latitude) : null,
                     longitude: formData.longitude ? parseFloat(formData.longitude) : null,
                     nearby_areas: formData.nearby_areas ? formData.nearby_areas.split(',').map(r => r.trim()).filter(Boolean) : [],
-                    custom_services: formData.custom_services.length > 0 ? JSON.stringify(formData.custom_services) : null
+                    custom_services: formData.custom_services.length > 0 ? JSON.stringify(formData.custom_services) : null,
+                    custom_recoveries: formData.custom_recoveries.length > 0 ? JSON.stringify(formData.custom_recoveries) : null
                 })
             });
 
@@ -125,7 +136,8 @@ export default function AddAreaPage() {
                 longitude: '',
                 nearby_areas: '',
                 custom_faqs: [],
-                custom_services: []
+                custom_services: [],
+                custom_recoveries: []
             });
             setAutoSaveStatus('Draft cleared');
             setTimeout(() => setAutoSaveStatus(''), 2000);
@@ -406,6 +418,160 @@ export default function AddAreaPage() {
                         {formData.custom_services.length === 0 && (
                             <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
                                 Using global default services. Add overrides above to customize.
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Real Recoveries Section */}
+                <div className="form-section">
+                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2>Real Recoveries (Recent Work)</h2>
+                            <p className="section-desc">Showcase recent recoveries for this area. If empty, global defaults will be used.</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <select
+                                className="btn-secondary"
+                                style={{ padding: '8px', cursor: 'pointer' }}
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const selected = DEFAULT_RECOVERIES_LIST[e.target.value];
+                                        setFormData({
+                                            ...formData,
+                                            custom_recoveries: [...formData.custom_recoveries, { ...selected }]
+                                        });
+                                        e.target.value = "";
+                                    }
+                                }}
+                            >
+                                <option value="">+ Add From Defaults</option>
+                                {DEFAULT_RECOVERIES_LIST.map((r, i) => (
+                                    <option key={i} value={i}>{r.type} - {r.color_theme}</option>
+                                ))}
+                            </select>
+                            <button type="button" className="btn-secondary" onClick={() => setFormData({
+                                ...formData,
+                                custom_recoveries: [...formData.custom_recoveries, { type: '', location_text: '', description: '', status_text: '', icon_name: 'Truck', color_theme: 'blue' }]
+                            })}>
+                                + Add Custom
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '20px', marginTop: '20px' }}>
+                        {formData.custom_recoveries.map((recovery, index) => (
+                            <div key={index} className="form-group full-width" style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', border: '1px solid #e9ecef', position: 'relative' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newRecoveries = formData.custom_recoveries.filter((_, i) => i !== index);
+                                        setFormData({ ...formData, custom_recoveries: newRecoveries });
+                                    }}
+                                    style={{ position: 'absolute', top: '10px', right: '10px', background: '#dc3545', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    ×
+                                </button>
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
+                                    <div>
+                                        <label style={{ fontWeight: 'bold' }}>Recovery Type</label>
+                                        <input
+                                            type="text"
+                                            value={recovery.type}
+                                            onChange={(e) => {
+                                                const newRecs = [...formData.custom_recoveries];
+                                                newRecs[index].type = e.target.value;
+                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                            }}
+                                            placeholder="e.g. Flat Battery"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontWeight: 'bold' }}>Location Text</label>
+                                        <input
+                                            type="text"
+                                            value={recovery.location_text}
+                                            onChange={(e) => {
+                                                const newRecs = [...formData.custom_recoveries];
+                                                newRecs[index].location_text = e.target.value;
+                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                            }}
+                                            placeholder="e.g. Birmingham City Centre"
+                                        />
+                                    </div>
+                                </div>
+
+                                <label style={{ fontWeight: 'bold' }}>Description</label>
+                                <textarea
+                                    value={recovery.description}
+                                    onChange={(e) => {
+                                        const newRecs = [...formData.custom_recoveries];
+                                        newRecs[index].description = e.target.value;
+                                        setFormData({ ...formData, custom_recoveries: newRecs });
+                                    }}
+                                    placeholder="Enter details of the recovery..."
+                                    rows={2}
+                                    style={{ marginBottom: '10px' }}
+                                />
+
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+                                    <div>
+                                        <label style={{ fontWeight: 'bold' }}>Status Tag</label>
+                                        <input
+                                            type="text"
+                                            value={recovery.status_text}
+                                            onChange={(e) => {
+                                                const newRecs = [...formData.custom_recoveries];
+                                                newRecs[index].status_text = e.target.value;
+                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                            }}
+                                            placeholder="e.g. Safe Destination"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontWeight: 'bold' }}>Icon</label>
+                                        <select
+                                            value={recovery.icon_name}
+                                            onChange={(e) => {
+                                                const newRecs = [...formData.custom_recoveries];
+                                                newRecs[index].icon_name = e.target.value;
+                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                            }}
+                                        >
+                                            <option value="Battery">Battery</option>
+                                            <option value="Car">Car</option>
+                                            <option value="Route">Route</option>
+                                            <option value="Lock">Lock</option>
+                                            <option value="TriangleAlert">Alert</option>
+                                            <option value="Truck">Truck</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style={{ fontWeight: 'bold' }}>Color Theme</label>
+                                        <select
+                                            value={recovery.color_theme}
+                                            onChange={(e) => {
+                                                const newRecs = [...formData.custom_recoveries];
+                                                newRecs[index].color_theme = e.target.value;
+                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                            }}
+                                        >
+                                            <option value="yellow">Yellow</option>
+                                            <option value="blue">Blue</option>
+                                            <option value="orange">Orange</option>
+                                            <option value="green">Green</option>
+                                            <option value="red">Red</option>
+                                            <option value="purple">Purple</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d', marginTop: '5px', display: 'block' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
+                            </div>
+                        ))}
+                        {formData.custom_recoveries.length === 0 && (
+                            <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
+                                Using global default recoveries. Add overrides above to customize.
                             </p>
                         )}
                     </div>
