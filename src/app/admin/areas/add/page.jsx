@@ -8,6 +8,15 @@ import '../../../../styles/admin.css';
 const AUTOSAVE_KEY = 'area_form_autosave';
 const AUTOSAVE_DELAY = 1000; // 1 second debounce
 
+const DEFAULT_SERVICES_LIST = [
+    { title: "Emergency Breakdown Recovery", description: "Available 24/7, our emergency recovery team handles breakdowns, accidents, and roadside issues across {{location}} & outskirts." },
+    { title: "Roadside Assistance", description: "Quick fixes for flat tyres, jump starts, and minor mechanical issues to get you moving again fast." },
+    { title: "Vehicle Transportation", description: "Safe, fully insured door-to-door transport for cars, vans, and motorcycles locally or nationwide." },
+    { title: "Jump Start Service", description: "Fast battery revival service available 24/7. We'll get you started or recover you to a garage." },
+    { title: "Low Vehicle Recovery", description: "Specialist flatbed trucks and ramps for sports cars, lowered vehicles, and luxury cars — damage-free guaranteed." },
+    { title: "Motorway Recovery ({{majorRoads}})", description: "Priority dispatch for motorway breakdowns. We understand the urgency and safety risks involved." }
+];
+
 export default function AddAreaPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -15,17 +24,16 @@ export default function AddAreaPage() {
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
-        slug: '',
         h1_title: '',
         intro_text: '',
         meta_title: '',
         meta_description: '',
         major_roads: '',
         latitude: '',
-        latitude: '',
         longitude: '',
         nearby_areas: '',
-        custom_faqs: []
+        custom_faqs: [],
+        custom_services: []
     });
 
     // Load autosaved data on mount
@@ -81,7 +89,8 @@ export default function AddAreaPage() {
                     latitude: formData.latitude ? parseFloat(formData.latitude) : null,
                     latitude: formData.latitude ? parseFloat(formData.latitude) : null,
                     longitude: formData.longitude ? parseFloat(formData.longitude) : null,
-                    nearby_areas: formData.nearby_areas ? formData.nearby_areas.split(',').map(r => r.trim()).filter(Boolean) : []
+                    nearby_areas: formData.nearby_areas ? formData.nearby_areas.split(',').map(r => r.trim()).filter(Boolean) : [],
+                    custom_services: formData.custom_services.length > 0 ? JSON.stringify(formData.custom_services) : null
                 })
             });
 
@@ -115,7 +124,8 @@ export default function AddAreaPage() {
                 latitude: '',
                 longitude: '',
                 nearby_areas: '',
-                custom_faqs: []
+                custom_faqs: [],
+                custom_services: []
             });
             setAutoSaveStatus('Draft cleared');
             setTimeout(() => setAutoSaveStatus(''), 2000);
@@ -313,6 +323,90 @@ export default function AddAreaPage() {
                         ))}
                         {formData.custom_faqs.length === 0 && (
                             <p style={{ color: '#6c757d', fontStyle: 'italic', textAlign: 'center' }}>No FAQs added yet.</p>
+                        )}
+                    </div>
+                </div>
+
+
+                {/* Services Section */}
+                <div className="form-section">
+                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div>
+                            <h2>Services Section Descriptions</h2>
+                            <p className="section-desc">Add custom services for this area. If empty, global defaults will be used.</p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <select
+                                className="btn-secondary"
+                                style={{ padding: '8px', cursor: 'pointer' }}
+                                onChange={(e) => {
+                                    if (e.target.value) {
+                                        const selected = DEFAULT_SERVICES_LIST[e.target.value];
+                                        setFormData({
+                                            ...formData,
+                                            custom_services: [...formData.custom_services, { ...selected }]
+                                        });
+                                        e.target.value = "";
+                                    }
+                                }}
+                            >
+                                <option value="">+ Add From Defaults</option>
+                                {DEFAULT_SERVICES_LIST.map((s, i) => (
+                                    <option key={i} value={i}>{s.title}</option>
+                                ))}
+                            </select>
+                            <button type="button" className="btn-secondary" onClick={() => setFormData({
+                                ...formData,
+                                custom_services: [...formData.custom_services, { title: '', description: '' }]
+                            })}>
+                                + Add Custom
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '20px', marginTop: '20px' }}>
+                        {formData.custom_services.map((service, index) => (
+                            <div key={index} className="form-group full-width" style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', border: '1px solid #e9ecef', position: 'relative' }}>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const newServices = formData.custom_services.filter((_, i) => i !== index);
+                                        setFormData({ ...formData, custom_services: newServices });
+                                    }}
+                                    style={{ position: 'absolute', top: '10px', right: '10px', background: '#dc3545', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    ×
+                                </button>
+                                <label style={{ fontWeight: 'bold' }}>Service Title</label>
+                                <input
+                                    type="text"
+                                    value={service.title}
+                                    onChange={(e) => {
+                                        const newServices = [...formData.custom_services];
+                                        newServices[index].title = e.target.value;
+                                        setFormData({ ...formData, custom_services: newServices });
+                                    }}
+                                    placeholder="e.g. 24/7 Breakdown Recovery"
+                                    style={{ marginBottom: '10px' }}
+                                />
+                                <label style={{ fontWeight: 'bold' }}>Description</label>
+                                <textarea
+                                    value={service.description}
+                                    onChange={(e) => {
+                                        const newServices = [...formData.custom_services];
+                                        newServices[index].description = e.target.value;
+                                        setFormData({ ...formData, custom_services: newServices });
+                                    }}
+                                    placeholder="Enter description..."
+                                    rows={3}
+                                />
+                                <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
+                            </div>
+                        ))}
+                        {formData.custom_services.length === 0 && (
+                            <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
+                                Using global default services. Add overrides above to customize.
+                            </p>
                         )}
                     </div>
                 </div>

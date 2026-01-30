@@ -1,4 +1,5 @@
 import pool from '@/lib/db';
+import { getServices } from "@/lib/services";
 import { notFound } from 'next/navigation';
 import HeroSection from "@/components/HeroSection";
 import ImmediateHelpSection from "@/components/ImmediateHelpSection";
@@ -68,6 +69,7 @@ export async function generateMetadata({ params }) {
 export default async function AreaPage({ params }) {
     const { slug } = await params;
     const area = await getAreaBySlug(slug);
+    const services = await getServices();
 
     if (!area) {
         notFound();
@@ -78,6 +80,11 @@ export default async function AreaPage({ params }) {
     const majorRoads = area.major_roads ? (typeof area.major_roads === 'string' ? JSON.parse(area.major_roads) : area.major_roads) : [];
     const nearbyAreas = area.nearby_areas ? (typeof area.nearby_areas === 'string' ? JSON.parse(area.nearby_areas) : area.nearby_areas) : [];
     const customFaqs = area.custom_faqs ? (typeof area.custom_faqs === 'string' ? JSON.parse(area.custom_faqs) : area.custom_faqs) : [];
+
+    // Prioritize area-specific services if they exist
+    const displayServices = area.custom_services
+        ? (typeof area.custom_services === 'string' ? JSON.parse(area.custom_services) : area.custom_services)
+        : services;
 
 
     return (
@@ -92,7 +99,7 @@ export default async function AreaPage({ params }) {
             <StepsSection />
 
             {/* 4. Services - What we do */}
-            <ServicesSection location={location} majorRoads={majorRoads} />
+            <ServicesSection location={location} majorRoads={majorRoads} services={displayServices} />
 
             {/* 5. Areas We Cover */}
             <CoverageSection location={location} majorRoads={majorRoads} nearbyAreas={nearbyAreas} />

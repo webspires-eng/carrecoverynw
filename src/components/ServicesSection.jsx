@@ -2,12 +2,12 @@
 
 import { CircleCheck } from "lucide-react";
 
-export default function ServicesSection({ location = "West Midlands", majorRoads = [] }) {
+export default function ServicesSection({ location = "West Midlands", majorRoads = [], services: dynamicServices = [] }) {
     const majorRoadsStr = (majorRoads && majorRoads.length > 0)
         ? majorRoads.slice(0, 3).join('/')
         : "M6/M5/M42";
 
-    const services = [
+    const defaultServices = [
         {
             title: "Emergency Breakdown Recovery",
             description: `Available 24/7, our emergency recovery team handles breakdowns, accidents, and roadside issues across ${location} & outskirts.`
@@ -34,10 +34,19 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
         }
     ];
 
+    // Use dynamic services if provided, otherwise fallback to defaults
+    const servicesToDisplay = dynamicServices.length > 0
+        ? dynamicServices.map(s => ({
+            ...s,
+            title: s.title.replaceAll('{{majorRoads}}', majorRoadsStr).replaceAll('{{location}}', location),
+            description: s.description.replaceAll('{{majorRoads}}', majorRoadsStr).replaceAll('{{location}}', location)
+        }))
+        : defaultServices;
+
     return (
         <section className="layout4">
             <h2 style={{ color: 'var(--primary-orange)', fontSize: '40px', fontWeight: 800, lineHeight: '60px', fontFamily: "'Rubik', sans-serif", textAlign: 'center', marginBottom: '30px' }}>
-                24/7 Recovery Services We Provide
+                24/7 Car Recovery in {location}
             </h2>
             <p style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 40px', color: '#666' }}>
                 From emergency breakdowns to scheduled vehicle transport, we cover all your recovery needs in {location} and beyond.
@@ -47,7 +56,7 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
                 <div className="m-image"></div>
 
                 <div className="service2-list">
-                    {services.map((service, index) => (
+                    {servicesToDisplay.map((service, index) => (
                         <div key={index}>
                             <div className="service-item">
                                 <CircleCheck size={22} color="white" fill="#3ec56c" />

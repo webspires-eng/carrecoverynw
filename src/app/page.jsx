@@ -15,9 +15,12 @@ import FAQSection from "@/components/FAQSection";
 import FinalCTASection from "@/components/FinalCTASection";
 import Footer from "@/components/Footer";
 
+import { getServices } from "@/lib/services";
+
 export default async function Home({ searchParams }) {
   const params = await searchParams;
   const location = params.loc || "West Midlands";
+  const services = await getServices();
 
   return (
     <main>
@@ -31,7 +34,7 @@ export default async function Home({ searchParams }) {
       <StepsSection />
 
       {/* 4. Services - What we do */}
-      <ServicesSection location={location} />
+      <ServicesSection location={location} services={services} />
 
       {/* 5. Areas We Cover */}
       <CoverageSection />
