@@ -376,47 +376,59 @@ export default function AddAreaPage() {
                         </div>
                     </div>
 
-                    <div className="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '20px', marginTop: '20px' }}>
+                    <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
                         {formData.custom_services.map((service, index) => (
-                            <div key={index} className="form-group full-width" style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', border: '1px solid #e9ecef', position: 'relative' }}>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const newServices = formData.custom_services.filter((_, i) => i !== index);
-                                        setFormData({ ...formData, custom_services: newServices });
-                                    }}
-                                    style={{ position: 'absolute', top: '10px', right: '10px', background: '#dc3545', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                >
-                                    ×
-                                </button>
-                                <label style={{ fontWeight: 'bold' }}>Service Title</label>
-                                <input
-                                    type="text"
-                                    value={service.title}
-                                    onChange={(e) => {
-                                        const newServices = [...formData.custom_services];
-                                        newServices[index].title = e.target.value;
-                                        setFormData({ ...formData, custom_services: newServices });
-                                    }}
-                                    placeholder="e.g. 24/7 Breakdown Recovery"
-                                    style={{ marginBottom: '10px' }}
-                                />
-                                <label style={{ fontWeight: 'bold' }}>Description</label>
-                                <textarea
-                                    value={service.description}
-                                    onChange={(e) => {
-                                        const newServices = [...formData.custom_services];
-                                        newServices[index].description = e.target.value;
-                                        setFormData({ ...formData, custom_services: newServices });
-                                    }}
-                                    placeholder="Enter description..."
-                                    rows={3}
-                                />
-                                <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
-                            </div>
+                            <details key={index} className="faq-item" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', overflow: 'hidden' }}>
+                                <summary style={{ padding: '15px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#e9ecef' }}>
+                                    <span>{service.title || `Service #${index + 1}`}</span>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (confirm('Delete this service override?')) {
+                                                const newServices = formData.custom_services.filter((_, i) => i !== index);
+                                                setFormData({ ...formData, custom_services: newServices });
+                                            }
+                                        }}
+                                        style={{ background: '#dc3545', border: 'none', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem' }}
+                                        title="Remove Service"
+                                    >
+                                        ×
+                                    </button>
+                                </summary>
+                                <div style={{ padding: '20px' }}>
+                                    <div className="form-group full-width">
+                                        <label style={{ fontWeight: 'bold' }}>Service Title</label>
+                                        <input
+                                            type="text"
+                                            value={service.title}
+                                            onChange={(e) => {
+                                                const newServices = [...formData.custom_services];
+                                                newServices[index].title = e.target.value;
+                                                setFormData({ ...formData, custom_services: newServices });
+                                            }}
+                                            placeholder="e.g. 24/7 Breakdown Recovery"
+                                        />
+                                    </div>
+                                    <div className="form-group full-width" style={{ marginTop: '15px' }}>
+                                        <label style={{ fontWeight: 'bold' }}>Description</label>
+                                        <textarea
+                                            value={service.description}
+                                            onChange={(e) => {
+                                                const newServices = [...formData.custom_services];
+                                                newServices[index].description = e.target.value;
+                                                setFormData({ ...formData, custom_services: newServices });
+                                            }}
+                                            placeholder="Enter description..."
+                                            rows={3}
+                                        />
+                                        <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
+                                    </div>
+                                </div>
+                            </details>
                         ))}
                         {formData.custom_services.length === 0 && (
-                            <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
+                            <p style={{ textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
                                 Using global default services. Add overrides above to customize.
                             </p>
                         )}
@@ -459,118 +471,129 @@ export default function AddAreaPage() {
                         </div>
                     </div>
 
-                    <div className="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '20px', marginTop: '20px' }}>
+                    <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
                         {formData.custom_recoveries.map((recovery, index) => (
-                            <div key={index} className="form-group full-width" style={{ background: '#f8f9fa', padding: '15px', borderRadius: '8px', border: '1px solid #e9ecef', position: 'relative' }}>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const newRecoveries = formData.custom_recoveries.filter((_, i) => i !== index);
-                                        setFormData({ ...formData, custom_recoveries: newRecoveries });
-                                    }}
-                                    style={{ position: 'absolute', top: '10px', right: '10px', background: '#dc3545', border: 'none', color: 'white', width: '20px', height: '20px', borderRadius: '50%', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                >
-                                    ×
-                                </button>
+                            <details key={index} className="faq-item" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', overflow: 'hidden' }}>
+                                <summary style={{ padding: '15px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#e9ecef' }}>
+                                    <span>{recovery.type || `Recovery #${index + 1}`} - {recovery.location_text || 'No Location'}</span>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (confirm('Delete this recovery?')) {
+                                                const newRecoveries = formData.custom_recoveries.filter((_, i) => i !== index);
+                                                setFormData({ ...formData, custom_recoveries: newRecoveries });
+                                            }
+                                        }}
+                                        style={{ background: '#dc3545', border: 'none', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem' }}
+                                        title="Remove Recovery"
+                                    >
+                                        ×
+                                    </button>
+                                </summary>
+                                <div style={{ padding: '20px' }}>
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold' }}>Recovery Type</label>
+                                            <input
+                                                type="text"
+                                                value={recovery.type}
+                                                onChange={(e) => {
+                                                    const newRecs = [...formData.custom_recoveries];
+                                                    newRecs[index].type = e.target.value;
+                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                }}
+                                                placeholder="e.g. Flat Battery"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold' }}>Location Text</label>
+                                            <input
+                                                type="text"
+                                                value={recovery.location_text}
+                                                onChange={(e) => {
+                                                    const newRecs = [...formData.custom_recoveries];
+                                                    newRecs[index].location_text = e.target.value;
+                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                }}
+                                                placeholder="e.g. Birmingham City Centre"
+                                            />
+                                        </div>
+                                    </div>
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '10px' }}>
-                                    <div>
-                                        <label style={{ fontWeight: 'bold' }}>Recovery Type</label>
-                                        <input
-                                            type="text"
-                                            value={recovery.type}
+                                    <div className="form-group full-width" style={{ marginBottom: '15px' }}>
+                                        <label style={{ fontWeight: 'bold' }}>Description</label>
+                                        <textarea
+                                            value={recovery.description}
                                             onChange={(e) => {
                                                 const newRecs = [...formData.custom_recoveries];
-                                                newRecs[index].type = e.target.value;
+                                                newRecs[index].description = e.target.value;
                                                 setFormData({ ...formData, custom_recoveries: newRecs });
                                             }}
-                                            placeholder="e.g. Flat Battery"
+                                            placeholder="Enter details of the recovery..."
+                                            rows={2}
                                         />
                                     </div>
-                                    <div>
-                                        <label style={{ fontWeight: 'bold' }}>Location Text</label>
-                                        <input
-                                            type="text"
-                                            value={recovery.location_text}
-                                            onChange={(e) => {
-                                                const newRecs = [...formData.custom_recoveries];
-                                                newRecs[index].location_text = e.target.value;
-                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                            }}
-                                            placeholder="e.g. Birmingham City Centre"
-                                        />
+
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold' }}>Status Tag</label>
+                                            <input
+                                                type="text"
+                                                value={recovery.status_text}
+                                                onChange={(e) => {
+                                                    const newRecs = [...formData.custom_recoveries];
+                                                    newRecs[index].status_text = e.target.value;
+                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                }}
+                                                placeholder="e.g. Safe Destination"
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold' }}>Icon</label>
+                                            <select
+                                                value={recovery.icon_name}
+                                                onChange={(e) => {
+                                                    const newRecs = [...formData.custom_recoveries];
+                                                    newRecs[index].icon_name = e.target.value;
+                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                }}
+                                                style={{ width: '100%', padding: '8px' }}
+                                            >
+                                                <option value="Battery">Battery</option>
+                                                <option value="Car">Car</option>
+                                                <option value="Route">Route</option>
+                                                <option value="Lock">Lock</option>
+                                                <option value="TriangleAlert">Alert</option>
+                                                <option value="Truck">Truck</option>
+                                            </select>
+                                        </div>
+                                        <div className="form-group">
+                                            <label style={{ fontWeight: 'bold' }}>Color Theme</label>
+                                            <select
+                                                value={recovery.color_theme}
+                                                onChange={(e) => {
+                                                    const newRecs = [...formData.custom_recoveries];
+                                                    newRecs[index].color_theme = e.target.value;
+                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                }}
+                                                style={{ width: '100%', padding: '8px' }}
+                                            >
+                                                <option value="yellow">Yellow</option>
+                                                <option value="blue">Blue</option>
+                                                <option value="orange">Orange</option>
+                                                <option value="green">Green</option>
+                                                <option value="red">Red</option>
+                                                <option value="purple">Purple</option>
+                                            </select>
+                                        </div>
                                     </div>
+                                    <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d', marginTop: '10px', display: 'block' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
                                 </div>
-
-                                <label style={{ fontWeight: 'bold' }}>Description</label>
-                                <textarea
-                                    value={recovery.description}
-                                    onChange={(e) => {
-                                        const newRecs = [...formData.custom_recoveries];
-                                        newRecs[index].description = e.target.value;
-                                        setFormData({ ...formData, custom_recoveries: newRecs });
-                                    }}
-                                    placeholder="Enter details of the recovery..."
-                                    rows={2}
-                                    style={{ marginBottom: '10px' }}
-                                />
-
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-                                    <div>
-                                        <label style={{ fontWeight: 'bold' }}>Status Tag</label>
-                                        <input
-                                            type="text"
-                                            value={recovery.status_text}
-                                            onChange={(e) => {
-                                                const newRecs = [...formData.custom_recoveries];
-                                                newRecs[index].status_text = e.target.value;
-                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                            }}
-                                            placeholder="e.g. Safe Destination"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label style={{ fontWeight: 'bold' }}>Icon</label>
-                                        <select
-                                            value={recovery.icon_name}
-                                            onChange={(e) => {
-                                                const newRecs = [...formData.custom_recoveries];
-                                                newRecs[index].icon_name = e.target.value;
-                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                            }}
-                                        >
-                                            <option value="Battery">Battery</option>
-                                            <option value="Car">Car</option>
-                                            <option value="Route">Route</option>
-                                            <option value="Lock">Lock</option>
-                                            <option value="TriangleAlert">Alert</option>
-                                            <option value="Truck">Truck</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label style={{ fontWeight: 'bold' }}>Color Theme</label>
-                                        <select
-                                            value={recovery.color_theme}
-                                            onChange={(e) => {
-                                                const newRecs = [...formData.custom_recoveries];
-                                                newRecs[index].color_theme = e.target.value;
-                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                            }}
-                                        >
-                                            <option value="yellow">Yellow</option>
-                                            <option value="blue">Blue</option>
-                                            <option value="orange">Orange</option>
-                                            <option value="green">Green</option>
-                                            <option value="red">Red</option>
-                                            <option value="purple">Purple</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d', marginTop: '5px', display: 'block' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
-                            </div>
+                            </details>
                         ))}
                         {formData.custom_recoveries.length === 0 && (
-                            <p style={{ gridColumn: '1/-1', textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
+                            <p style={{ textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
                                 Using global default recoveries. Add overrides above to customize.
                             </p>
                         )}

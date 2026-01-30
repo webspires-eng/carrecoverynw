@@ -63,8 +63,12 @@ const iconMap = {
     Truck
 };
 
-export default function RealRecoveriesSection({ location = "West Midlands", recoveries: dynamicRecoveries = [] }) {
+export default function RealRecoveriesSection({ location = "West Midlands", majorRoads = [], recoveries: dynamicRecoveries = [] }) {
     const recoveriesToDisplay = dynamicRecoveries.length > 0 ? dynamicRecoveries : defaultRecoveriesList;
+
+    const majorRoadsStr = (majorRoads && majorRoads.length > 0)
+        ? majorRoads.slice(0, 3).join('/')
+        : "M6/M5/M42";
 
     return (
         <section className="real-recoveries">
@@ -78,8 +82,12 @@ export default function RealRecoveriesSection({ location = "West Midlands", reco
                 {recoveriesToDisplay.map((item, index) => {
                     const IconComponent = iconMap[item.icon_name] || Truck;
                     // Replace placeholders in text
-                    const displayLocation = item.location_text.replaceAll('{{location}}', location);
-                    const displayDescription = item.description.replaceAll('{{location}}', location);
+                    const displayLocation = item.location_text
+                        .replaceAll('{{location}}', location)
+                        .replaceAll('{{majorRoads}}', majorRoadsStr);
+                    const displayDescription = item.description
+                        .replaceAll('{{location}}', location)
+                        .replaceAll('{{majorRoads}}', majorRoadsStr);
 
                     return (
                         <div key={index} className={`recovery-card recovery-${item.color_theme}`}>

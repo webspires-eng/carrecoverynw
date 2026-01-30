@@ -88,6 +88,11 @@ export default async function AreaPage({ params }) {
         ? (typeof area.custom_services === 'string' ? JSON.parse(area.custom_services) : area.custom_services)
         : services;
 
+    // Prioritize area-specific recoveries if they exist
+    const displayRecoveries = area.custom_recoveries
+        ? (typeof area.custom_recoveries === 'string' ? JSON.parse(area.custom_recoveries) : area.custom_recoveries)
+        : recoveries;
+
     return (
         <main>
             {/* 1. HERO + CTAs + Trust strip */}
@@ -121,7 +126,7 @@ export default async function AreaPage({ params }) {
             <PricingSection />
 
             {/* 11. Real Recoveries */}
-            <RealRecoveriesSection location={location} recoveries={recoveries} />
+            <RealRecoveriesSection location={location} majorRoads={majorRoads} recoveries={displayRecoveries} />
 
             {/* 12. Damage-Free Recovery */}
             <DamageFreeSection />
