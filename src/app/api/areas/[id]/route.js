@@ -54,6 +54,28 @@ export async function PUT(request, { params }) {
             return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 });
         }
 
+        // Check for duplicate slug or name if they are being updated
+        if (body.slug || body.name) {
+            const checkFields = [];
+            const checkValues = [];
+            if (body.slug) { checkFields.push('slug = ?'); checkValues.push(body.slug); }
+            if (body.name) { checkFields.push('name = ?'); checkValues.push(body.name); }
+
+            const [existing] = await pool.execute(
+                `SELECT id, slug, name FROM areas WHERE (${checkFields.join(' OR ')}) AND id != ?`,
+                [...checkValues, id]
+            );
+
+            if (existing.length > 0) {
+                const match = existing[0];
+                const duplicateField = (match.slug === body.slug) ? 'slug' : 'name';
+                return NextResponse.json({
+                    success: false,
+                    error: `Another area with this ${duplicateField} already exists (${match[duplicateField]})`
+                }, { status: 409 });
+            }
+        }
+
         values.push(id);
 
         await pool.execute(
@@ -64,6 +86,9 @@ export async function PUT(request, { params }) {
         return NextResponse.json({ success: true, message: 'Area updated successfully' });
     } catch (error) {
         console.error('Database error:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            return NextResponse.json({ success: false, error: 'An area with this name or slug already exists' }, { status: 409 });
+        }
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }

@@ -70,6 +70,21 @@ export async function POST(request) {
             return NextResponse.json({ success: false, error: 'Slug and name are required' }, { status: 400 });
         }
 
+        // Check for existing area with same slug or name
+        const [existing] = await pool.execute(
+            'SELECT slug, name FROM areas WHERE slug = ? OR name = ?',
+            [slug, name]
+        );
+
+        if (existing.length > 0) {
+            const match = existing[0];
+            const duplicateField = (match.slug === slug) ? 'slug' : 'name';
+            return NextResponse.json({
+                success: false,
+                error: `An area with this ${duplicateField} already exists (${match[duplicateField]})`
+            }, { status: 409 });
+        }
+
         const [result] = await pool.execute(
             `INSERT INTO areas (slug, name, county, region, meta_title, meta_description, h1_title, intro_text, latitude, longitude, postcode_prefix, nearby_areas, major_roads, custom_services, custom_faqs, custom_recoveries, is_active) 
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
@@ -97,7 +112,7 @@ export async function POST(request) {
     } catch (error) {
         console.error('Database error:', error);
         if (error.code === 'ER_DUP_ENTRY') {
-            return NextResponse.json({ success: false, error: 'An area with this slug already exists' }, { status: 409 });
+            return NextResponse.json({ success: false, error: 'An area with this name or slug already exists' }, { status: 409 });
         }
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
