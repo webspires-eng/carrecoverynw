@@ -89,13 +89,12 @@ export default function HeroSection({ location = "West Midlands" }) {
                 </div>
 
                 <div className="container-hero">
-                    <div className="road"></div>
                     <Image
-                        src="/van-CZQXbkbi.webp"
-                        alt="Professional tow truck"
-                        width={580}
-                        height={400}
-                        className="van"
+                        src="https://storage.googleapis.com/msgsndr/XC3tce6DM0fYi7gpF790/media/6983318545998675693c6ba8.jpg"
+                        alt="Professional car recovery service"
+                        width={800}
+                        height={600}
+                        className="hero-image"
                         priority
                     />
                 </div>

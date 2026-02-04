@@ -13,6 +13,9 @@ export const metadata = {
   title: "24 Hours Car Recovery Service In West Midlands & Outskirts | 0736 054 4819",
   description: "24/7 Emergency Car Recovery Service covering the entire UK. Arrive in less than 15 minutes. Call 0736 054 4819 for immediate assistance.",
   keywords: "car recovery, emergency towing, 24/7 recovery, UK car recovery, roadside assistance, vehicle transport",
+  icons: {
+    icon: "/truckicon.png",
+  },
 };
 
 export default async function RootLayout({ children }) {
