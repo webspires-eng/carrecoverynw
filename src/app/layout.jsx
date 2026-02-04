@@ -3,6 +3,7 @@ import "./globals.css";
 import { getSettings } from "@/lib/settings";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
+import { Analytics } from "@vercel/analytics/next";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default async function RootLayout({ children }) {
         <SettingsProvider settings={settings}>
           {children}
           <FloatingActions />
+          <Analytics />
         </SettingsProvider>
       </body>
     </html>
