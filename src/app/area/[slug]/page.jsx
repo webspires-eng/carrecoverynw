@@ -1,4 +1,4 @@
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import { getServices } from "@/lib/services";
 import { getRecoveries } from "@/lib/recoveries";
 import { notFound } from 'next/navigation';
@@ -22,11 +22,9 @@ import Footer from "@/components/Footer";
 // Fetch area data from database
 async function getAreaBySlug(slug) {
     try {
-        const [rows] = await pool.execute(
-            'SELECT * FROM areas WHERE slug = ? AND is_active = 1',
-            [slug]
-        );
-        return rows[0] || null;
+        const { db } = await connectToDatabase();
+        const area = await db.collection('areas').findOne({ slug, is_active: true });
+        return area || null;
     } catch (error) {
         console.error('Database error:', error);
         return null;
@@ -36,7 +34,10 @@ async function getAreaBySlug(slug) {
 // Generate static params for all active areas (for static generation)
 export async function generateStaticParams() {
     try {
-        const [rows] = await pool.execute('SELECT slug FROM areas WHERE is_active = 1');
+        const { db } = await connectToDatabase();
+        const rows = await db.collection('areas')
+            .find({ is_active: true }, { projection: { slug: 1 } })
+            .toArray();
         return rows.map((row) => ({
             slug: row.slug,
         }));

@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 
 // GET all settings
 export async function GET() {
     try {
-        const [rows] = await pool.execute('SELECT setting_key, setting_value FROM settings');
+        const { db } = await connectToDatabase();
+        const rows = await db.collection('settings').find({}).toArray();
         const settings = {};
         rows.forEach(row => {
             settings[row.setting_key] = row.setting_value;
@@ -20,12 +21,19 @@ export async function GET() {
 export async function PUT(request) {
     try {
         const body = await request.json();
+        const { db } = await connectToDatabase();
+        const settingsCollection = db.collection('settings');
 
-        for (const [key, value] of Object.entries(body)) {
-            await pool.execute(
-                'INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?',
-                [key, value, value]
-            );
+        const bulkOps = Object.entries(body).map(([key, value]) => ({
+            updateOne: {
+                filter: { setting_key: key },
+                update: { $set: { setting_key: key, setting_value: value } },
+                upsert: true
+            }
+        }));
+
+        if (bulkOps.length > 0) {
+            await settingsCollection.bulkWrite(bulkOps);
         }
 
         return NextResponse.json({ success: true, message: 'Settings updated successfully' });

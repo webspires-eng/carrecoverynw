@@ -1,4 +1,4 @@
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 
 export const dynamic = 'force-dynamic'; // Ensure it's not cached static
 
@@ -7,8 +7,10 @@ export async function GET() {
 
     let areas = [];
     try {
-        const [rows] = await pool.execute('SELECT slug, updated_at, created_at FROM areas WHERE is_active = 1');
-        areas = rows;
+        const { db } = await connectToDatabase();
+        areas = await db.collection('areas')
+            .find({ is_active: true }, { projection: { slug: 1, updated_at: 1, created_at: 1 } })
+            .toArray();
     } catch (e) {
         console.error('Sitemap DB error:', e);
     }

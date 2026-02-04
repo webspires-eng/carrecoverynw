@@ -1,17 +1,23 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { ObjectId } from 'mongodb';
+import { connectToDatabase } from '@/lib/db';
 
 // GET single area by ID
 export async function GET(request, { params }) {
     try {
         const { id } = await params;
-        const [rows] = await pool.execute('SELECT * FROM areas WHERE id = ?', [id]);
+        if (!ObjectId.isValid(id)) {
+            return NextResponse.json({ success: false, error: 'Invalid area id' }, { status: 400 });
+        }
 
-        if (rows.length === 0) {
+        const { db } = await connectToDatabase();
+        const area = await db.collection('areas').findOne({ _id: new ObjectId(id) });
+
+        if (!area) {
             return NextResponse.json({ success: false, error: 'Area not found' }, { status: 404 });
         }
 
-        return NextResponse.json({ success: true, data: rows[0] });
+        return NextResponse.json({ success: true, data: { ...area, id: area._id.toString() } });
     } catch (error) {
         console.error('Database error:', error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -22,10 +28,10 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
     try {
         const { id } = await params;
+        if (!ObjectId.isValid(id)) {
+            return NextResponse.json({ success: false, error: 'Invalid area id' }, { status: 400 });
+        }
         const body = await request.json();
-
-        const fields = [];
-        const values = [];
 
         const allowedFields = [
             'slug', 'name', 'county', 'region', 'meta_title', 'meta_description',
@@ -33,62 +39,50 @@ export async function PUT(request, { params }) {
             'nearby_areas', 'major_roads', 'custom_services', 'custom_faqs', 'custom_recoveries', 'is_active'
         ];
 
+        const updateData = {};
         for (const field of allowedFields) {
             if (body[field] !== undefined) {
-                fields.push(`${field} = ?`);
-                if (['nearby_areas', 'major_roads', 'custom_faqs'].includes(field)) {
-                    values.push(JSON.stringify(body[field]));
-                } else {
-                    values.push(body[field]);
-                }
+                updateData[field] = body[field];
             }
         }
 
-        // Default is_active to 1 if not provided (ensures areas are active by default when editing)
+        // Default is_active to true if not provided
         if (body.is_active === undefined) {
-            fields.push('is_active = ?');
-            values.push(1);
+            updateData.is_active = true;
         }
 
-        if (fields.length === 0) {
+        if (Object.keys(updateData).length === 0) {
             return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 });
         }
 
         // Check for duplicate slug or name if they are being updated
         if (body.slug || body.name) {
-            const checkFields = [];
-            const checkValues = [];
-            if (body.slug) { checkFields.push('slug = ?'); checkValues.push(body.slug); }
-            if (body.name) { checkFields.push('name = ?'); checkValues.push(body.name); }
+            const { db } = await connectToDatabase();
+            const existing = await db.collection('areas').findOne({
+                $and: [
+                    { _id: { $ne: new ObjectId(id) } },
+                    { $or: [body.slug ? { slug: body.slug } : {}, body.name ? { name: body.name } : {}] }
+                ]
+            });
 
-            const [existing] = await pool.execute(
-                `SELECT id, slug, name FROM areas WHERE (${checkFields.join(' OR ')}) AND id != ?`,
-                [...checkValues, id]
-            );
-
-            if (existing.length > 0) {
-                const match = existing[0];
-                const duplicateField = (match.slug === body.slug) ? 'slug' : 'name';
+            if (existing) {
+                const duplicateField = (existing.slug === body.slug) ? 'slug' : 'name';
                 return NextResponse.json({
                     success: false,
-                    error: `Another area with this ${duplicateField} already exists (${match[duplicateField]})`
+                    error: `Another area with this ${duplicateField} already exists (${existing[duplicateField]})`
                 }, { status: 409 });
             }
         }
 
-        values.push(id);
-
-        await pool.execute(
-            `UPDATE areas SET ${fields.join(', ')} WHERE id = ?`,
-            values
+        const { db } = await connectToDatabase();
+        await db.collection('areas').updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { ...updateData, updated_at: new Date() } }
         );
 
         return NextResponse.json({ success: true, message: 'Area updated successfully' });
     } catch (error) {
         console.error('Database error:', error);
-        if (error.code === 'ER_DUP_ENTRY') {
-            return NextResponse.json({ success: false, error: 'An area with this name or slug already exists' }, { status: 409 });
-        }
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
@@ -97,8 +91,12 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
     try {
         const { id } = await params;
+        if (!ObjectId.isValid(id)) {
+            return NextResponse.json({ success: false, error: 'Invalid area id' }, { status: 400 });
+        }
 
-        await pool.execute('DELETE FROM areas WHERE id = ?', [id]);
+        const { db } = await connectToDatabase();
+        await db.collection('areas').deleteOne({ _id: new ObjectId(id) });
 
         return NextResponse.json({ success: true, message: 'Area deleted successfully' });
     } catch (error) {

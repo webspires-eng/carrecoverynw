@@ -1,20 +1,22 @@
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import Link from 'next/link';
 import '../../styles/sections/areas-archive.css';
 
 // Fetch all areas
 async function getAreas(search = '') {
     try {
-        let query = 'SELECT slug, name, county, region FROM areas WHERE is_active = 1';
-        const params = [];
+        const { db } = await connectToDatabase();
+        const filter = { is_active: true };
 
         if (search) {
-            query += ' AND (name LIKE ? OR county LIKE ?)';
-            params.push(`%${search}%`, `%${search}%`);
+            const regex = new RegExp(search, 'i');
+            filter.$or = [{ name: regex }, { county: regex }];
         }
 
-        query += ' ORDER BY name ASC';
-        const [rows] = await pool.execute(query, params);
+        const rows = await db.collection('areas')
+            .find(filter, { projection: { slug: 1, name: 1, county: 1, region: 1 } })
+            .sort({ name: 1 })
+            .toArray();
         return rows;
     } catch (error) {
         console.error('Database error:', error);

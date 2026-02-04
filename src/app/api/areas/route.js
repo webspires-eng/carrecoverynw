@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 
 // GET all areas
 export async function GET(request) {
@@ -10,31 +10,37 @@ export async function GET(request) {
         const search = searchParams.get('search') || '';
         const offset = (page - 1) * limit;
 
-        let query = 'SELECT * FROM areas WHERE is_active = 1';
-        let countQuery = 'SELECT COUNT(*) as total FROM areas WHERE is_active = 1';
-        const params = [];
+        const { db } = await connectToDatabase();
+        const filter = { is_active: true };
 
         if (search) {
-            query += ' AND (name LIKE ? OR slug LIKE ? OR county LIKE ?)';
-            countQuery += ' AND (name LIKE ? OR slug LIKE ? OR county LIKE ?)';
-            const searchTerm = `%${search}%`;
-            params.push(searchTerm, searchTerm, searchTerm);
+            const regex = new RegExp(search, 'i');
+            filter.$or = [{ name: regex }, { slug: regex }, { county: regex }];
         }
 
-        query += ' ORDER BY name ASC LIMIT ? OFFSET ?';
-        params.push(limit, offset);
+        const [rows, total] = await Promise.all([
+            db.collection('areas')
+                .find(filter)
+                .sort({ name: 1 })
+                .skip(offset)
+                .limit(limit)
+                .toArray(),
+            db.collection('areas').countDocuments(filter)
+        ]);
 
-        const [rows] = await pool.execute(query, params);
-        const [countResult] = await pool.execute(countQuery, search ? [`%${search}%`, `%${search}%`, `%${search}%`] : []);
+        const data = rows.map(row => ({
+            ...row,
+            id: row._id.toString()
+        }));
 
         return NextResponse.json({
             success: true,
-            data: rows,
+            data,
             pagination: {
                 page,
                 limit,
-                total: countResult[0].total,
-                totalPages: Math.ceil(countResult[0].total / limit)
+                total,
+                totalPages: Math.ceil(total / limit)
             }
         });
     } catch (error) {
@@ -70,50 +76,46 @@ export async function POST(request) {
             return NextResponse.json({ success: false, error: 'Slug and name are required' }, { status: 400 });
         }
 
-        // Check for existing area with same slug or name
-        const [existing] = await pool.execute(
-            'SELECT slug, name FROM areas WHERE slug = ? OR name = ?',
-            [slug, name]
-        );
+        const { db } = await connectToDatabase();
 
-        if (existing.length > 0) {
-            const match = existing[0];
-            const duplicateField = (match.slug === slug) ? 'slug' : 'name';
+        // Check for existing area with same slug or name
+        const existing = await db.collection('areas').findOne({
+            $or: [{ slug }, { name }]
+        });
+
+        if (existing) {
+            const duplicateField = (existing.slug === slug) ? 'slug' : 'name';
             return NextResponse.json({
                 success: false,
-                error: `An area with this ${duplicateField} already exists (${match[duplicateField]})`
+                error: `An area with this ${duplicateField} already exists (${existing[duplicateField]})`
             }, { status: 409 });
         }
 
-        const [result] = await pool.execute(
-            `INSERT INTO areas (slug, name, county, region, meta_title, meta_description, h1_title, intro_text, latitude, longitude, postcode_prefix, nearby_areas, major_roads, custom_services, custom_faqs, custom_recoveries, is_active) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-            [
-                slug,
-                name,
-                county || null,
-                region,
-                meta_title || `24/7 Car Recovery in ${name} | Car Recovery UK`,
-                meta_description || `Fast and reliable car recovery services in ${name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
-                h1_title || `24/7 Car Recovery & Emergency Towing in ${name}`,
-                intro_text || null,
-                latitude || null,
-                longitude || null,
-                postcode_prefix || null,
-                JSON.stringify(nearby_areas || []),
-                JSON.stringify(major_roads || []),
-                custom_services || null,
-                JSON.stringify(custom_faqs || []),
-                custom_recoveries || null
-            ]
-        );
+        const result = await db.collection('areas').insertOne({
+            slug,
+            name,
+            county: county || null,
+            region,
+            meta_title: meta_title || `24/7 Car Recovery in ${name} | Car Recovery UK`,
+            meta_description: meta_description || `Fast and reliable car recovery services in ${name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
+            h1_title: h1_title || `24/7 Car Recovery & Emergency Towing in ${name}`,
+            intro_text: intro_text || null,
+            latitude: latitude || null,
+            longitude: longitude || null,
+            postcode_prefix: postcode_prefix || null,
+            nearby_areas: nearby_areas || [],
+            major_roads: major_roads || [],
+            custom_services: custom_services || null,
+            custom_faqs: custom_faqs || [],
+            custom_recoveries: custom_recoveries || null,
+            is_active: true,
+            created_at: new Date(),
+            updated_at: new Date()
+        });
 
-        return NextResponse.json({ success: true, id: result.insertId, message: 'Area created successfully' });
+        return NextResponse.json({ success: true, id: result.insertedId.toString(), message: 'Area created successfully' });
     } catch (error) {
         console.error('Database error:', error);
-        if (error.code === 'ER_DUP_ENTRY') {
-            return NextResponse.json({ success: false, error: 'An area with this name or slug already exists' }, { status: 409 });
-        }
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }

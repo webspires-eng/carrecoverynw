@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 import '../../styles/sections/sitemap.css';
 
 export const metadata = {
@@ -9,7 +9,11 @@ export const metadata = {
 
 async function getAreas() {
     try {
-        const [rows] = await pool.execute('SELECT name, slug FROM areas WHERE is_active = 1 ORDER BY name ASC');
+        const { db } = await connectToDatabase();
+        const rows = await db.collection('areas')
+            .find({ is_active: true }, { projection: { name: 1, slug: 1 } })
+            .sort({ name: 1 })
+            .toArray();
         return rows;
     } catch (error) {
         console.error(error);
