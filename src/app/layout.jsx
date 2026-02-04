@@ -2,6 +2,7 @@ import { Rubik } from "next/font/google";
 import "./globals.css";
 import { getSettings } from "@/lib/settings";
 import { SettingsProvider } from "@/components/SettingsProvider";
+import FloatingActions from "@/components/FloatingActions";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -29,6 +30,7 @@ export default async function RootLayout({ children }) {
       <body className={`${rubik.variable} font-sans antialiased`} suppressHydrationWarning>
         <SettingsProvider settings={settings}>
           {children}
+          <FloatingActions />
         </SettingsProvider>
       </body>
     </html>
