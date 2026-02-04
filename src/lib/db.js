@@ -1,14 +1,23 @@
-import mysql from 'mysql2/promise';
+import { MongoClient } from 'mongodb';
 
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'carrecoverynw',
+const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/carrecoverynw';
+let cachedClient = null;
+let cachedDb = null;
 
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
+export async function connectToDatabase() {
+    if (cachedClient && cachedDb) {
+        return { client: cachedClient, db: cachedDb };
+    }
 
-export default pool;
+    const client = new MongoClient(uri);
+    
+    await client.connect();
+    const db = client.db('carrecoverynw');
+
+    cachedClient = client;
+    cachedDb = db;
+
+    return { client, db };
+}
+
+export default connectToDatabase;

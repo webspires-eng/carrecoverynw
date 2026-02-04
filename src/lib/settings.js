@@ -1,4 +1,4 @@
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 
 export async function getSettings() {
     const defaultSettings = {
@@ -10,23 +10,21 @@ export async function getSettings() {
     };
 
     try {
-        const [rows] = await pool.execute('SELECT setting_key, setting_value FROM settings');
+        const { db } = await connectToDatabase();
+        const settingsCollection = db.collection('settings');
+        
+        const docs = await settingsCollection.find({}).toArray();
         const settings = { ...defaultSettings };
 
-        rows.forEach(row => {
-            if (row.setting_value) {
-                settings[row.setting_key] = row.setting_value;
+        docs.forEach(doc => {
+            if (doc.setting_key && doc.setting_value) {
+                settings[doc.setting_key] = doc.setting_value;
             }
         });
 
         return settings;
     } catch (error) {
         console.error('Database error fetching settings:', error.message || error);
-        console.error('Database config - Host: %s, User: %s, Database: %s', 
-            process.env.DB_HOST || 'localhost',
-            process.env.DB_USER || 'root',
-            process.env.DB_NAME || 'carrecoverynw'
-        );
         return defaultSettings;
     }
 }

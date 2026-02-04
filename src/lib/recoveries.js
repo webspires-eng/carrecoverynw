@@ -1,8 +1,15 @@
-import pool from '@/lib/db';
+import { connectToDatabase } from '@/lib/db';
 
 export async function getRecoveries() {
     try {
-        const [rows] = await pool.execute('SELECT * FROM recoveries WHERE is_active = TRUE ORDER BY display_order ASC');
+        const { db } = await connectToDatabase();
+        const recoveriesCollection = db.collection('recoveries');
+        
+        const rows = await recoveriesCollection
+            .find({ is_active: true })
+            .sort({ display_order: 1 })
+            .toArray();
+        
         return rows;
     } catch (error) {
         console.error('Database error fetching recoveries:', error);
