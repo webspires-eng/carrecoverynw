@@ -49,11 +49,6 @@ export default function FloatingActions() {
 
     return (
         <div style={containerStyle}>
-            <Link href={callLink} aria-label="Call Now" style={{ textDecoration: 'none' }}>
-                <div style={{ ...iconWrapperBase, background: '#FF0000' }}>
-                    <Phone size={28} color="white" />
-                </div>
-            </Link>
             <Link href={whatsappLink} aria-label="WhatsApp" style={{ textDecoration: 'none' }}>
                 <div style={{ ...iconWrapperBase, background: '#25D366' }}>
                     <FaWhatsapp size={32} color="white" />
