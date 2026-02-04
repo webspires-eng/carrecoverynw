@@ -971,6 +971,7 @@ body {
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
+    padding: 0;
   }
 
   .maintainence {
@@ -1112,7 +1113,7 @@ body {
   }
 
   .layout1 .title-info h1 {
-    font-size: 2.2rem !important;
+    font-size: 1.8rem !important;
   }
 
   .container-6 {
