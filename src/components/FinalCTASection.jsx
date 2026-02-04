@@ -61,7 +61,7 @@ export default function FinalCTASection({ location = "West Midlands" }) {
                     </div>
                     <div className="proof-text">
                         <span className="rating">5.0</span>
-                        <span className="reviews">407+ Google Reviews</span>
+                        <span className="reviews">1207+ Google Reviews</span>
                     </div>
                 </div>
 

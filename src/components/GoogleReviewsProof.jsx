@@ -7,7 +7,7 @@ export default function GoogleReviewsProof() {
     return (
         <section className="reviews-proof">
             <span className="verified-label">Verified Google Reviews</span>
-            <h2>5.0 Rated on Google (407 Reviews)</h2>
+            <h2>5.0 Rated on Google (1207 Reviews)</h2>
 
             <div className="rating-display">
                 <span className="rating-number">5.0</span>
@@ -37,7 +37,7 @@ export default function GoogleReviewsProof() {
 
             <p style={{ marginTop: '30px' }}>
                 <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-blue)', fontWeight: 700, textDecoration: 'underline' }}>
-                    View all 407 reviews on Google Maps
+                    View all 1207 reviews on Google Maps
                 </a>
             </p>
         </section>

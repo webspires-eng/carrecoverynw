@@ -60,7 +60,7 @@ export default function TestimonialsSection({ location = "West Midlands" }) {
                     Verified Google Reviews
                 </span>
             </div>
-            <h1>5.0 Rated on Google (407 Reviews)</h1>
+            <h1>5.0 Rated on Google (1207 Reviews)</h1>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
                 <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary-blue)' }}>5.0</span>
                 <span style={{ color: '#ffb400', fontSize: '2rem' }}>★★★★★</span>
@@ -118,7 +118,7 @@ export default function TestimonialsSection({ location = "West Midlands" }) {
             </div>
             <p style={{ textAlign: 'center', marginTop: '30px' }}>
                 <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-blue)', fontWeight: 700, textDecoration: 'underline' }}>
-                    View all 407 reviews on Google Maps →
+                    View all 1207 reviews on Google Maps →
                 </a>
             </p>
         </section>
