@@ -111,6 +111,10 @@
 }
 
 @media (max-width: 768px) {
+    .coverage-section {
+        padding: 40px 20px;
+    }
+
     .coverage-section h2 {
         font-size: 1.8rem !important;
         line-height: 1.3em !important;
@@ -118,5 +122,49 @@
 
     .priority-areas {
         grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .area-tag {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+    }
+
+    .roads-list {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 25px 15px;
+        margin-top: 25px;
+        background: linear-gradient(135deg, #f8f9ff 0%, #eef1ff 100%);
+        border-radius: 16px;
+        border: 1px solid #e0e5f5;
+    }
+
+    .roads-list strong {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+        color: var(--primary-orange);
+    }
+
+    .road-badge {
+        padding: 12px 28px;
+        font-size: 1.1rem;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .stranded-mini-list {
+        padding: 20px 15px;
+        margin-top: 30px;
+    }
+
+    .stranded-items {
+        gap: 10px;
+    }
+
+    .stranded-item {
+        font-size: 0.85rem;
+        padding: 6px 12px;
     }
 }
