@@ -84,7 +84,7 @@ export default function FloatingActions() {
                 }
 
                 .call .icon-wrapper {
-                    background: var(--primary-orange, #ed4705);
+                    background: #FF0000;
                 }
 
                 .whatsapp .icon-wrapper {
@@ -107,7 +107,7 @@ export default function FloatingActions() {
                     width: 100%;
                     height: 100%;
                     border-radius: 50%;
-                    background: var(--primary-orange, #ed4705);
+                    background: #FF0000;
                     opacity: 0.7;
                     z-index: -1;
                     animation: pulse 2s infinite;
