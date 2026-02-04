@@ -1,7 +1,8 @@
 "use client";
 
 import { useSettings } from "@/components/SettingsProvider";
-import { Phone, MessageCircle } from "lucide-react";
+import { Phone } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -37,7 +38,7 @@ export default function FloatingActions() {
             </Link>
             <Link href={whatsappLink} className="action-btn whatsapp" aria-label="WhatsApp">
                 <div className="icon-wrapper">
-                    <MessageCircle size={26} fill="currentColor" />
+                    <FaWhatsapp size={32} />
                 </div>
             </Link>
 

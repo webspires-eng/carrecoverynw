@@ -49,7 +49,7 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
             <h2>
                 24/7 Car Recovery in <span className="location-name">{location}</span>
             </h2>
-            <p style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 40px', color: '#666' }}>
+            <p className="section-description">
                 From emergency breakdowns to scheduled vehicle transport, we cover all your recovery needs in <span className="location-name">{location}</span> and beyond.
             </p>
 
