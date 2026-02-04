@@ -29,7 +29,7 @@ export default function FinalCTASection({ location = "West Midlands" }) {
                     </span>
                 </div>
 
-                <h2>Need 24/7 Car Recovery in {location}?</h2>
+                <h2>Need 24/7 Car Recovery in <span className="location-name">{location}</span>?</h2>
                 <p>Fast, reliable recovery when you're stuck — day or night. Send your location pin and we'll dispatch the nearest truck.</p>
 
                 <div className="cta-buttons-large">

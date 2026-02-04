@@ -18,9 +18,9 @@ export default function CoverageSection({ location, majorRoads, nearbyAreas }) {
     return (
         <section className="coverage-section">
             <div className="coverage-content">
-                <h2>Areas We Cover in {location || 'West Midlands & Surrounding Outskirts'}</h2>
+                <h2>Areas We Cover in <span className="location-name">{location || 'West Midlands & Surrounding Outskirts'}</span></h2>
                 <p className="coverage-text">
-                    We provide 24/7 emergency car recovery and towing services across the entire {location || 'West Midlands'} region.
+                    We provide 24/7 emergency car recovery and towing services across the entire <span className="location-name">{location || 'West Midlands'}</span> region.
                     No matter where you're stranded, our rapid response team is never far away.
                 </p>
 

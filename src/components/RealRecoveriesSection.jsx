@@ -1,6 +1,7 @@
 "use client";
 
 import { Battery, Car, Route, Lock, TriangleAlert, Truck, CheckCircle2, MapPin } from "lucide-react";
+import HighlightedText from "@/components/HighlightedText";
 import "../styles/sections/real-recoveries.css";
 
 const defaultRecoveriesList = [
@@ -75,7 +76,7 @@ export default function RealRecoveriesSection({ location = "West Midlands", majo
             <div className="recoveries-header">
                 <span className="recoveries-badge">Real Results</span>
                 <h2>Real Recoveries We Handle Every Week</h2>
-                <p className="recoveries-subtitle">See the types of situations we resolve — professionally and promptly in {location}</p>
+                <p className="recoveries-subtitle">See the types of situations we resolve — professionally and promptly in <span className="location-name">{location}</span></p>
             </div>
 
             <div className="recoveries-grid">
@@ -101,10 +102,10 @@ export default function RealRecoveriesSection({ location = "West Midlands", majo
                                     <span className={`recovery-tag tag-${item.color_theme}`}>{item.type}</span>
                                     <h3>
                                         <MapPin size={16} className="location-icon" />
-                                        {displayLocation}
+                                        <HighlightedText text={displayLocation} location={location} />
                                     </h3>
                                 </div>
-                                <p>{displayDescription}</p>
+                                <p><HighlightedText text={displayDescription} location={location} /></p>
                                 <div className="recovery-meta">
                                     <span className="status">
                                         <CheckCircle2 size={14} />

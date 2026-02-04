@@ -13,6 +13,11 @@
   --gold: #ce9b45;
 }
 
+.location-name {
+  color: var(--primary-blue);
+  font-weight: 700;
+}
+
 * {
   margin: 0;
   padding: 0;

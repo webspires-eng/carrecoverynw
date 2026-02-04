@@ -1,6 +1,7 @@
 "use client";
 
 import { CircleCheck } from "lucide-react";
+import HighlightedText from "@/components/HighlightedText";
 
 export default function ServicesSection({ location = "West Midlands", majorRoads = [], services: dynamicServices = [] }) {
     const majorRoadsStr = (majorRoads && majorRoads.length > 0)
@@ -46,10 +47,10 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
     return (
         <section className="layout4">
             <h2>
-                24/7 Car Recovery in {location}
+                24/7 Car Recovery in <span className="location-name">{location}</span>
             </h2>
             <p style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 40px', color: '#666' }}>
-                From emergency breakdowns to scheduled vehicle transport, we cover all your recovery needs in {location} and beyond.
+                From emergency breakdowns to scheduled vehicle transport, we cover all your recovery needs in <span className="location-name">{location}</span> and beyond.
             </p>
 
             <div className="maintainence">
@@ -60,9 +61,9 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
                         <div key={index}>
                             <div className="service-item">
                                 <CircleCheck size={22} color="white" fill="#3ec56c" />
-                                <h2>{service.title}</h2>
+                                <h2><HighlightedText text={service.title} location={location} /></h2>
                             </div>
-                            <p>{service.description}</p>
+                            <p><HighlightedText text={service.description} location={location} /></p>
                         </div>
                     ))}
                 </div>
