@@ -1043,8 +1043,9 @@ body {
   .layout5 h1,
   .layout4 h1,
   .heading-6 h1 {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     line-height: 1.2;
+
   }
 
   .layout2 h3 {
