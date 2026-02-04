@@ -45,7 +45,7 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
 
     return (
         <section className="layout4">
-            <h2 style={{ color: 'var(--primary-orange)', fontSize: '1.8rem', fontWeight: 800, lineHeight: '1.3em', fontFamily: "'Rubik', sans-serif", textAlign: 'center', marginBottom: '30px' }}>
+            <h2>
                 24/7 Car Recovery in {location}
             </h2>
             <p style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 40px', color: '#666' }}>

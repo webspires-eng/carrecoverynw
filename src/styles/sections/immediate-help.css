@@ -109,8 +109,8 @@
 
 @media (max-width: 768px) {
     .immediate-help h2 {
-        font-size: 1.8rem;
-        line-height: 1.2;
+        font-size: 1.8rem !important;
+        line-height: 1.3em !important;
     }
 
     .help-process {

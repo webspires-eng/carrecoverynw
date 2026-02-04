@@ -273,10 +273,10 @@ body {
 }
 
 .layout2 h1 {
-  color: #ED4705;
-  font-size: 60px;
+  color: var(--primary-orange);
+  font-size: 40px;
   font-weight: 800;
-  line-height: normal;
+  line-height: 60px;
   font-family: 'Rubik', sans-serif;
 }
 
@@ -386,11 +386,11 @@ body {
 
 .layout3 .content2 h1 {
   color: var(--primary-orange);
-  font-size: 4rem;
+  font-size: 40px;
   text-align: center;
   font-weight: 800;
   font-family: 'Rubik', sans-serif;
-  line-height: 1.1;
+  line-height: 60px;
 }
 
 .layout3 .content2 h1 span {
@@ -423,9 +423,13 @@ body {
   line-height: 40.8px;
 }
 
-.layout4 h1 {
+.layout4 h1,
+.layout4 h2 {
   color: var(--primary-orange);
-  font-size: 2.7rem;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 60px;
+  font-family: 'Rubik', sans-serif;
 }
 
 .maintainence {
@@ -1042,10 +1046,11 @@ body {
   .layout2 h1,
   .layout5 h1,
   .layout4 h1,
+  .layout4 h2,
+  .layout3 .content2 h1,
   .heading-6 h1 {
-    font-size: 1.8rem;
-    line-height: 1.2;
-
+    font-size: 1.8rem !important;
+    line-height: 1.3em !important;
   }
 
   .layout2 h3 {
