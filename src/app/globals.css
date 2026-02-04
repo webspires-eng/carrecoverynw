@@ -1077,7 +1077,6 @@ body {
   .heading-6 h1 {
     font-size: 1.8rem !important;
     line-height: 1.3em !important;
-    text-align: left !important;
   }
 
   .layout2 h3 {
@@ -1091,7 +1090,6 @@ body {
   }
 
   .section-description {
-    text-align: left !important;
     margin-left: 0;
     margin-bottom: 30px;
   }
