@@ -4,6 +4,7 @@ import { getSettings } from "@/lib/settings";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default async function RootLayout({ children }) {
           {children}
           <FloatingActions />
           <Analytics />
+          <SpeedInsights />
         </SettingsProvider>
       </body>
     </html>
