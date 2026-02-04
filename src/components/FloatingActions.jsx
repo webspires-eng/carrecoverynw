@@ -29,78 +29,108 @@ export default function FloatingActions() {
 
     return (
         <div className={`floating-actions ${isVisible ? 'visible' : ''}`}>
-            <Link href={whatsappLink} className="action-btn whatsapp" aria-label="WhatsApp">
-                <MessageCircle size={28} />
-                <span>WhatsApp</span>
-            </Link>
             <Link href={callLink} className="action-btn call" aria-label="Call Now">
-                <Phone size={24} />
-                <span>Call Now</span>
+                <div className="icon-wrapper">
+                    <Phone size={24} fill="currentColor" />
+                    <span className="pulse-ring"></span>
+                </div>
+            </Link>
+            <Link href={whatsappLink} className="action-btn whatsapp" aria-label="WhatsApp">
+                <div className="icon-wrapper">
+                    <MessageCircle size={26} fill="currentColor" />
+                </div>
             </Link>
 
             <style jsx>{`
                 .floating-actions {
                     position: fixed;
-                    bottom: 20px;
-                    left: 0;
-                    right: 0;
+                    right: 20px;
+                    bottom: 30px;
                     display: flex;
-                    justify-content: space-between;
-                    padding: 0 20px;
-                    z-index: 9999;
+                    flex-direction: column;
+                    gap: 15px;
+                    z-index: 99999;
                     pointer-events: none;
                     opacity: 0;
-                    transform: translateY(20px);
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                    transform: translateX(40px);
+                    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 }
 
                 .floating-actions.visible {
                     opacity: 1;
-                    transform: translateY(0);
+                    transform: translateX(0);
                     pointer-events: auto;
                 }
 
                 .action-btn {
                     display: flex;
                     align-items: center;
-                    gap: 8px;
-                    padding: 12px 20px;
-                    border-radius: 50px;
-                    color: white;
-                    font-weight: 700;
+                    justify-content: center;
                     text-decoration: none;
-                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-                    transition: transform 0.2s ease;
+                    transition: all 0.3s ease;
                 }
 
-                .action-btn:active {
-                    transform: scale(0.9);
+                .icon-wrapper {
+                    width: 60px;
+                    height: 60px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+                    position: relative;
                 }
 
-                .whatsapp {
-                    background: #25D366;
-                }
-
-                .call {
+                .call .icon-wrapper {
                     background: var(--primary-orange, #ed4705);
                 }
 
-                .action-btn span {
-                    font-size: 14px;
+                .whatsapp .icon-wrapper {
+                    background: #25D366;
                 }
 
-                @media (min-width: 769px) {
+                .action-btn:hover {
+                    transform: scale(1.1);
+                }
+
+                .action-btn:hover .icon-wrapper {
+                    transform: translateY(-5px);
+                }
+
+                /* Pulse Animation for Call */
+                .pulse-ring {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+                    background: var(--primary-orange, #ed4705);
+                    opacity: 0.7;
+                    z-index: -1;
+                    animation: pulse 2s infinite;
+                }
+
+                @keyframes pulse {
+                    0% {
+                        transform: scale(1);
+                        opacity: 0.7;
+                    }
+                    100% {
+                        transform: scale(1.6);
+                        opacity: 0;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .icon-wrapper {
+                        width: 55px;
+                        height: 55px;
+                    }
                     .floating-actions {
-                        display: none;
-                    }
-                }
-
-                @media (max-width: 360px) {
-                    .action-btn span {
-                        display: none;
-                    }
-                    .action-btn {
-                        padding: 12px;
+                        right: 15px;
+                        bottom: 25px;
                     }
                 }
             `}</style>

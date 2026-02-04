@@ -58,7 +58,7 @@ export default function HeroSection({ location = "West Midlands" }) {
             <section className="layout1">
                 <div className="title-info">
                     <h4>24 Hours</h4>
-                    <h1>Car Recovery Service<br />In <span className="location-name">{location}</span> &<br />Outskirts</h1>
+                    <h1>Car Recovery Service In <span className="location-name">{location}</span> & Outskirts</h1>
 
                     <ul className="service-list">
                         {features.map((feature, index) => (
