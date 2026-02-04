@@ -37,11 +37,13 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
 
     // Use dynamic services if provided, otherwise fallback to defaults
     const servicesToDisplay = dynamicServices.length > 0
-        ? dynamicServices.map(s => ({
-            ...s,
-            title: s.title.replaceAll('{{majorRoads}}', majorRoadsStr).replaceAll('{{location}}', location),
-            description: s.description.replaceAll('{{majorRoads}}', majorRoadsStr).replaceAll('{{location}}', location)
-        }))
+        ? dynamicServices
+            .filter(s => s.title && s.description) // Filter out incomplete records
+            .map(s => ({
+                ...s,
+                title: (s.title || '').replaceAll('{{majorRoads}}', majorRoadsStr).replaceAll('{{location}}', location),
+                description: (s.description || '').replaceAll('{{majorRoads}}', majorRoadsStr).replaceAll('{{location}}', location)
+            }))
         : defaultServices;
 
     return (

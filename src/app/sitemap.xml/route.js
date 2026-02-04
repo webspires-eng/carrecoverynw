@@ -3,7 +3,7 @@ import pool from '@/lib/db';
 export const dynamic = 'force-dynamic'; // Ensure it's not cached static
 
 export async function GET() {
-    const baseUrl = process.env.SITE_URL || 'https://carrecoverynw.co.uk';
+    const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
 
     let areas = [];
     try {

@@ -83,10 +83,10 @@ export default function RealRecoveriesSection({ location = "West Midlands", majo
                 {recoveriesToDisplay.map((item, index) => {
                     const IconComponent = iconMap[item.icon_name] || Truck;
                     // Replace placeholders in text
-                    const displayLocation = item.location_text
+                    const displayLocation = (item.location_text || '')
                         .replaceAll('{{location}}', location)
                         .replaceAll('{{majorRoads}}', majorRoadsStr);
-                    const displayDescription = item.description
+                    const displayDescription = (item.description || '')
                         .replaceAll('{{location}}', location)
                         .replaceAll('{{majorRoads}}', majorRoadsStr);
 
