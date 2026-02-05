@@ -45,8 +45,23 @@ export default function EditAreaPage() {
         nearby_areas: '',
         custom_faqs: [],
         custom_services: [],
-        custom_recoveries: []
+        custom_recoveries: [],
+        bottom_content: ''
     });
+
+    const [expandedItems, setExpandedItems] = useState({
+        faqs: null,
+        services: null,
+        recoveries: null
+    });
+
+    const toggleItem = (section, index, e) => {
+        if (e) e.stopPropagation();
+        setExpandedItems(prev => ({
+            ...prev,
+            [section]: prev[section] === index ? null : index
+        }));
+    };
 
     useEffect(() => {
         if (id) {
@@ -106,7 +121,8 @@ export default function EditAreaPage() {
                                 ? JSON.parse(area.custom_recoveries)
                                 : (area.custom_recoveries || []);
                         } catch { return []; }
-                    })()
+                    })(),
+                    bottom_content: area.bottom_content || ''
                 });
             } else {
                 alert('Area not found');
@@ -363,55 +379,67 @@ export default function EditAreaPage() {
                                 <div className="items-list">
                                     {formData.custom_faqs.map((faq, index) => (
                                         <div key={index} className="collapsible-item">
-                                            <div className="collapsible-header">
-                                                <span className="item-number">{index + 1}</span>
-                                                <input
-                                                    type="text"
-                                                    value={faq.question}
-                                                    onChange={(e) => {
-                                                        const newFaqs = [...formData.custom_faqs];
-                                                        newFaqs[index].question = e.target.value;
-                                                        setFormData({ ...formData, custom_faqs: newFaqs });
-                                                    }}
-                                                    placeholder="Question..."
-                                                    className="item-title"
-                                                    style={{ border: 'none', background: 'transparent', width: '100%', fontSize: '0.95rem' }}
-                                                />
-                                                <button
-                                                    type="button"
-                                                    className="btn-icon-delete"
-                                                    onClick={() => {
-                                                        if (confirm('Delete this FAQ?')) {
-                                                            const newFaqs = formData.custom_faqs.filter((_, i) => i !== index);
-                                                            setFormData({ ...formData, custom_faqs: newFaqs });
-                                                        }
-                                                    }}
-                                                >
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            <div className="collapsible-content">
-                                                <div className="form-group full-width">
-                                                    <label>Answer</label>
-                                                    <textarea
-                                                        value={faq.answer}
+                                            <div className="collapsible-header" onClick={(e) => toggleItem('faqs', index, e)} style={{ cursor: 'pointer' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                                    <span className="item-number">{index + 1}</span>
+                                                    <input
+                                                        type="text"
+                                                        value={faq.question}
                                                         onChange={(e) => {
+                                                            e.stopPropagation();
                                                             const newFaqs = [...formData.custom_faqs];
-                                                            newFaqs[index].answer = e.target.value;
+                                                            newFaqs[index].question = e.target.value;
                                                             setFormData({ ...formData, custom_faqs: newFaqs });
                                                         }}
-                                                        rows={2}
-                                                        placeholder="Answer..."
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        placeholder="Question..."
+                                                        className="item-title"
+                                                        style={{ border: 'none', background: 'transparent', width: '100%', fontSize: '0.95rem' }}
                                                     />
                                                 </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-icon-delete"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (confirm('Delete this FAQ?')) {
+                                                                const newFaqs = formData.custom_faqs.filter((_, i) => i !== index);
+                                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                                            }
+                                                        }}
+                                                    >
+                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                        </svg>
+                                                    </button>
+                                                    <svg className={`chevron ${expandedItems.faqs === index ? 'expanded' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </div>
                                             </div>
+                                            {expandedItems.faqs === index && (
+                                                <div className="collapsible-content">
+                                                    <div className="form-group full-width">
+                                                        <label>Answer</label>
+                                                        <textarea
+                                                            value={faq.answer}
+                                                            onChange={(e) => {
+                                                                const newFaqs = [...formData.custom_faqs];
+                                                                newFaqs[index].answer = e.target.value;
+                                                                setFormData({ ...formData, custom_faqs: newFaqs });
+                                                            }}
+                                                            rows={3}
+                                                            placeholder="Answer..."
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                     {formData.custom_faqs.length === 0 && (
-                                        <div className="empty-items">No FAQs added yet.</div>
+                                        <div className="empty-items">No area-specific FAQs. Uses defaults.</div>
                                     )}
                                 </div>
                             </div>
@@ -476,53 +504,63 @@ export default function EditAreaPage() {
                                 <div className="items-list">
                                     {formData.custom_services.map((service, index) => (
                                         <div key={index} className="collapsible-item">
-                                            <div className="collapsible-header">
-                                                <span className="item-number">{index + 1}</span>
-                                                <span className="item-title">{service.title || 'New Service'}</span>
-                                                <button
-                                                    type="button"
-                                                    className="btn-icon-delete"
-                                                    onClick={() => {
-                                                        if (confirm('Delete this service?')) {
-                                                            const newServices = formData.custom_services.filter((_, i) => i !== index);
-                                                            setFormData({ ...formData, custom_services: newServices });
-                                                        }
-                                                    }}
-                                                >
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            <div className="collapsible-header" onClick={(e) => toggleItem('services', index, e)} style={{ cursor: 'pointer' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                                    <span className="item-number">{index + 1}</span>
+                                                    <span className="item-title">{service.title || 'New Service'}</span>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-icon-delete"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (confirm('Delete this service?')) {
+                                                                const newServices = formData.custom_services.filter((_, i) => i !== index);
+                                                                setFormData({ ...formData, custom_services: newServices });
+                                                            }
+                                                        }}
+                                                    >
+                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                        </svg>
+                                                    </button>
+                                                    <svg className={`chevron ${expandedItems.services === index ? 'expanded' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
                                                     </svg>
-                                                </button>
-                                            </div>
-                                            <div className="collapsible-content">
-                                                <div className="form-group full-width">
-                                                    <label>Service Title</label>
-                                                    <input
-                                                        type="text"
-                                                        value={service.title}
-                                                        onChange={(e) => {
-                                                            const newServices = [...formData.custom_services];
-                                                            newServices[index].title = e.target.value;
-                                                            setFormData({ ...formData, custom_services: newServices });
-                                                        }}
-                                                        placeholder="e.g. 24/7 Breakdown Recovery"
-                                                    />
-                                                </div>
-                                                <div className="form-group full-width">
-                                                    <label>Description</label>
-                                                    <textarea
-                                                        value={service.description}
-                                                        onChange={(e) => {
-                                                            const newServices = [...formData.custom_services];
-                                                            newServices[index].description = e.target.value;
-                                                            setFormData({ ...formData, custom_services: newServices });
-                                                        }}
-                                                        rows={2}
-                                                        placeholder="Service description..."
-                                                    />
                                                 </div>
                                             </div>
+                                            {expandedItems.services === index && (
+                                                <div className="collapsible-content">
+                                                    <div className="form-group full-width">
+                                                        <label>Service Title</label>
+                                                        <input
+                                                            type="text"
+                                                            value={service.title}
+                                                            onChange={(e) => {
+                                                                const newServices = [...formData.custom_services];
+                                                                newServices[index].title = e.target.value;
+                                                                setFormData({ ...formData, custom_services: newServices });
+                                                            }}
+                                                            placeholder="e.g. 24/7 Breakdown Recovery"
+                                                        />
+                                                    </div>
+                                                    <div className="form-group full-width">
+                                                        <label>Description</label>
+                                                        <textarea
+                                                            value={service.description}
+                                                            onChange={(e) => {
+                                                                const newServices = [...formData.custom_services];
+                                                                newServices[index].description = e.target.value;
+                                                                setFormData({ ...formData, custom_services: newServices });
+                                                            }}
+                                                            rows={2}
+                                                            placeholder="Service description..."
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                     {formData.custom_services.length === 0 && (
@@ -591,121 +629,133 @@ export default function EditAreaPage() {
                                 <div className="items-list">
                                     {formData.custom_recoveries.map((recovery, index) => (
                                         <div key={index} className="collapsible-item">
-                                            <div className="collapsible-header">
-                                                <span className="item-number">{index + 1}</span>
-                                                <span className="item-title">{recovery.type || 'New Recovery'}</span>
-                                                <button
-                                                    type="button"
-                                                    className="btn-icon-delete"
-                                                    onClick={() => {
-                                                        if (confirm('Delete this recovery?')) {
-                                                            const newRecoveries = formData.custom_recoveries.filter((_, i) => i !== index);
-                                                            setFormData({ ...formData, custom_recoveries: newRecoveries });
-                                                        }
-                                                    }}
-                                                >
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
-                                                    </svg>
-                                                </button>
-                                            </div>
-                                            <div className="collapsible-content">
-                                                <div className="form-grid">
-                                                    <div className="form-group">
-                                                        <label>Recovery Type</label>
-                                                        <input
-                                                            type="text"
-                                                            value={recovery.type}
-                                                            onChange={(e) => {
-                                                                const newRecs = [...formData.custom_recoveries];
-                                                                newRecs[index].type = e.target.value;
-                                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                                            }}
-                                                            placeholder="e.g. Flat Battery"
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label>Location Text</label>
-                                                        <input
-                                                            type="text"
-                                                            value={recovery.location_text}
-                                                            onChange={(e) => {
-                                                                const newRecs = [...formData.custom_recoveries];
-                                                                newRecs[index].location_text = e.target.value;
-                                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                                            }}
-                                                            placeholder="e.g. Birmingham City Centre"
-                                                        />
-                                                    </div>
+                                            <div className="collapsible-header" onClick={(e) => toggleItem('recoveries', index, e)} style={{ cursor: 'pointer' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                                                    <span className="item-number">{index + 1}</span>
+                                                    <span className="item-title">{recovery.type || 'New Recovery'} - {recovery.location_text || 'No Location'}</span>
                                                 </div>
-
-                                                <div className="form-group full-width">
-                                                    <label>Description</label>
-                                                    <textarea
-                                                        value={recovery.description}
-                                                        onChange={(e) => {
-                                                            const newRecs = [...formData.custom_recoveries];
-                                                            newRecs[index].description = e.target.value;
-                                                            setFormData({ ...formData, custom_recoveries: newRecs });
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <button
+                                                        type="button"
+                                                        className="btn-icon-delete"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            if (confirm('Delete this recovery?')) {
+                                                                const newRecs = formData.custom_recoveries.filter((_, i) => i !== index);
+                                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                                            }
                                                         }}
-                                                        rows={2}
-                                                        placeholder="Recovery details..."
-                                                    />
-                                                </div>
-
-                                                <div className="form-grid-3">
-                                                    <div className="form-group">
-                                                        <label>Status Tag</label>
-                                                        <input
-                                                            type="text"
-                                                            value={recovery.status_text}
-                                                            onChange={(e) => {
-                                                                const newRecs = [...formData.custom_recoveries];
-                                                                newRecs[index].status_text = e.target.value;
-                                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                                            }}
-                                                            placeholder="e.g. Safe Destination"
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label>Icon</label>
-                                                        <select
-                                                            value={recovery.icon_name}
-                                                            onChange={(e) => {
-                                                                const newRecs = [...formData.custom_recoveries];
-                                                                newRecs[index].icon_name = e.target.value;
-                                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                                            }}
-                                                        >
-                                                            <option value="Battery">Battery</option>
-                                                            <option value="Car">Car</option>
-                                                            <option value="Route">Route</option>
-                                                            <option value="Lock">Lock</option>
-                                                            <option value="TriangleAlert">Alert</option>
-                                                            <option value="Truck">Truck</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label>Color Theme</label>
-                                                        <select
-                                                            value={recovery.color_theme}
-                                                            onChange={(e) => {
-                                                                const newRecs = [...formData.custom_recoveries];
-                                                                newRecs[index].color_theme = e.target.value;
-                                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                                            }}
-                                                        >
-                                                            <option value="yellow">Yellow</option>
-                                                            <option value="blue">Blue</option>
-                                                            <option value="orange">Orange</option>
-                                                            <option value="green">Green</option>
-                                                            <option value="red">Red</option>
-                                                            <option value="purple">Purple</option>
-                                                        </select>
-                                                    </div>
+                                                    >
+                                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                        </svg>
+                                                    </button>
+                                                    <svg className={`chevron ${expandedItems.recoveries === index ? 'expanded' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
                                                 </div>
                                             </div>
+                                            {expandedItems.recoveries === index && (
+                                                <div className="collapsible-content">
+                                                    <div className="form-grid">
+                                                        <div className="form-group">
+                                                            <label>Recovery Type</label>
+                                                            <input
+                                                                type="text"
+                                                                value={recovery.type}
+                                                                onChange={(e) => {
+                                                                    const newRecs = [...formData.custom_recoveries];
+                                                                    newRecs[index].type = e.target.value;
+                                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                                }}
+                                                                placeholder="e.g. Flat Battery"
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>Location Text</label>
+                                                            <input
+                                                                type="text"
+                                                                value={recovery.location_text}
+                                                                onChange={(e) => {
+                                                                    const newRecs = [...formData.custom_recoveries];
+                                                                    newRecs[index].location_text = e.target.value;
+                                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                                }}
+                                                                placeholder="e.g. Birmingham City Centre"
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="form-group full-width">
+                                                        <label>Description</label>
+                                                        <textarea
+                                                            value={recovery.description}
+                                                            onChange={(e) => {
+                                                                const newRecs = [...formData.custom_recoveries];
+                                                                newRecs[index].description = e.target.value;
+                                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                                            }}
+                                                            placeholder="Recovery details..."
+                                                            rows={2}
+                                                        />
+                                                    </div>
+
+                                                    <div className="form-grid form-grid-3">
+                                                        <div className="form-group">
+                                                            <label>Status Tag</label>
+                                                            <input
+                                                                type="text"
+                                                                value={recovery.status_text}
+                                                                onChange={(e) => {
+                                                                    const newRecs = [...formData.custom_recoveries];
+                                                                    newRecs[index].status_text = e.target.value;
+                                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                                }}
+                                                                placeholder="e.g. Safe Destination"
+                                                            />
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>Icon</label>
+                                                            <select
+                                                                value={recovery.icon_name}
+                                                                onChange={(e) => {
+                                                                    const newRecs = [...formData.custom_recoveries];
+                                                                    newRecs[index].icon_name = e.target.value;
+                                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                                }}
+                                                                className="select-input"
+                                                            >
+                                                                <option value="Battery">🔋 Battery</option>
+                                                                <option value="Car">🚗 Car</option>
+                                                                <option value="Route">🛣️ Route</option>
+                                                                <option value="Lock">🔒 Lock</option>
+                                                                <option value="TriangleAlert">⚠️ Alert</option>
+                                                                <option value="Truck">🚚 Truck</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="form-group">
+                                                            <label>Color Theme</label>
+                                                            <select
+                                                                value={recovery.color_theme}
+                                                                onChange={(e) => {
+                                                                    const newRecs = [...formData.custom_recoveries];
+                                                                    newRecs[index].color_theme = e.target.value;
+                                                                    setFormData({ ...formData, custom_recoveries: newRecs });
+                                                                }}
+                                                                className="select-input"
+                                                            >
+                                                                <option value="yellow">🟡 Yellow</option>
+                                                                <option value="blue">🔵 Blue</option>
+                                                                <option value="orange">🟠 Orange</option>
+                                                                <option value="green">🟢 Green</option>
+                                                                <option value="red">🔴 Red</option>
+                                                                <option value="purple">🟣 Purple</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                     {formData.custom_recoveries.length === 0 && (
@@ -716,7 +766,38 @@ export default function EditAreaPage() {
                         )}
                     </div>
 
-                    {/* Sticky Actions */}
+                    {/* Rich Text Editor Section */}
+                    <div className="form-section">
+                        <div className="section-header-toggle" onClick={() => toggleSection('extra_content')}>
+                            <div className="section-header-left">
+                                <div className="section-icon">📝</div>
+                                <div>
+                                    <h2>Rich Text Content</h2>
+                                    <p className="section-desc">Additional formatted content for the bottom of the page</p>
+                                </div>
+                            </div>
+                            <svg className={`chevron ${expandedSection === 'extra_content' ? 'expanded' : ''}`} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+
+                        {expandedSection === 'extra_content' && (
+                            <div className="section-content">
+                                <div className="form-group full-width">
+                                    <label>HTML / Content</label>
+                                    <textarea
+                                        value={formData.bottom_content}
+                                        onChange={(e) => setFormData({ ...formData, bottom_content: e.target.value })}
+                                        placeholder="<h2>Section Title</h2><p>Your content here...</p>"
+                                        rows={12}
+                                        style={{ fontFamily: 'monospace' }}
+                                    />
+                                    <span className="input-hint">Use standard HTML tags like &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;. Use {"{{location}}"} for dynamic area name.</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     <div className="form-actions-sticky">
                         <div className="location-hint" style={{ fontSize: '0.85rem', color: 'var(--admin-gray-600)' }}>
                             Dynamic: <strong>{"{{location}}"}</strong> = {formData.name || '...'} • <strong>{"{{majorRoads}}"}</strong> = {formData.major_roads || '...'}

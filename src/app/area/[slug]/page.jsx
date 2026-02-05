@@ -16,6 +16,7 @@ import RealRecoveriesSection from "@/components/RealRecoveriesSection";
 import DamageFreeSection from "@/components/DamageFreeSection";
 import SafetySection from "@/components/SafetySection";
 import FAQSection from "@/components/FAQSection";
+import ExtraContentSection from "@/components/ExtraContentSection";
 import FinalCTASection from "@/components/FinalCTASection";
 import Footer from "@/components/Footer";
 
@@ -128,6 +129,9 @@ export default async function AreaPage({ params }) {
 
             {/* 11. Real Recoveries */}
             <RealRecoveriesSection location={location} majorRoads={majorRoads} recoveries={displayRecoveries} />
+
+            {/* 11.5 Custom Extra Content */}
+            <ExtraContentSection content={area.bottom_content} location={location} />
 
             {/* 12. Damage-Free Recovery */}
             <DamageFreeSection />

@@ -36,7 +36,7 @@ export async function PUT(request, { params }) {
         const allowedFields = [
             'slug', 'name', 'county', 'region', 'meta_title', 'meta_description',
             'h1_title', 'intro_text', 'latitude', 'longitude', 'postcode_prefix',
-            'nearby_areas', 'major_roads', 'custom_services', 'custom_faqs', 'custom_recoveries', 'is_active'
+            'nearby_areas', 'major_roads', 'custom_services', 'custom_faqs', 'custom_recoveries', 'is_active', 'bottom_content'
         ];
 
         const updateData = {};

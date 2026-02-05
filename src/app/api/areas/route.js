@@ -69,7 +69,8 @@ export async function POST(request) {
             major_roads,
             custom_services,
             custom_faqs,
-            custom_recoveries
+            custom_recoveries,
+            bottom_content
         } = body;
 
         if (!slug || !name) {
@@ -108,6 +109,7 @@ export async function POST(request) {
             custom_services: custom_services || null,
             custom_faqs: custom_faqs || [],
             custom_recoveries: custom_recoveries || null,
+            bottom_content: bottom_content || null,
             is_active: true,
             created_at: new Date(),
             updated_at: new Date()
