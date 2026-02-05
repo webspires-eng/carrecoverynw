@@ -130,6 +130,9 @@ export default async function AreaPage({ params }) {
             {/* 11. Real Recoveries */}
             <RealRecoveriesSection location={location} majorRoads={majorRoads} recoveries={displayRecoveries} />
 
+            {/* 11.5 Custom Extra Content */}
+            <ExtraContentSection content={area.bottom_content} location={location} majorRoads={majorRoads} />
+
             {/* 12. Damage-Free Recovery */}
             <DamageFreeSection />
 
@@ -139,9 +142,6 @@ export default async function AreaPage({ params }) {
             {/* 14. FAQs */}
             <FAQSection customFaqs={customFaqs} />
 
-            {/* 14.5 Custom Extra Content */}
-            <ExtraContentSection content={area.bottom_content} location={location} majorRoads={majorRoads} />
-
             {/* 15. Final CTA */}
             <FinalCTASection location={location} />
 
@@ -150,4 +150,4 @@ export default async function AreaPage({ params }) {
     );
 }
 
-export const revalidate = 60; // Revalidate every minute
+export const revalidate = 0; // Force dynamic for now to reflect changes immediately

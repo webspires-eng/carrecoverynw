@@ -1,31 +1,43 @@
 /* Extra Content Section */
 .extra-content-section {
-    padding: 60px 0;
-    background: #fdfdfd;
-    border-top: 1px solid #f0f0f0;
+    padding: 80px 5%;
+    background: #fbfbfb;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    width: 100%;
+    overflow: hidden;
 }
 
 .extra-content-section .container {
-    max-width: 900px;
+    max-width: 1400px;
+    width: 100%;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0;
 }
 
 .rich-text-content {
     line-height: 1.8;
-    color: var(--gray-700);
+    color: #333;
+    font-size: 1.1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.rich-text-content * {
+    max-width: 100%;
 }
 
 .rich-text-content h2 {
     font-size: 2rem;
-    color: var(--dark);
+    color: var(--dark, #121212);
     margin-bottom: 24px;
     font-weight: 700;
 }
 
 .rich-text-content h3 {
     font-size: 1.5rem;
-    color: var(--dark);
+    color: var(--dark, #121212);
     margin-top: 32px;
     margin-bottom: 16px;
     font-weight: 600;
@@ -46,7 +58,13 @@
 }
 
 .rich-text-content strong {
-    color: var(--primary);
+    color: var(--primary, #ed4705);
+}
+
+.rich-text-content img {
+    height: auto;
+    border-radius: 8px;
+    margin: 20px 0;
 }
 
 @media (max-width: 768px) {
@@ -56,5 +74,9 @@
 
     .rich-text-content h2 {
         font-size: 1.6rem;
+    }
+
+    .rich-text-content h3 {
+        font-size: 1.3rem;
     }
 }

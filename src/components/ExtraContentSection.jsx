@@ -1,12 +1,15 @@
-"use client";
-
 import "../styles/sections/extra-content.css";
 
 export default function ExtraContentSection({ content, location, majorRoads = [] }) {
-    if (!content || typeof content !== 'string') return null;
+    // If no content, don't render anything
+    if (!content) return null;
+
+    // Ensure content is a string
+    const stringContent = String(content);
+    if (stringContent.trim() === '') return null;
 
     // Replace {{location}} with area name
-    let processedContent = content.replace(/\{\{location\}\}/g, location || '');
+    let processedContent = stringContent.replace(/\{\{location\}\}/g, location || '');
 
     // Replace {{majorRoads}}
     const roadsText = Array.isArray(majorRoads) ? majorRoads.join(', ') : (majorRoads || '');
