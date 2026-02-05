@@ -9,6 +9,11 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/area',
+        destination: '/areas',
+        permanent: true,
+      },
     ];
   },
   images: {
