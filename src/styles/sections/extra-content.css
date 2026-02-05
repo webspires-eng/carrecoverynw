@@ -19,8 +19,8 @@
     line-height: 1.8;
     color: #333;
     font-size: 1.1rem;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
+    word-wrap: normal;
+    overflow-wrap: normal;
     word-break: normal;
 }
 
