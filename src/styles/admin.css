@@ -1315,6 +1315,7 @@
     gap: 12px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+    justify-content: flex-end;
 }
 
 /* Select Input */

@@ -31,8 +31,8 @@ export default function AddAreaPage() {
     const [loading, setLoading] = useState(false);
     const [autoSaveStatus, setAutoSaveStatus] = useState('');
     const [expandedSections, setExpandedSections] = useState({
-        basic: true,
-        seo: true,
+        basic: false,
+        seo: false,
         faqs: false,
         services: false,
         recoveries: false
@@ -353,10 +353,6 @@ export default function AddAreaPage() {
                                         ...formData,
                                         custom_faqs: [...formData.custom_faqs, { question: '', answer: '' }]
                                     })}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
                                         Add FAQ
                                     </button>
                                 </div>
@@ -459,7 +455,7 @@ export default function AddAreaPage() {
                                             }
                                         }}
                                     >
-                                        <option value="">+ Add From Defaults</option>
+                                        <option value="">Add From Defaults</option>
                                         {DEFAULT_SERVICES_LIST.map((s, i) => {
                                             const isAdded = formData.custom_services.some(added => added.title === s.title);
                                             if (isAdded) return null;
@@ -470,10 +466,6 @@ export default function AddAreaPage() {
                                         ...formData,
                                         custom_services: [...formData.custom_services, { title: '', description: '' }]
                                     })}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
                                         Add Custom
                                     </button>
                                 </div>
@@ -577,7 +569,7 @@ export default function AddAreaPage() {
                                             }
                                         }}
                                     >
-                                        <option value="">+ Add From Defaults</option>
+                                        <option value="">Add From Defaults</option>
                                         {DEFAULT_RECOVERIES_LIST.map((r, i) => {
                                             const isAdded = formData.custom_recoveries.some(added => added.type === r.type);
                                             if (isAdded) return null;
@@ -588,10 +580,6 @@ export default function AddAreaPage() {
                                         ...formData,
                                         custom_recoveries: [...formData.custom_recoveries, { type: '', location_text: '', description: '', status_text: '', icon_name: 'Truck', color_theme: 'blue' }]
                                     })}>
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                                        </svg>
                                         Add Custom
                                     </button>
                                 </div>
@@ -731,33 +719,38 @@ export default function AddAreaPage() {
 
                     {/* Form Actions */}
                     <div className="form-actions-sticky">
-                        <button type="button" className="btn btn-secondary" onClick={handleClearDraft}>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                            Clear Draft
-                        </button>
-                        <Link href="/admin/areas" className="btn btn-secondary">
-                            Cancel
-                        </Link>
-                        <button type="submit" className="btn btn-primary" disabled={loading}>
-                            {loading ? (
-                                <>
-                                    <div className="btn-spinner"></div>
-                                    Creating...
-                                </>
-                            ) : (
-                                <>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                        <polyline points="7 3 7 8 15 8"></polyline>
-                                    </svg>
-                                    Create Area
-                                </>
-                            )}
-                        </button>
+                        <div className="location-hint" style={{ fontSize: '0.85rem', color: 'var(--admin-gray-600)' }}>
+                            Dynamic: <strong>{"{{location}}"}</strong> = {formData.name || '...'} • <strong>{"{{majorRoads}}"}</strong> = {formData.major_roads || '...'}
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <button type="button" className="btn btn-secondary" onClick={handleClearDraft}>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                </svg>
+                                Clear Draft
+                            </button>
+                            <Link href="/admin/areas" className="btn btn-secondary">
+                                Cancel
+                            </Link>
+                            <button type="submit" className="btn btn-primary" disabled={loading}>
+                                {loading ? (
+                                    <>
+                                        <div className="btn-spinner"></div>
+                                        Creating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                            <polyline points="7 3 7 8 15 8"></polyline>
+                                        </svg>
+                                        Create Area
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

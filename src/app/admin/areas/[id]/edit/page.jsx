@@ -31,7 +31,7 @@ export default function EditAreaPage() {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [expandedSection, setExpandedSection] = useState('basic');
+    const [expandedSection, setExpandedSection] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
@@ -342,28 +342,24 @@ export default function EditAreaPage() {
                                 </div>
                                 <span className="item-number">{formData.custom_faqs.length}</span>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                                <button type="button" className="btn btn-secondary" onClick={(e) => {
-                                    e.stopPropagation();
-                                    setFormData({
-                                        ...formData,
-                                        custom_faqs: [...formData.custom_faqs, { question: '', answer: '' }]
-                                    });
-                                    setExpandedSection('faqs');
-                                }}>
-                                    + Add FAQ
-                                </button>
-                                <svg
-                                    className={`chevron ${expandedSection === 'faqs' ? 'expanded' : ''}`}
-                                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-                                >
-                                    <polyline points="6 9 12 15 18 9"></polyline>
-                                </svg>
-                            </div>
+                            <svg
+                                className={`chevron ${expandedSection === 'faqs' ? 'expanded' : ''}`}
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                            >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
                         </div>
 
                         {expandedSection === 'faqs' && (
                             <div className="section-content">
+                                <div className="section-actions">
+                                    <button type="button" className="btn btn-secondary" onClick={() => setFormData({
+                                        ...formData,
+                                        custom_faqs: [...formData.custom_faqs, { question: '', answer: '' }]
+                                    })}>
+                                        Add FAQ
+                                    </button>
+                                </div>
                                 <div className="items-list">
                                     {formData.custom_faqs.map((faq, index) => (
                                         <div key={index} className="collapsible-item">
@@ -462,7 +458,7 @@ export default function EditAreaPage() {
                                             }
                                         }}
                                     >
-                                        <option value="">+ Add From Defaults</option>
+                                        <option value="">Add From Defaults</option>
                                         {DEFAULT_SERVICES_LIST.map((s, i) => {
                                             const isAdded = formData.custom_services.some(added => added.title === s.title);
                                             if (isAdded) return null;
@@ -473,7 +469,7 @@ export default function EditAreaPage() {
                                         ...formData,
                                         custom_services: [...formData.custom_services, { title: '', description: '' }]
                                     })}>
-                                        + Add Custom
+                                        Add Custom
                                     </button>
                                 </div>
 
@@ -577,7 +573,7 @@ export default function EditAreaPage() {
                                             }
                                         }}
                                     >
-                                        <option value="">+ Add From Defaults</option>
+                                        <option value="">Add From Defaults</option>
                                         {DEFAULT_RECOVERIES_LIST.map((r, i) => {
                                             const isAdded = formData.custom_recoveries.some(added => added.type === r.type);
                                             if (isAdded) return null;
@@ -588,7 +584,7 @@ export default function EditAreaPage() {
                                         ...formData,
                                         custom_recoveries: [...formData.custom_recoveries, { type: '', location_text: '', description: '', status_text: '', icon_name: 'Truck', color_theme: 'blue' }]
                                     })}>
-                                        + Add Custom
+                                        Add Custom
                                     </button>
                                 </div>
 
