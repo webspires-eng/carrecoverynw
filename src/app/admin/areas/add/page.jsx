@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import RichTextEditor from '@/components/RichTextEditor';
 import '../../../../styles/admin.css';
 
 const AUTOSAVE_KEY = 'area_form_autosave';
@@ -783,12 +784,10 @@ export default function AddAreaPage() {
                                 <div className="section-content">
                                     <div className="form-group full-width">
                                         <label>HTML / Content</label>
-                                        <textarea
+                                        <RichTextEditor
                                             value={formData.bottom_content}
-                                            onChange={(e) => setFormData({ ...formData, bottom_content: e.target.value })}
+                                            onChange={(content) => setFormData({ ...formData, bottom_content: content })}
                                             placeholder="<h2>Section Title</h2><p>Your content here...</p>"
-                                            rows={12}
-                                            style={{ fontFamily: 'monospace' }}
                                         />
                                         <span className="input-hint">Use standard HTML tags like &lt;h2&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;strong&gt;. Use {"{{location}}"} for dynamic area name.</span>
                                     </div>
