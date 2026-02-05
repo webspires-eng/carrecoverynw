@@ -46,11 +46,12 @@ export default function Footer() {
                     <div className="footer-column">
                         <h4>Quick Links</h4>
                         <ul>
-                            <li><Link href="#">About Our Company</Link></li>
+                            <li><Link href="/about-us">About Our Company</Link></li>
+                            <li><Link href="/contact-us">Contact Us</Link></li>
                             <li><Link href="/areas">Areas We Cover</Link></li>
-                            <li><Link href="#">Safety Guidelines</Link></li>
-                            <li><Link href="#">Privacy Policy</Link></li>
-                            <li><Link href="#">Terms of Service</Link></li>
+                            <li><Link href="/sitemap-html">HTML Sitemap</Link></li>
+                            <li><Link href="/privacy-policy">Privacy Policy</Link></li>
+                            <li><Link href="/terms-of-service">Terms of Service</Link></li>
                         </ul>
                     </div>
 
@@ -84,6 +85,6 @@ export default function Footer() {
                     </div>
                 </div>
             </div>
-        </footer>
+        </footer >
     );
 }

@@ -62,12 +62,35 @@ export async function generateMetadata({ params }) {
         };
     }
 
+    const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
+    const url = `${baseUrl}/area/${slug}`;
+
     return {
         title: area.meta_title || `24/7 Car Recovery in ${area.name} | Car Recovery UK`,
         description: area.meta_description || `Fast and reliable car recovery services in ${area.name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
+        alternates: {
+            canonical: url,
+        },
         openGraph: {
             title: area.meta_title || `24/7 Car Recovery in ${area.name}`,
             description: area.meta_description,
+            url: url,
+            siteName: "Car Recovery UK",
+            images: [
+                {
+                    url: '/tow-truck-hero.png',
+                    width: 1200,
+                    height: 630,
+                },
+            ],
+            locale: 'en_GB',
+            type: 'article',
+        },
+        twitter: {
+            card: 'summary_large_image',
+            title: area.meta_title || `24/7 Car Recovery in ${area.name}`,
+            description: area.meta_description,
+            images: ['/tow-truck-hero.png'],
         },
     };
 }
