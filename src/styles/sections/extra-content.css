@@ -1,7 +1,8 @@
 /* Extra Content Section */
 .extra-content-section {
     padding: 60px 0;
-    background: var(--white);
+    background: #fdfdfd;
+    border-top: 1px solid #f0f0f0;
 }
 
 .extra-content-section .container {

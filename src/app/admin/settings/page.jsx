@@ -171,13 +171,13 @@ export default function SettingsPage() {
                                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                                     <input
                                         type="text"
-                                        value={settings.favicon}
+                                        value={settings.favicon || ''}
                                         onChange={(e) => setSettings({ ...settings, favicon: e.target.value })}
-                                        placeholder="/favicon.png or https://example.com/icon.png"
+                                        placeholder="/truckicon.png"
                                     />
-                                    {settings.favicon && (
-                                        <div style={{ padding: '5px', background: '#eee', borderRadius: '4px' }}>
-                                            <img src={settings.favicon} alt="Favicon Preview" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                    {(settings.favicon || "/truckicon.png") && (
+                                        <div style={{ padding: '5px', background: '#eee', borderRadius: '4px', border: '1px solid #ddd' }}>
+                                            <img src={settings.favicon || "/truckicon.png"} alt="Favicon Preview" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
                                         </div>
                                     )}
                                 </div>

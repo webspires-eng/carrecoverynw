@@ -158,7 +158,8 @@ export default function AddAreaPage() {
                 nearby_areas: '',
                 custom_faqs: [],
                 custom_services: [],
-                custom_recoveries: []
+                custom_recoveries: [],
+                bottom_content: ''
             });
             setAutoSaveStatus('Draft cleared');
             setTimeout(() => setAutoSaveStatus(''), 2000);
