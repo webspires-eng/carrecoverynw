@@ -21,7 +21,7 @@
     font-size: 1.1rem;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    word-break: break-word;
+    word-break: normal;
 }
 
 .rich-text-content * {
