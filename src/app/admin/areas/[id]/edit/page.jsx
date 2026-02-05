@@ -463,9 +463,11 @@ export default function EditAreaPage() {
                                         }}
                                     >
                                         <option value="">+ Add From Defaults</option>
-                                        {DEFAULT_SERVICES_LIST.map((s, i) => (
-                                            <option key={i} value={i}>{s.title}</option>
-                                        ))}
+                                        {DEFAULT_SERVICES_LIST.map((s, i) => {
+                                            const isAdded = formData.custom_services.some(added => added.title === s.title);
+                                            if (isAdded) return null;
+                                            return <option key={i} value={i}>{s.title}</option>
+                                        })}
                                     </select>
                                     <button type="button" className="btn btn-secondary" onClick={() => setFormData({
                                         ...formData,
@@ -576,9 +578,11 @@ export default function EditAreaPage() {
                                         }}
                                     >
                                         <option value="">+ Add From Defaults</option>
-                                        {DEFAULT_RECOVERIES_LIST.map((r, i) => (
-                                            <option key={i} value={i}>{r.type}</option>
-                                        ))}
+                                        {DEFAULT_RECOVERIES_LIST.map((r, i) => {
+                                            const isAdded = formData.custom_recoveries.some(added => added.type === r.type);
+                                            if (isAdded) return null;
+                                            return <option key={i} value={i}>{r.type}</option>
+                                        })}
                                     </select>
                                     <button type="button" className="btn btn-secondary" onClick={() => setFormData({
                                         ...formData,
@@ -718,26 +722,31 @@ export default function EditAreaPage() {
 
                     {/* Sticky Actions */}
                     <div className="form-actions-sticky">
-                        <Link href="/admin/areas" className="btn btn-secondary">
-                            Cancel
-                        </Link>
-                        <button type="submit" className="btn btn-primary" disabled={saving}>
-                            {saving ? (
-                                <>
-                                    <div className="btn-spinner"></div>
-                                    Updating...
-                                </>
-                            ) : (
-                                <>
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                        <polyline points="7 3 7 8 15 8"></polyline>
-                                    </svg>
-                                    Update Area
-                                </>
-                            )}
-                        </button>
+                        <div className="location-hint" style={{ fontSize: '0.85rem', color: 'var(--admin-gray-600)' }}>
+                            Dynamic: <strong>{"{{location}}"}</strong> = {formData.name || '...'}
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                            <Link href="/admin/areas" className="btn btn-secondary">
+                                Cancel
+                            </Link>
+                            <button type="submit" className="btn btn-primary" disabled={saving}>
+                                {saving ? (
+                                    <>
+                                        <div className="btn-spinner"></div>
+                                        Updating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                            <polyline points="7 3 7 8 15 8"></polyline>
+                                        </svg>
+                                        Update Area
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>

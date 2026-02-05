@@ -460,9 +460,11 @@ export default function AddAreaPage() {
                                         }}
                                     >
                                         <option value="">+ Add From Defaults</option>
-                                        {DEFAULT_SERVICES_LIST.map((s, i) => (
-                                            <option key={i} value={i}>{s.title}</option>
-                                        ))}
+                                        {DEFAULT_SERVICES_LIST.map((s, i) => {
+                                            const isAdded = formData.custom_services.some(added => added.title === s.title);
+                                            if (isAdded) return null;
+                                            return <option key={i} value={i}>{s.title}</option>
+                                        })}
                                     </select>
                                     <button type="button" className="btn btn-secondary" onClick={() => setFormData({
                                         ...formData,
@@ -576,9 +578,11 @@ export default function AddAreaPage() {
                                         }}
                                     >
                                         <option value="">+ Add From Defaults</option>
-                                        {DEFAULT_RECOVERIES_LIST.map((r, i) => (
-                                            <option key={i} value={i}>{r.type} - {r.color_theme}</option>
-                                        ))}
+                                        {DEFAULT_RECOVERIES_LIST.map((r, i) => {
+                                            const isAdded = formData.custom_recoveries.some(added => added.type === r.type);
+                                            if (isAdded) return null;
+                                            return <option key={i} value={i}>{r.type} - {r.color_theme}</option>
+                                        })}
                                     </select>
                                     <button type="button" className="btn btn-secondary" onClick={() => setFormData({
                                         ...formData,

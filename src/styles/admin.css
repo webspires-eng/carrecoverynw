@@ -1430,7 +1430,8 @@
     bottom: 0;
     display: flex;
     gap: 10px;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     padding: 12px 20px;
     margin: 16px -20px -20px -20px;
     background: var(--admin-white);
