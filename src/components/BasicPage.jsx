@@ -11,9 +11,17 @@ export default function BasicPage({ title, content }) {
                 <Link href="/" style={{ color: '#ed4705', fontWeight: '600' }}>← Back to Home</Link>
             </header>
 
-            <section style={{ padding: '80px 5%', maxWidth: '1000px', margin: '0 auto', minHeight: '60vh' }}>
+            <section style={{ padding: '80px 5%', maxWidth: '1400px', margin: '0 auto', minHeight: '60vh' }}>
                 <h1 style={{ fontSize: '3rem', marginBottom: '30px', color: '#012169' }}>{title}</h1>
-                <div style={{ lineHeight: '1.8', color: '#333', fontSize: '1.1rem', overflowWrap: 'normal', wordBreak: 'normal' }}>
+                <div
+                    className="basic-page-content"
+                    style={{
+                        lineHeight: '1.9',
+                        color: '#444',
+                        fontSize: '1.15rem',
+                        hyphens: 'none'
+                    }}
+                >
                     {content}
                 </div>
             </section>

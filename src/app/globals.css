@@ -1296,3 +1296,15 @@ body {
     justify-content: flex-start;
   }
 }
+
+.basic-page-content {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+@media (max-width: 768px) {
+  .basic-page-content {
+    text-align: left;
+    font-size: 1.05rem !important;
+  }
+}
