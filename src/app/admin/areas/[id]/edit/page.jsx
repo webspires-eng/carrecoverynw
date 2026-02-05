@@ -31,6 +31,7 @@ export default function EditAreaPage() {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [expandedSection, setExpandedSection] = useState('basic');
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
@@ -118,6 +119,10 @@ export default function EditAreaPage() {
         setLoading(false);
     };
 
+    const toggleSection = (section) => {
+        setExpandedSection(expandedSection === section ? null : section);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
@@ -151,439 +156,581 @@ export default function EditAreaPage() {
         setSaving(false);
     };
 
-    if (loading) return <div className="admin-dashboard"><p>Loading...</p></div>;
+    if (loading) {
+        return (
+            <div className="admin-dashboard">
+                <div className="admin-main">
+                    <div className="loading">
+                        <div className="loading-spinner"></div>
+                        <p>Loading area details...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="admin-dashboard">
-            <header className="admin-header">
-                <div>
-                    <h1>Edit Area</h1>
-                    <p>Update location details for {formData.name}</p>
-                </div>
-                <Link href="/admin/areas" className="btn-back">← Back to List</Link>
-            </header>
-
-            <form onSubmit={handleSubmit} className="area-form">
-                {/* Basic Information */}
-                <div className="form-section">
-                    <h2>Basic Information</h2>
-
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label>Area Name *</label>
-                            <input
-                                type="text"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>URL Slug *</label>
-                            <input
-                                type="text"
-                                value={formData.slug}
-                                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                                required
-                            />
-                        </div>
-
-                        <div className="form-group">
-                            <label>Major Roads</label>
-                            <input
-                                type="text"
-                                value={formData.major_roads}
-                                onChange={(e) => setFormData({ ...formData, major_roads: e.target.value })}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Nearby Areas (comma-separated)</label>
-                            <input
-                                type="text"
-                                value={formData.nearby_areas}
-                                onChange={(e) => setFormData({ ...formData, nearby_areas: e.target.value })}
-                            />
-                        </div>
+            <div className="admin-main">
+                {/* Header */}
+                <header className="admin-header">
+                    <div className="admin-header-left">
+                        <h1>Edit Area</h1>
+                        <p>Update location details for {formData.name}</p>
                     </div>
-                </div>
-
-                {/* SEO Settings */}
-                <div className="form-section">
-                    <h2>SEO Settings</h2>
-
-                    <div className="form-group full-width">
-                        <label>H1 Title</label>
-                        <input
-                            type="text"
-                            value={formData.h1_title}
-                            onChange={(e) => setFormData({ ...formData, h1_title: e.target.value })}
-                        />
-                    </div>
-
-                    <div className="form-group full-width">
-                        <label>Meta Title</label>
-                        <input
-                            type="text"
-                            value={formData.meta_title}
-                            onChange={(e) => setFormData({ ...formData, meta_title: e.target.value })}
-                        />
-                    </div>
-
-                    <div className="form-group full-width">
-                        <label>Meta Description</label>
-                        <textarea
-                            value={formData.meta_description}
-                            onChange={(e) => setFormData({ ...formData, meta_description: e.target.value })}
-                            rows={3}
-                        />
-                    </div>
-
-                    <div className="form-group full-width">
-                        <label>Intro Text</label>
-                        <textarea
-                            value={formData.intro_text}
-                            onChange={(e) => setFormData({ ...formData, intro_text: e.target.value })}
-                            rows={4}
-                        />
-                    </div>
-                </div>
-
-                {/* FAQs Section */}
-                <div className="form-section">
-                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <h2>FAQs</h2>
-                            <p className="section-desc">Add area-specific frequently asked questions</p>
-                        </div>
-                        <button type="button" className="btn-secondary" onClick={() => setFormData({
-                            ...formData,
-                            custom_faqs: [...formData.custom_faqs, { question: '', answer: '' }]
-                        })}>
-                            + Add FAQ
+                    <div className="admin-header-actions">
+                        <Link href="/admin/areas" className="btn btn-secondary">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            Back to List
+                        </Link>
+                        <button type="submit" form="area-form" className="btn btn-primary" disabled={saving}>
+                            {saving ? (
+                                <>
+                                    <div className="btn-spinner"></div>
+                                    Updating...
+                                </>
+                            ) : (
+                                <>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Update Area
+                                </>
+                            )}
                         </button>
                     </div>
+                </header>
 
-                    <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
-                        {formData.custom_faqs.map((faq, index) => (
-                            <details key={index} className="faq-item" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', overflow: 'hidden' }}>
-                                <summary style={{ padding: '15px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#e9ecef' }}>
-                                    <span>{faq.question || `FAQ #${index + 1}`}</span>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            if (confirm('Delete this FAQ?')) {
-                                                const newFaqs = formData.custom_faqs.filter((_, i) => i !== index);
-                                                setFormData({ ...formData, custom_faqs: newFaqs });
-                                            }
-                                        }}
-                                        style={{ background: '#dc3545', border: 'none', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem' }}
-                                        title="Remove FAQ"
-                                    >
-                                        ×
-                                    </button>
-                                </summary>
-                                <div style={{ padding: '20px' }}>
-                                    <div className="form-group full-width">
-                                        <label>Question</label>
+                <form id="area-form" onSubmit={handleSubmit} className="area-form">
+                    {/* Basic Information */}
+                    <div className="form-section">
+                        <div className="section-header-toggle" onClick={() => toggleSection('basic')}>
+                            <div className="section-header-left">
+                                <div className="section-icon">📝</div>
+                                <div>
+                                    <h2>Basic Information</h2>
+                                    <p className="section-desc">Essential area details and roads</p>
+                                </div>
+                            </div>
+                            <svg
+                                className={`chevron ${expandedSection === 'basic' ? 'expanded' : ''}`}
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                            >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+
+                        {expandedSection === 'basic' && (
+                            <div className="section-content">
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label>Area Name *</label>
                                         <input
                                             type="text"
-                                            value={faq.question}
-                                            onChange={(e) => {
-                                                const newFaqs = [...formData.custom_faqs];
-                                                newFaqs[index].question = e.target.value;
-                                                setFormData({ ...formData, custom_faqs: newFaqs });
-                                            }}
+                                            value={formData.name}
+                                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                            required
+                                            placeholder="e.g. Birmingham"
                                         />
                                     </div>
-                                    <div className="form-group full-width" style={{ marginTop: '15px' }}>
-                                        <label>Answer</label>
-                                        <textarea
-                                            value={faq.answer}
-                                            onChange={(e) => {
-                                                const newFaqs = [...formData.custom_faqs];
-                                                newFaqs[index].answer = e.target.value;
-                                                setFormData({ ...formData, custom_faqs: newFaqs });
-                                            }}
-                                            rows={3}
-                                        />
-                                    </div>
-                                </div>
-                            </details>
-                        ))}
-                        {formData.custom_faqs.length === 0 && (
-                            <p style={{ color: '#6c757d', fontStyle: 'italic', textAlign: 'center' }}>No FAQs added yet.</p>
-                        )}
-                    </div>
-                </div>
-
-                {/* Services Section */}
-                <div className="form-section">
-                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <h2>Services Section Descriptions</h2>
-                            <p className="section-desc">Add custom services for this area. If empty, global defaults will be used.</p>
-                        </div>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <select
-                                className="btn-secondary"
-                                style={{ padding: '8px', cursor: 'pointer' }}
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        const selected = DEFAULT_SERVICES_LIST[e.target.value];
-                                        setFormData({
-                                            ...formData,
-                                            custom_services: [...formData.custom_services, { ...selected }]
-                                        });
-                                        e.target.value = "";
-                                    }
-                                }}
-                            >
-                                <option value="">+ Add From Defaults</option>
-                                {DEFAULT_SERVICES_LIST.map((s, i) => (
-                                    <option key={i} value={i}>{s.title}</option>
-                                ))}
-                            </select>
-                            <button type="button" className="btn-secondary" onClick={() => setFormData({
-                                ...formData,
-                                custom_services: [...formData.custom_services, { title: '', description: '' }]
-                            })}>
-                                + Add Custom
-                            </button>
-                        </div>
-                    </div>
-
-                    <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
-                        {formData.custom_services.map((service, index) => (
-                            <details key={index} className="faq-item" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', overflow: 'hidden' }}>
-                                <summary style={{ padding: '15px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#e9ecef' }}>
-                                    <span>{service.title || `Service #${index + 1}`}</span>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            if (confirm('Delete this service override?')) {
-                                                const newServices = formData.custom_services.filter((_, i) => i !== index);
-                                                setFormData({ ...formData, custom_services: newServices });
-                                            }
-                                        }}
-                                        style={{ background: '#dc3545', border: 'none', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem' }}
-                                        title="Remove Service"
-                                    >
-                                        ×
-                                    </button>
-                                </summary>
-                                <div style={{ padding: '20px' }}>
-                                    <div className="form-group full-width">
-                                        <label style={{ fontWeight: 'bold' }}>Service Title</label>
+                                    <div className="form-group">
+                                        <label>URL Slug *</label>
                                         <input
                                             type="text"
-                                            value={service.title}
-                                            onChange={(e) => {
-                                                const newServices = [...formData.custom_services];
-                                                newServices[index].title = e.target.value;
-                                                setFormData({ ...formData, custom_services: newServices });
-                                            }}
-                                            placeholder="e.g. 24/7 Breakdown Recovery"
+                                            value={formData.slug}
+                                            onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                                            required
+                                            placeholder="e.g. birmingham"
                                         />
                                     </div>
-                                    <div className="form-group full-width" style={{ marginTop: '15px' }}>
-                                        <label style={{ fontWeight: 'bold' }}>Description</label>
-                                        <textarea
-                                            value={service.description}
-                                            onChange={(e) => {
-                                                const newServices = [...formData.custom_services];
-                                                newServices[index].description = e.target.value;
-                                                setFormData({ ...formData, custom_services: newServices });
-                                            }}
-                                            placeholder="Enter description..."
-                                            rows={3}
+                                    <div className="form-group">
+                                        <label>Major Roads (comma-separated)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.major_roads}
+                                            onChange={(e) => setFormData({ ...formData, major_roads: e.target.value })}
+                                            placeholder="e.g. M6, A38, M42"
                                         />
-                                        <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Nearby Areas (comma-separated)</label>
+                                        <input
+                                            type="text"
+                                            value={formData.nearby_areas}
+                                            onChange={(e) => setFormData({ ...formData, nearby_areas: e.target.value })}
+                                            placeholder="e.g. Solihull, Edgbaston"
+                                        />
                                     </div>
                                 </div>
-                            </details>
-                        ))}
-                        {formData.custom_services.length === 0 && (
-                            <p style={{ textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
-                                Using global default services. Add overrides above to customize.
-                            </p>
+                            </div>
                         )}
                     </div>
-                </div>
 
-                {/* Real Recoveries Section */}
-                <div className="form-section">
-                    <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div>
-                            <h2>Real Recoveries (Recent Work)</h2>
-                            <p className="section-desc">Showcase recent recoveries for this area. If empty, global defaults will be used.</p>
-                        </div>
-                        <div style={{ display: 'flex', gap: '10px' }}>
-                            <select
-                                className="btn-secondary"
-                                style={{ padding: '8px', cursor: 'pointer' }}
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        const selected = DEFAULT_RECOVERIES_LIST[e.target.value];
-                                        setFormData({
-                                            ...formData,
-                                            custom_recoveries: [...formData.custom_recoveries, { ...selected }]
-                                        });
-                                        e.target.value = "";
-                                    }
-                                }}
+                    {/* SEO Settings */}
+                    <div className="form-section">
+                        <div className="section-header-toggle" onClick={() => toggleSection('seo')}>
+                            <div className="section-header-left">
+                                <div className="section-icon">🔍</div>
+                                <div>
+                                    <h2>SEO Settings</h2>
+                                    <p className="section-desc">Optimize for search engines</p>
+                                </div>
+                            </div>
+                            <svg
+                                className={`chevron ${expandedSection === 'seo' ? 'expanded' : ''}`}
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
                             >
-                                <option value="">+ Add From Defaults</option>
-                                {DEFAULT_RECOVERIES_LIST.map((r, i) => (
-                                    <option key={i} value={i}>{r.type} - {r.color_theme}</option>
-                                ))}
-                            </select>
-                            <button type="button" className="btn-secondary" onClick={() => setFormData({
-                                ...formData,
-                                custom_recoveries: [...formData.custom_recoveries, { type: '', location_text: '', description: '', status_text: '', icon_name: 'Truck', color_theme: 'blue' }]
-                            })}>
-                                + Add Custom
-                            </button>
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
                         </div>
+
+                        {expandedSection === 'seo' && (
+                            <div className="section-content">
+                                <div className="form-group full-width">
+                                    <label>H1 Title</label>
+                                    <input
+                                        type="text"
+                                        value={formData.h1_title}
+                                        onChange={(e) => setFormData({ ...formData, h1_title: e.target.value })}
+                                        placeholder="e.g. Breakdown Recovery in Birmingham"
+                                    />
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Meta Title</label>
+                                    <input
+                                        type="text"
+                                        value={formData.meta_title}
+                                        onChange={(e) => setFormData({ ...formData, meta_title: e.target.value })}
+                                        placeholder="e.g. 24/7 Car Recovery Birmingham | Fast Response"
+                                    />
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Meta Description</label>
+                                    <textarea
+                                        value={formData.meta_description}
+                                        onChange={(e) => setFormData({ ...formData, meta_description: e.target.value })}
+                                        rows={3}
+                                        placeholder="Brief description for search results..."
+                                    />
+                                </div>
+                                <div className="form-group full-width">
+                                    <label>Intro Text</label>
+                                    <textarea
+                                        value={formData.intro_text}
+                                        onChange={(e) => setFormData({ ...formData, intro_text: e.target.value })}
+                                        rows={4}
+                                        placeholder="Introduction content for the area page..."
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    <div className="faq-list" style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '20px' }}>
-                        {formData.custom_recoveries.map((recovery, index) => (
-                            <details key={index} className="faq-item" style={{ background: '#f8f9fa', borderRadius: '8px', border: '1px solid #e9ecef', overflow: 'hidden' }}>
-                                <summary style={{ padding: '15px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#e9ecef' }}>
-                                    <span>{recovery.type || `Recovery #${index + 1}`} - {recovery.location_text || 'No Location'}</span>
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            if (confirm('Delete this recovery?')) {
-                                                const newRecoveries = formData.custom_recoveries.filter((_, i) => i !== index);
-                                                setFormData({ ...formData, custom_recoveries: newRecoveries });
+                    {/* FAQs Section */}
+                    <div className="form-section">
+                        <div className="section-header-toggle" onClick={() => toggleSection('faqs')}>
+                            <div className="section-header-left">
+                                <div className="section-icon">❓</div>
+                                <div>
+                                    <h2>FAQs</h2>
+                                    <p className="section-desc">Area-specific questions</p>
+                                </div>
+                                <span className="item-number">{formData.custom_faqs.length}</span>
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                <button type="button" className="btn btn-secondary" onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFormData({
+                                        ...formData,
+                                        custom_faqs: [...formData.custom_faqs, { question: '', answer: '' }]
+                                    });
+                                    setExpandedSection('faqs');
+                                }}>
+                                    + Add FAQ
+                                </button>
+                                <svg
+                                    className={`chevron ${expandedSection === 'faqs' ? 'expanded' : ''}`}
+                                    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                                >
+                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+
+                        {expandedSection === 'faqs' && (
+                            <div className="section-content">
+                                <div className="items-list">
+                                    {formData.custom_faqs.map((faq, index) => (
+                                        <div key={index} className="collapsible-item">
+                                            <div className="collapsible-header">
+                                                <span className="item-number">{index + 1}</span>
+                                                <input
+                                                    type="text"
+                                                    value={faq.question}
+                                                    onChange={(e) => {
+                                                        const newFaqs = [...formData.custom_faqs];
+                                                        newFaqs[index].question = e.target.value;
+                                                        setFormData({ ...formData, custom_faqs: newFaqs });
+                                                    }}
+                                                    placeholder="Question..."
+                                                    className="item-title"
+                                                    style={{ border: 'none', background: 'transparent', width: '100%', fontSize: '0.95rem' }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="btn-icon-delete"
+                                                    onClick={() => {
+                                                        if (confirm('Delete this FAQ?')) {
+                                                            const newFaqs = formData.custom_faqs.filter((_, i) => i !== index);
+                                                            setFormData({ ...formData, custom_faqs: newFaqs });
+                                                        }
+                                                    }}
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div className="collapsible-content">
+                                                <div className="form-group full-width">
+                                                    <label>Answer</label>
+                                                    <textarea
+                                                        value={faq.answer}
+                                                        onChange={(e) => {
+                                                            const newFaqs = [...formData.custom_faqs];
+                                                            newFaqs[index].answer = e.target.value;
+                                                            setFormData({ ...formData, custom_faqs: newFaqs });
+                                                        }}
+                                                        rows={2}
+                                                        placeholder="Answer..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {formData.custom_faqs.length === 0 && (
+                                        <div className="empty-items">No FAQs added yet.</div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Services Section */}
+                    <div className="form-section">
+                        <div className="section-header-toggle" onClick={() => toggleSection('services')}>
+                            <div className="section-header-left">
+                                <div className="section-icon">🛠️</div>
+                                <div>
+                                    <h2>Services</h2>
+                                    <p className="section-desc">Custom services for area</p>
+                                </div>
+                                <span className="item-number">{formData.custom_services.length}</span>
+                            </div>
+                            <svg
+                                className={`chevron ${expandedSection === 'services' ? 'expanded' : ''}`}
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                            >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+
+                        {expandedSection === 'services' && (
+                            <div className="section-content">
+                                <div className="section-actions">
+                                    <select
+                                        className="select-input"
+                                        onChange={(e) => {
+                                            if (e.target.value) {
+                                                const selected = DEFAULT_SERVICES_LIST[e.target.value];
+                                                setFormData({
+                                                    ...formData,
+                                                    custom_services: [...formData.custom_services, { ...selected }]
+                                                });
+                                                e.target.value = "";
                                             }
                                         }}
-                                        style={{ background: '#dc3545', border: 'none', color: 'white', width: '24px', height: '24px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '1rem' }}
-                                        title="Remove Recovery"
                                     >
-                                        ×
+                                        <option value="">+ Add From Defaults</option>
+                                        {DEFAULT_SERVICES_LIST.map((s, i) => (
+                                            <option key={i} value={i}>{s.title}</option>
+                                        ))}
+                                    </select>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setFormData({
+                                        ...formData,
+                                        custom_services: [...formData.custom_services, { title: '', description: '' }]
+                                    })}>
+                                        + Add Custom
                                     </button>
-                                </summary>
-                                <div style={{ padding: '20px' }}>
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '15px' }}>
-                                        <div className="form-group">
-                                            <label style={{ fontWeight: 'bold' }}>Recovery Type</label>
-                                            <input
-                                                type="text"
-                                                value={recovery.type}
-                                                onChange={(e) => {
-                                                    const newRecs = [...formData.custom_recoveries];
-                                                    newRecs[index].type = e.target.value;
-                                                    setFormData({ ...formData, custom_recoveries: newRecs });
-                                                }}
-                                                placeholder="e.g. Flat Battery"
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label style={{ fontWeight: 'bold' }}>Location Text</label>
-                                            <input
-                                                type="text"
-                                                value={recovery.location_text}
-                                                onChange={(e) => {
-                                                    const newRecs = [...formData.custom_recoveries];
-                                                    newRecs[index].location_text = e.target.value;
-                                                    setFormData({ ...formData, custom_recoveries: newRecs });
-                                                }}
-                                                placeholder="e.g. Birmingham City Centre"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="form-group full-width" style={{ marginBottom: '15px' }}>
-                                        <label style={{ fontWeight: 'bold' }}>Description</label>
-                                        <textarea
-                                            value={recovery.description}
-                                            onChange={(e) => {
-                                                const newRecs = [...formData.custom_recoveries];
-                                                newRecs[index].description = e.target.value;
-                                                setFormData({ ...formData, custom_recoveries: newRecs });
-                                            }}
-                                            placeholder="Enter details of the recovery..."
-                                            rows={2}
-                                        />
-                                    </div>
-
-                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '15px' }}>
-                                        <div className="form-group">
-                                            <label style={{ fontWeight: 'bold' }}>Status Tag</label>
-                                            <input
-                                                type="text"
-                                                value={recovery.status_text}
-                                                onChange={(e) => {
-                                                    const newRecs = [...formData.custom_recoveries];
-                                                    newRecs[index].status_text = e.target.value;
-                                                    setFormData({ ...formData, custom_recoveries: newRecs });
-                                                }}
-                                                placeholder="e.g. Safe Destination"
-                                            />
-                                        </div>
-                                        <div className="form-group">
-                                            <label style={{ fontWeight: 'bold' }}>Icon</label>
-                                            <select
-                                                value={recovery.icon_name}
-                                                onChange={(e) => {
-                                                    const newRecs = [...formData.custom_recoveries];
-                                                    newRecs[index].icon_name = e.target.value;
-                                                    setFormData({ ...formData, custom_recoveries: newRecs });
-                                                }}
-                                                style={{ width: '100%', padding: '8px' }}
-                                            >
-                                                <option value="Battery">Battery</option>
-                                                <option value="Car">Car</option>
-                                                <option value="Route">Route</option>
-                                                <option value="Lock">Lock</option>
-                                                <option value="TriangleAlert">Alert</option>
-                                                <option value="Truck">Truck</option>
-                                            </select>
-                                        </div>
-                                        <div className="form-group">
-                                            <label style={{ fontWeight: 'bold' }}>Color Theme</label>
-                                            <select
-                                                value={recovery.color_theme}
-                                                onChange={(e) => {
-                                                    const newRecs = [...formData.custom_recoveries];
-                                                    newRecs[index].color_theme = e.target.value;
-                                                    setFormData({ ...formData, custom_recoveries: newRecs });
-                                                }}
-                                                style={{ width: '100%', padding: '8px' }}
-                                            >
-                                                <option value="yellow">Yellow</option>
-                                                <option value="blue">Blue</option>
-                                                <option value="orange">Orange</option>
-                                                <option value="green">Green</option>
-                                                <option value="red">Red</option>
-                                                <option value="purple">Purple</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <span className="input-hint" style={{ fontSize: '0.8rem', color: '#6c757d', marginTop: '10px', display: 'block' }}>Use {"{{location}}"} and {"{{majorRoads}}"} for dynamic text.</span>
                                 </div>
-                            </details>
-                        ))}
-                        {formData.custom_recoveries.length === 0 && (
-                            <p style={{ textAlign: 'center', color: '#6c757d', fontStyle: 'italic', padding: '20px' }}>
-                                Using global default recoveries. Add overrides above to customize.
-                            </p>
+
+                                <div className="items-list">
+                                    {formData.custom_services.map((service, index) => (
+                                        <div key={index} className="collapsible-item">
+                                            <div className="collapsible-header">
+                                                <span className="item-number">{index + 1}</span>
+                                                <span className="item-title">{service.title || 'New Service'}</span>
+                                                <button
+                                                    type="button"
+                                                    className="btn-icon-delete"
+                                                    onClick={() => {
+                                                        if (confirm('Delete this service?')) {
+                                                            const newServices = formData.custom_services.filter((_, i) => i !== index);
+                                                            setFormData({ ...formData, custom_services: newServices });
+                                                        }
+                                                    }}
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div className="collapsible-content">
+                                                <div className="form-group full-width">
+                                                    <label>Service Title</label>
+                                                    <input
+                                                        type="text"
+                                                        value={service.title}
+                                                        onChange={(e) => {
+                                                            const newServices = [...formData.custom_services];
+                                                            newServices[index].title = e.target.value;
+                                                            setFormData({ ...formData, custom_services: newServices });
+                                                        }}
+                                                        placeholder="e.g. 24/7 Breakdown Recovery"
+                                                    />
+                                                </div>
+                                                <div className="form-group full-width">
+                                                    <label>Description</label>
+                                                    <textarea
+                                                        value={service.description}
+                                                        onChange={(e) => {
+                                                            const newServices = [...formData.custom_services];
+                                                            newServices[index].description = e.target.value;
+                                                            setFormData({ ...formData, custom_services: newServices });
+                                                        }}
+                                                        rows={2}
+                                                        placeholder="Service description..."
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {formData.custom_services.length === 0 && (
+                                        <div className="empty-items">Using global default services.</div>
+                                    )}
+                                </div>
+                            </div>
                         )}
                     </div>
-                </div>
 
-                <div className="form-actions">
-                    <Link href="/admin/areas" className="btn-cancel">Cancel</Link>
-                    <button type="submit" className="btn-primary" disabled={saving}>
-                        {saving ? 'Updating...' : 'Update Area'}
-                    </button>
-                </div>
-            </form>
+                    {/* Recoveries Section */}
+                    <div className="form-section">
+                        <div className="section-header-toggle" onClick={() => toggleSection('recoveries')}>
+                            <div className="section-header-left">
+                                <div className="section-icon">🚛</div>
+                                <div>
+                                    <h2>Recoveries</h2>
+                                    <p className="section-desc">Recent work examples</p>
+                                </div>
+                                <span className="item-number">{formData.custom_recoveries.length}</span>
+                            </div>
+                            <svg
+                                className={`chevron ${expandedSection === 'recoveries' ? 'expanded' : ''}`}
+                                width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+                            >
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+
+                        {expandedSection === 'recoveries' && (
+                            <div className="section-content">
+                                <div className="section-actions">
+                                    <select
+                                        className="select-input"
+                                        onChange={(e) => {
+                                            if (e.target.value) {
+                                                const selected = DEFAULT_RECOVERIES_LIST[e.target.value];
+                                                setFormData({
+                                                    ...formData,
+                                                    custom_recoveries: [...formData.custom_recoveries, { ...selected }]
+                                                });
+                                                e.target.value = "";
+                                            }
+                                        }}
+                                    >
+                                        <option value="">+ Add From Defaults</option>
+                                        {DEFAULT_RECOVERIES_LIST.map((r, i) => (
+                                            <option key={i} value={i}>{r.type}</option>
+                                        ))}
+                                    </select>
+                                    <button type="button" className="btn btn-secondary" onClick={() => setFormData({
+                                        ...formData,
+                                        custom_recoveries: [...formData.custom_recoveries, { type: '', location_text: '', description: '', status_text: '', icon_name: 'Truck', color_theme: 'blue' }]
+                                    })}>
+                                        + Add Custom
+                                    </button>
+                                </div>
+
+                                <div className="items-list">
+                                    {formData.custom_recoveries.map((recovery, index) => (
+                                        <div key={index} className="collapsible-item">
+                                            <div className="collapsible-header">
+                                                <span className="item-number">{index + 1}</span>
+                                                <span className="item-title">{recovery.type || 'New Recovery'}</span>
+                                                <button
+                                                    type="button"
+                                                    className="btn-icon-delete"
+                                                    onClick={() => {
+                                                        if (confirm('Delete this recovery?')) {
+                                                            const newRecoveries = formData.custom_recoveries.filter((_, i) => i !== index);
+                                                            setFormData({ ...formData, custom_recoveries: newRecoveries });
+                                                        }
+                                                    }}
+                                                >
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div className="collapsible-content">
+                                                <div className="form-grid">
+                                                    <div className="form-group">
+                                                        <label>Recovery Type</label>
+                                                        <input
+                                                            type="text"
+                                                            value={recovery.type}
+                                                            onChange={(e) => {
+                                                                const newRecs = [...formData.custom_recoveries];
+                                                                newRecs[index].type = e.target.value;
+                                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                                            }}
+                                                            placeholder="e.g. Flat Battery"
+                                                        />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Location Text</label>
+                                                        <input
+                                                            type="text"
+                                                            value={recovery.location_text}
+                                                            onChange={(e) => {
+                                                                const newRecs = [...formData.custom_recoveries];
+                                                                newRecs[index].location_text = e.target.value;
+                                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                                            }}
+                                                            placeholder="e.g. Birmingham City Centre"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="form-group full-width">
+                                                    <label>Description</label>
+                                                    <textarea
+                                                        value={recovery.description}
+                                                        onChange={(e) => {
+                                                            const newRecs = [...formData.custom_recoveries];
+                                                            newRecs[index].description = e.target.value;
+                                                            setFormData({ ...formData, custom_recoveries: newRecs });
+                                                        }}
+                                                        rows={2}
+                                                        placeholder="Recovery details..."
+                                                    />
+                                                </div>
+
+                                                <div className="form-grid-3">
+                                                    <div className="form-group">
+                                                        <label>Status Tag</label>
+                                                        <input
+                                                            type="text"
+                                                            value={recovery.status_text}
+                                                            onChange={(e) => {
+                                                                const newRecs = [...formData.custom_recoveries];
+                                                                newRecs[index].status_text = e.target.value;
+                                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                                            }}
+                                                            placeholder="e.g. Safe Destination"
+                                                        />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Icon</label>
+                                                        <select
+                                                            value={recovery.icon_name}
+                                                            onChange={(e) => {
+                                                                const newRecs = [...formData.custom_recoveries];
+                                                                newRecs[index].icon_name = e.target.value;
+                                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                                            }}
+                                                        >
+                                                            <option value="Battery">Battery</option>
+                                                            <option value="Car">Car</option>
+                                                            <option value="Route">Route</option>
+                                                            <option value="Lock">Lock</option>
+                                                            <option value="TriangleAlert">Alert</option>
+                                                            <option value="Truck">Truck</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label>Color Theme</label>
+                                                        <select
+                                                            value={recovery.color_theme}
+                                                            onChange={(e) => {
+                                                                const newRecs = [...formData.custom_recoveries];
+                                                                newRecs[index].color_theme = e.target.value;
+                                                                setFormData({ ...formData, custom_recoveries: newRecs });
+                                                            }}
+                                                        >
+                                                            <option value="yellow">Yellow</option>
+                                                            <option value="blue">Blue</option>
+                                                            <option value="orange">Orange</option>
+                                                            <option value="green">Green</option>
+                                                            <option value="red">Red</option>
+                                                            <option value="purple">Purple</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {formData.custom_recoveries.length === 0 && (
+                                        <div className="empty-items">Using global default recoveries.</div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Sticky Actions */}
+                    <div className="form-actions-sticky">
+                        <Link href="/admin/areas" className="btn btn-secondary">
+                            Cancel
+                        </Link>
+                        <button type="submit" className="btn btn-primary" disabled={saving}>
+                            {saving ? (
+                                <>
+                                    <div className="btn-spinner"></div>
+                                    Updating...
+                                </>
+                            ) : (
+                                <>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                        <polyline points="7 3 7 8 15 8"></polyline>
+                                    </svg>
+                                    Update Area
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }
