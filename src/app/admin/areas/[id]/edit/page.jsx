@@ -32,6 +32,7 @@ export default function EditAreaPage() {
 
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [saveStatus, setSaveStatus] = useState('');
     const [expandedSection, setExpandedSection] = useState(null);
     const [formData, setFormData] = useState({
         name: '',
@@ -162,7 +163,10 @@ export default function EditAreaPage() {
             const data = await res.json();
 
             if (data.success) {
-                router.push('/admin/areas');
+                setSaveStatus('success');
+                setTimeout(() => setSaveStatus(''), 3000);
+                // Refresh data to be sure
+                fetchArea();
             } else {
                 alert(data.error);
             }
@@ -216,12 +220,34 @@ export default function EditAreaPage() {
                                         <polyline points="17 21 17 13 7 13 7 21"></polyline>
                                         <polyline points="7 3 7 8 15 8"></polyline>
                                     </svg>
-                                    Update Area
+                                    {saveStatus === 'success' ? 'Saved!' : 'Update Area'}
                                 </>
                             )}
                         </button>
                     </div>
                 </header>
+
+                {saveStatus === 'success' && (
+                    <div style={{
+                        gridColumn: '1 / -1',
+                        background: '#d1fae5',
+                        color: '#065f46',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        marginBottom: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontWeight: '600',
+                        fontSize: '0.9rem',
+                        border: '1px solid #10b981'
+                    }}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Changes saved successfully!
+                    </div>
+                )}
 
                 <form id="area-form" onSubmit={handleSubmit} className="area-form">
                     {/* Basic Information */}

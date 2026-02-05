@@ -25,6 +25,9 @@ async function getAreaBySlug(slug) {
     try {
         const { db } = await connectToDatabase();
         const area = await db.collection('areas').findOne({ slug, is_active: true });
+        if (area) {
+            area._id = area._id.toString();
+        }
         return area || null;
     } catch (error) {
         console.error('Database error:', error);

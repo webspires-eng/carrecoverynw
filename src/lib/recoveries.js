@@ -4,13 +4,16 @@ export async function getRecoveries() {
     try {
         const { db } = await connectToDatabase();
         const recoveriesCollection = db.collection('recoveries');
-        
+
         const rows = await recoveriesCollection
             .find({ is_active: true })
             .sort({ display_order: 1 })
             .toArray();
-        
-        return rows;
+
+        return rows.map(recovery => ({
+            ...recovery,
+            _id: recovery._id.toString()
+        }));
     } catch (error) {
         console.error('Database error fetching recoveries:', error);
         return [];

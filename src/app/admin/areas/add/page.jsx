@@ -132,7 +132,7 @@ export default function AddAreaPage() {
 
             if (data.success) {
                 clearAutosave();
-                router.push('/admin/areas');
+                router.push(`/admin/areas/${data.id}/edit`);
             } else {
                 alert(data.error);
             }
