@@ -156,7 +156,7 @@ export default function AddAreaPage() {
                 {/* Header */}
                 <header className="admin-header">
                     <div className="admin-header-left">
-                        <h1>➕ Add New Area</h1>
+                        <h1>Add New Area</h1>
                         <p>Create a new location page for your website</p>
                     </div>
                     <div className="admin-header-actions">

@@ -724,7 +724,17 @@
 
 /* Form Styles */
 .area-form {
-    max-width: 800px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    padding-bottom: 80px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .area-form {
+        grid-template-columns: 1fr;
+    }
 }
 
 .form-section {
@@ -1426,19 +1436,20 @@
 
 /* Sticky Form Actions */
 .form-actions-sticky {
-    position: sticky;
+    position: fixed;
     bottom: 0;
+    left: 0;
+    right: 0;
     display: flex;
     gap: 10px;
     justify-content: space-between;
     align-items: center;
-    padding: 12px 20px;
-    margin: 16px -20px -20px -20px;
+    padding: 16px 24px;
+    margin: 0;
     background: var(--admin-white);
     border-top: 1px solid var(--admin-gray-200);
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-    border-radius: 0 0 var(--admin-radius) var(--admin-radius);
-    z-index: 10;
+    z-index: 1000;
 }
 
 @media (max-width: 768px) {

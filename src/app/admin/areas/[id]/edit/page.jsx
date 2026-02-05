@@ -723,7 +723,7 @@ export default function EditAreaPage() {
                     {/* Sticky Actions */}
                     <div className="form-actions-sticky">
                         <div className="location-hint" style={{ fontSize: '0.85rem', color: 'var(--admin-gray-600)' }}>
-                            Dynamic: <strong>{"{{location}}"}</strong> = {formData.name || '...'}
+                            Dynamic: <strong>{"{{location}}"}</strong> = {formData.name || '...'} • <strong>{"{{majorRoads}}"}</strong> = {formData.major_roads || '...'}
                         </div>
                         <div style={{ display: 'flex', gap: '10px' }}>
                             <Link href="/admin/areas" className="btn btn-secondary">
