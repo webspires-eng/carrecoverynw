@@ -6,13 +6,14 @@ export async function getSettings() {
         phone: '07360544819',
         whatsapp: '447360544819',
         email: 'info@carrecoveryuk.co.uk',
-        address: 'West Midlands, UK'
+        address: 'West Midlands, UK',
+        favicon: '/truckicon.png'
     };
 
     try {
         const { db } = await connectToDatabase();
         const settingsCollection = db.collection('settings');
-        
+
         const docs = await settingsCollection.find({}).toArray();
         const settings = { ...defaultSettings };
 

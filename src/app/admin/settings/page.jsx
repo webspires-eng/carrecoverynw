@@ -10,7 +10,8 @@ export default function SettingsPage() {
         phone: '',
         whatsapp: '',
         email: '',
-        address: ''
+        address: '',
+        favicon: ''
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -155,9 +156,32 @@ export default function SettingsPage() {
                                 <textarea
                                     value={settings.address}
                                     onChange={(e) => setSettings({ ...settings, address: e.target.value })}
-                                    placeholder="Your business address"
-                                    rows={3}
                                 />
+                            </div>
+
+                            <div className="form-group">
+                                <label>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                    Favicon URL / Path
+                                </label>
+                                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                                    <input
+                                        type="text"
+                                        value={settings.favicon}
+                                        onChange={(e) => setSettings({ ...settings, favicon: e.target.value })}
+                                        placeholder="/favicon.png or https://example.com/icon.png"
+                                    />
+                                    {settings.favicon && (
+                                        <div style={{ padding: '5px', background: '#eee', borderRadius: '4px' }}>
+                                            <img src={settings.favicon} alt="Favicon Preview" style={{ width: '24px', height: '24px', objectFit: 'contain' }} />
+                                        </div>
+                                    )}
+                                </div>
+                                <span className="input-hint">Path to your favicon (default is /truckicon.png)</span>
                             </div>
                         </div>
 
