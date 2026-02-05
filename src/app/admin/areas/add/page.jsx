@@ -446,6 +446,11 @@ export default function AddAreaPage() {
                                         onChange={(e) => {
                                             if (e.target.value) {
                                                 const selected = DEFAULT_SERVICES_LIST[e.target.value];
+                                                if (formData.custom_services.some(s => s.title === selected.title)) {
+                                                    alert('This service has already been added.');
+                                                    e.target.value = "";
+                                                    return;
+                                                }
                                                 setFormData({
                                                     ...formData,
                                                     custom_services: [...formData.custom_services, { ...selected }]
@@ -557,6 +562,11 @@ export default function AddAreaPage() {
                                         onChange={(e) => {
                                             if (e.target.value) {
                                                 const selected = DEFAULT_RECOVERIES_LIST[e.target.value];
+                                                if (formData.custom_recoveries.some(r => r.type === selected.type)) {
+                                                    alert('This recovery type has already been added.');
+                                                    e.target.value = "";
+                                                    return;
+                                                }
                                                 setFormData({
                                                     ...formData,
                                                     custom_recoveries: [...formData.custom_recoveries, { ...selected }]
