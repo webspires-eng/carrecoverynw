@@ -38,7 +38,6 @@ export default function EditAreaPage() {
         name: '',
         slug: '',
         h1_title: '',
-        intro_text: '',
         meta_title: '',
         meta_description: '',
         major_roads: '',
@@ -81,7 +80,6 @@ export default function EditAreaPage() {
                     name: area.name || '',
                     slug: area.slug || '',
                     h1_title: area.h1_title || '',
-                    intro_text: area.intro_text || '',
                     meta_title: area.meta_title || '',
                     meta_description: area.meta_description || '',
                     major_roads: (() => {
@@ -662,24 +660,7 @@ export default function EditAreaPage() {
                             <div className="cms-tab-content">
                                 {activeTab === 'content' && (
                                     <>
-                                        <div className="cms-panel">
-                                            <div className="cms-panel-header">
-                                                <div className="cms-panel-title">
-                                                    <span className="cms-panel-icon">📝</span>
-                                                    <span>Intro Text</span>
-                                                </div>
-                                            </div>
-                                            <div className="cms-panel-body">
-                                                <div className="form-group">
-                                                    <textarea
-                                                        value={formData.intro_text}
-                                                        onChange={(e) => setFormData({ ...formData, intro_text: e.target.value })}
-                                                        placeholder="Introduction paragraph for the area page (optional)"
-                                                        rows={4}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+
 
                                         <div className="cms-panel">
                                             <div className="cms-panel-header">

@@ -36,7 +36,6 @@ export default function AddAreaPage() {
         name: '',
         slug: '',
         h1_title: '',
-        intro_text: '',
         meta_title: '',
         meta_description: '',
         major_roads: '',
@@ -139,7 +138,6 @@ export default function AddAreaPage() {
                 name: '',
                 slug: '',
                 h1_title: '',
-                intro_text: '',
                 meta_title: '',
                 meta_description: '',
                 major_roads: '',
@@ -629,24 +627,7 @@ export default function AddAreaPage() {
                             <div className="cms-tab-content">
                                 {activeTab === 'content' && (
                                     <>
-                                        <div className="cms-panel">
-                                            <div className="cms-panel-header">
-                                                <div className="cms-panel-title">
-                                                    <span className="cms-panel-icon">📝</span>
-                                                    <span>Intro Text</span>
-                                                </div>
-                                            </div>
-                                            <div className="cms-panel-body">
-                                                <div className="form-group">
-                                                    <textarea
-                                                        value={formData.intro_text}
-                                                        onChange={(e) => setFormData({ ...formData, intro_text: e.target.value })}
-                                                        placeholder="Introduction paragraph for the area page (optional)"
-                                                        rows={4}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+
 
                                         <div className="cms-panel">
                                             <div className="cms-panel-header">
