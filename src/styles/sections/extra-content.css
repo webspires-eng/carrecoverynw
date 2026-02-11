@@ -18,7 +18,7 @@
 }
 
 .extra-content-section .container {
-    max-width: 900px;
+    max-width: 1400px;
     width: 100%;
     margin: 0 auto;
     padding: 0 20px;
@@ -30,10 +30,11 @@
     color: #3a3a3a;
     font-size: 1.125rem;
     word-break: normal;
-    overflow-wrap: normal;
-    word-wrap: normal;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
     hyphens: none;
     font-family: 'Rubik', sans-serif;
+    width: 100%;
 }
 
 .rich-text-content * {
