@@ -6,12 +6,12 @@ import "../styles/sections/faq.css";
 
 const defaultFaqs = [
     {
-        q: "How fast can you reach me in West Midlands?",
+        q: "How fast can you reach me in {{location}}?",
         a: "We typically arrive within 15 to 30 minutes depending on your location. Our local dispatch system ensures the nearest driver is sent to you immediately."
     },
     {
-        q: "Do you cover motorway recovery (M6/M5/M42)?",
-        a: "Yes, we specialize in emergency motorway recovery on the M6, M5, M42 and major A-roads. We prioritize motorway call-outs due to safety risks."
+        q: "Do you cover motorway recovery ({{majorRoads}})?",
+        a: "Yes, we specialize in emergency motorway recovery on the {{majorRoads}} and major A-roads. We prioritize motorway call-outs due to safety risks."
     },
     {
         q: "How do I share my location on WhatsApp?",
@@ -42,8 +42,8 @@ const defaultFaqs = [
         a: "Yes, we keep you updated throughout. You can track our progress via WhatsApp, and we'll call you once the driver is nearly there."
     },
     {
-        q: "What areas outside West Midlands do you cover?",
-        a: "While we focus on West Midlands (Birmingham, Coventry, etc.), we provide long-distance recovery across the UK if pre-arranged."
+        q: "What areas outside {{location}} do you cover?",
+        a: "While we focus on {{location}}, we provide long-distance recovery across the UK if pre-arranged."
     },
     {
         q: "What information do you need when I call?",
@@ -54,7 +54,7 @@ const defaultFaqs = [
         a: "Yes, we are open 24 hours a day, 365 days a year, including Christmas Day, New Year, and all Bank Holidays."
     },
     {
-        q: "How much does car recovery cost?",
+        q: "How much does car recovery cost in {{location}}?",
         a: "Costs depend on distance and complexity. We provide a firm quote before we dispatch, so you know exactly what you'll pay."
     }
 ];
@@ -66,12 +66,12 @@ export default function FAQSection({ customFaqs = [], location, majorRoads = [] 
         ? majorRoads.slice(0, 3).join('/')
         : "M6/M5/M42";
 
-    const normalizedCustom = customFaqs.map(f => ({
-        q: f.question?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr),
-        a: f.answer?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr)
-    }));
+    const usedFaqs = (customFaqs && customFaqs.length > 0) ? customFaqs : defaultFaqs;
 
-    const displayFaqs = normalizedCustom.length > 0 ? normalizedCustom : defaultFaqs;
+    const displayFaqs = usedFaqs.map(f => ({
+        q: (f.question || f.q)?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr),
+        a: (f.answer || f.a)?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr)
+    }));
 
     const toggleFAQ = (index) => {
         setActiveIndex(activeIndex === index ? null : index);

@@ -1,7 +1,6 @@
 "use client";
 
 import { Battery, Car, Route, Lock, TriangleAlert, Truck, CheckCircle2, MapPin } from "lucide-react";
-import HighlightedText from "@/components/HighlightedText";
 import "../styles/sections/real-recoveries.css";
 
 const defaultRecoveriesList = [
@@ -64,57 +63,43 @@ const iconMap = {
     Truck
 };
 
-export default function RealRecoveriesSection({ location = "West Midlands", majorRoads = [], recoveries: dynamicRecoveries = [] }) {
-    const recoveriesToDisplay = dynamicRecoveries.length > 0 ? dynamicRecoveries : defaultRecoveriesList;
-
-    const majorRoadsStr = (majorRoads && majorRoads.length > 0)
-        ? majorRoads.slice(0, 3).join('/')
-        : "M6/M5/M42";
+export default function HomeRealRecoveriesSection() {
+    // Static recoveries list, no dynamic props needed for home page version
+    const recoveriesToDisplay = defaultRecoveriesList;
+    const location = "United Kingdom";
 
     return (
         <section className="real-recoveries">
             <div className="recoveries-header">
                 <span className="recoveries-badge">Real Results</span>
                 <h2>Real Recoveries We Handle Every Week</h2>
-                <p className="recoveries-subtitle">See the types of situations we resolve — professionally and promptly in <span className="location-name">{location}</span></p>
+                <p className="recoveries-subtitle">See the types of situations we resolve — professionally and promptly across the {location}</p>
             </div>
 
             <div className="recoveries-grid">
                 {recoveriesToDisplay.map((item, index) => {
-                    const colorTheme = item.color_theme || "blue";
-                    const iconName = item.icon_name || "Truck";
-                    const type = item.type || "Recovery";
-                    const statusText = item.status_text || "Verified";
-
-                    const IconComponent = iconMap[iconName] || Truck;
-                    // Replace placeholders in text
-                    const displayLocation = (item.location_text || '')
-                        .replaceAll('{{location}}', location)
-                        .replaceAll('{{majorRoads}}', majorRoadsStr);
-                    const displayDescription = (item.description || '')
-                        .replaceAll('{{location}}', location)
-                        .replaceAll('{{majorRoads}}', majorRoadsStr);
+                    const IconComponent = iconMap[item.icon_name] || Truck;
 
                     return (
-                        <div key={index} className={`recovery-card recovery-${colorTheme}`}>
+                        <div key={index} className={`recovery-card recovery-${item.color_theme}`}>
                             <div className="recovery-icon-wrapper">
-                                <div className={`recovery-icon icon-${colorTheme}`}>
+                                <div className={`recovery-icon icon-${item.color_theme}`}>
                                     <IconComponent size={24} />
                                 </div>
                             </div>
                             <div className="recovery-content">
                                 <div className="recovery-header">
-                                    <span className={`recovery-tag tag-${colorTheme}`}>{type}</span>
+                                    <span className={`recovery-tag tag-${item.color_theme}`}>{item.type}</span>
                                     <h3>
                                         <MapPin size={16} className="location-icon" />
-                                        <HighlightedText text={displayLocation} location={location} />
+                                        {item.location_text}
                                     </h3>
                                 </div>
-                                <p><HighlightedText text={displayDescription} location={location} /></p>
+                                <p>{item.description}</p>
                                 <div className="recovery-meta">
                                     <span className="status">
                                         <CheckCircle2 size={14} />
-                                        {statusText}
+                                        {item.status_text}
                                     </span>
                                     <span className="verified">
                                         <CheckCircle2 size={14} />

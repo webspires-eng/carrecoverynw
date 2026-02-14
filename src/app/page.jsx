@@ -1,76 +1,76 @@
-import HeroSection from "@/components/HeroSection";
-import ImmediateHelpSection from "@/components/ImmediateHelpSection";
-import StepsSection from "@/components/StepsSection";
-import ServicesSection from "@/components/ServicesSection";
-import CoverageSection from "@/components/CoverageSection";
-import MapSection from "@/components/MapSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import WhyChooseUsSection from "@/components/WhyChooseUsSection";
-import ServiceBoundaries from "@/components/ServiceBoundaries";
-import PricingSection from "@/components/PricingSection";
-import RealRecoveriesSection from "@/components/RealRecoveriesSection";
-import DamageFreeSection from "@/components/DamageFreeSection";
-import SafetySection from "@/components/SafetySection";
-import FAQSection from "@/components/FAQSection";
-import FinalCTASection from "@/components/FinalCTASection";
+import HomeHeroSection from "@/components/HomeHeroSection";
+import HomeImmediateHelpSection from "@/components/HomeImmediateHelpSection";
+import HomeStepsSection from "@/components/HomeStepsSection";
+import HomeServicesSection from "@/components/HomeServicesSection";
+import HomeCoverageSection from "@/components/HomeCoverageSection";
+import HomeMapSection from "@/components/HomeMapSection";
+import HomeTestimonialsSection from "@/components/HomeTestimonialsSection";
+import HomeWhyChooseUsSection from "@/components/HomeWhyChooseUsSection";
+import HomeServiceBoundaries from "@/components/HomeServiceBoundaries";
+import HomePricingSection from "@/components/HomePricingSection";
+import HomeRealRecoveriesSection from "@/components/HomeRealRecoveriesSection";
+import HomeDamageFreeSection from "@/components/HomeDamageFreeSection";
+import HomeSafetySection from "@/components/HomeSafetySection";
+import HomeFAQSection from "@/components/HomeFAQSection";
+import HomeFinalCTASection from "@/components/HomeFinalCTASection";
 import Footer from "@/components/Footer";
 
 import { getServices } from "@/lib/services";
-
-import { getRecoveries } from "@/lib/recoveries";
+// Recoveries data not needed anymore for HomeRealRecoveriesSection (it's static)
+// but keeping import if future changes need it or for consistency
 
 export default async function Home({ searchParams }) {
   const params = await searchParams;
-  const location = params.loc || "West Midlands";
+  const location = params.loc || "United Kingdom";
   const services = await getServices();
-  const recoveries = await getRecoveries();
+  // const recoveries = await getRecoveries(); // Not needed for static component
 
   return (
     <main>
       {/* 1. HERO + CTAs + Trust strip */}
-      <HeroSection location={location} />
+      <HomeHeroSection location={location} />
 
       {/* 2. Broken Down Now? - Emergency micro-section */}
-      <ImmediateHelpSection />
+      <HomeImmediateHelpSection />
 
       {/* 3. Get Your Car Recovered in 3 Easy Steps */}
-      <StepsSection />
+      <HomeStepsSection />
 
       {/* 4. Services - What we do */}
-      <ServicesSection location={location} services={services} />
+      <HomeServicesSection location={location} services={services} />
 
       {/* 5. Areas We Cover */}
-      <CoverageSection />
+      <HomeCoverageSection />
 
       {/* 6. Map + NAP */}
-      <MapSection />
+      <HomeMapSection />
 
       {/* 7. Reviews + Testimonials (unified) */}
-      <TestimonialsSection />
+      <HomeTestimonialsSection />
 
       {/* 8. Why Choose Us */}
-      <WhyChooseUsSection />
+      <HomeWhyChooseUsSection />
 
       {/* 9. Before We Dispatch - Service Boundaries */}
-      <ServiceBoundaries />
+      <HomeServiceBoundaries />
 
       {/* 10. Transparent Pricing */}
-      <PricingSection />
+      <HomePricingSection />
 
       {/* 11. Real Recoveries */}
-      <RealRecoveriesSection location={location} recoveries={recoveries} />
+      <HomeRealRecoveriesSection />
 
       {/* 12. Damage-Free Recovery */}
-      <DamageFreeSection />
+      <HomeDamageFreeSection />
 
       {/* 13. Safety Guide */}
-      <SafetySection />
+      <HomeSafetySection />
 
       {/* 14. FAQs */}
-      <FAQSection />
+      <HomeFAQSection />
 
       {/* 15. Final CTA */}
-      <FinalCTASection />
+      <HomeFinalCTASection />
 
       <Footer />
     </main>
