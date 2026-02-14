@@ -166,7 +166,7 @@ export default async function AreaPage({ params }) {
             <SafetySection />
 
             {/* 14. FAQs */}
-            <FAQSection customFaqs={customFaqs} />
+            <FAQSection customFaqs={customFaqs} location={location} majorRoads={majorRoads} />
 
             {/* 15. Final CTA */}
             <FinalCTASection location={location} />

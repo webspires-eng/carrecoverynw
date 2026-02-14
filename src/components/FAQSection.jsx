@@ -59,10 +59,18 @@ const defaultFaqs = [
     }
 ];
 
-export default function FAQSection({ customFaqs = [] }) {
+export default function FAQSection({ customFaqs = [], location, majorRoads = [] }) {
     const [activeIndex, setActiveIndex] = useState(null);
 
-    const normalizedCustom = customFaqs.map(f => ({ q: f.question, a: f.answer }));
+    const majorRoadsStr = (majorRoads && majorRoads.length > 0)
+        ? majorRoads.slice(0, 3).join('/')
+        : "M6/M5/M42";
+
+    const normalizedCustom = customFaqs.map(f => ({
+        q: f.question?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr),
+        a: f.answer?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr)
+    }));
+
     const displayFaqs = normalizedCustom.length > 0 ? normalizedCustom : defaultFaqs;
 
     const toggleFAQ = (index) => {
