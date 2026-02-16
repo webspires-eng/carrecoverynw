@@ -226,24 +226,7 @@ export default function AdminDashboard() {
                                     </span>
                                 </div>
                                 <div className="area-card-meta">
-                                    {area.county && (
-                                        <div className="area-card-meta-item">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                                <circle cx="12" cy="10" r="3"></circle>
-                                            </svg>
-                                            {area.county}
-                                        </div>
-                                    )}
-                                    {area.postcode_prefix && (
-                                        <div className="area-card-meta-item">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                                                <path d="M22 7l-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                                            </svg>
-                                            {area.postcode_prefix}
-                                        </div>
-                                    )}
+
                                     {area.region && (
                                         <div className="area-card-meta-item">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -292,8 +275,7 @@ export default function AdminDashboard() {
                             <tr>
                                 <th>Name</th>
                                 <th>Slug</th>
-                                <th>County</th>
-                                <th>Postcode</th>
+
                                 <th>Status</th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
                             </tr>
@@ -307,8 +289,7 @@ export default function AdminDashboard() {
                                             /area/{area.slug}
                                         </a>
                                     </td>
-                                    <td>{area.county || '—'}</td>
-                                    <td>{area.postcode_prefix || '—'}</td>
+
                                     <td>
                                         <span className={`area-card-status ${area.is_active !== false ? 'active' : 'inactive'}`}>
                                             {area.is_active !== false ? 'Active' : 'Inactive'}
