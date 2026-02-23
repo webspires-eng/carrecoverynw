@@ -226,12 +226,7 @@ export default function AdminDashboard() {
                                     </span>
                                 </div>
                                 <div className="area-card-meta">
-                                    {area.created_at && (
-                                        <span className="meta-item">Added: {new Date(area.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                                    )}
-                                    {area.updated_at && (
-                                        <span className="meta-item">Modified: {new Date(area.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                                    )}
+
                                 </div>
                                 <div className="area-card-actions">
                                     <a
