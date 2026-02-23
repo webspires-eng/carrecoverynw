@@ -7,11 +7,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function FloatingActions() {
-    const { phone } = useSettings();
+    const { phone, whatsapp } = useSettings();
     const [isVisible, setIsVisible] = useState(false);
 
     const cleanPhone = phone ? phone.replace(/\s+/g, '') : "07360544819";
-    const whatsappLink = `https://wa.me/${cleanPhone.startsWith('0') ? '44' + cleanPhone.substring(1) : cleanPhone}`;
+    const whatsappNumber = whatsapp || (cleanPhone.startsWith('0') ? '44' + cleanPhone.substring(1) : cleanPhone);
+    const whatsappLink = `https://wa.me/${whatsappNumber}`;
     const callLink = `tel:${cleanPhone}`;
 
     useEffect(() => {
