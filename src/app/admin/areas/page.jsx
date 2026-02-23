@@ -226,8 +226,12 @@ export default function AdminDashboard() {
                                     </span>
                                 </div>
                                 <div className="area-card-meta">
-
-
+                                    {area.created_at && (
+                                        <span className="meta-item">Added: {new Date(area.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                    )}
+                                    {area.updated_at && (
+                                        <span className="meta-item">Modified: {new Date(area.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                    )}
                                 </div>
                                 <div className="area-card-actions">
                                     <a
@@ -268,6 +272,8 @@ export default function AdminDashboard() {
                                 <th>Slug</th>
 
                                 <th>Status</th>
+                                <th>Date Added</th>
+                                <th>Date Modified</th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>
@@ -285,6 +291,12 @@ export default function AdminDashboard() {
                                         <span className={`area-card-status ${area.is_active !== false ? 'active' : 'inactive'}`}>
                                             {area.is_active !== false ? 'Active' : 'Inactive'}
                                         </span>
+                                    </td>
+                                    <td style={{ fontSize: '0.85rem', color: '#666' }}>
+                                        {area.created_at ? new Date(area.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                                    </td>
+                                    <td style={{ fontSize: '0.85rem', color: '#666' }}>
+                                        {area.updated_at ? new Date(area.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
                                     </td>
                                     <td>
                                         <div className="table-actions">
