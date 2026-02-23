@@ -14,6 +14,8 @@ export default function AdminDashboard() {
     const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
     const [hasDraft, setHasDraft] = useState(false);
     const [draftName, setDraftName] = useState('');
+    const [sortBy, setSortBy] = useState('created_at');
+    const [sortOrder, setSortOrder] = useState('desc');
     const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
 
     // Check for saved draft
@@ -43,7 +45,7 @@ export default function AdminDashboard() {
     const fetchAreas = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/areas?page=${page}&limit=25&search=${search}`);
+            const res = await fetch(`/api/areas?page=${page}&limit=25&search=${search}&sort_by=${sortBy}&sort_order=${sortOrder}`);
             const data = await res.json();
             if (data.success) {
                 setAreas(data.data);
@@ -57,7 +59,22 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         fetchAreas();
-    }, [page, search]);
+    }, [page, search, sortBy, sortOrder]);
+
+    const handleSort = (field) => {
+        if (sortBy === field) {
+            setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
+        } else {
+            setSortBy(field);
+            setSortOrder('desc');
+        }
+        setPage(1);
+    };
+
+    const SortIcon = ({ field }) => {
+        if (sortBy !== field) return <span style={{ opacity: 0.3, marginLeft: 4 }}>↕</span>;
+        return <span style={{ marginLeft: 4 }}>{sortOrder === 'asc' ? '↑' : '↓'}</span>;
+    };
 
     const handleDelete = async (id) => {
         if (!confirm('Are you sure you want to delete this area?')) return;
@@ -265,10 +282,9 @@ export default function AdminDashboard() {
                             <tr>
                                 <th>Name</th>
                                 <th>Slug</th>
-
                                 <th>Status</th>
-                                <th>Date Added</th>
-                                <th>Date Modified</th>
+                                <th onClick={() => handleSort('created_at')} style={{ cursor: 'pointer', userSelect: 'none' }}>Date Added<SortIcon field="created_at" /></th>
+                                <th onClick={() => handleSort('updated_at')} style={{ cursor: 'pointer', userSelect: 'none' }}>Date Modified<SortIcon field="updated_at" /></th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
                             </tr>
                         </thead>

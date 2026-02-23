@@ -8,6 +8,8 @@ export async function GET(request) {
         const page = parseInt(searchParams.get('page')) || 1;
         const limit = parseInt(searchParams.get('limit')) || 50;
         const search = searchParams.get('search') || '';
+        const sortBy = searchParams.get('sort_by') || 'created_at';
+        const sortOrder = searchParams.get('sort_order') === 'asc' ? 1 : -1;
         const offset = (page - 1) * limit;
 
         const { db } = await connectToDatabase();
@@ -18,10 +20,13 @@ export async function GET(request) {
             filter.$or = [{ name: regex }, { slug: regex }, { county: regex }];
         }
 
+        const allowedSortFields = ['name', 'created_at', 'updated_at'];
+        const sortField = allowedSortFields.includes(sortBy) ? sortBy : 'created_at';
+
         const [rows, total] = await Promise.all([
             db.collection('areas')
                 .find(filter)
-                .sort({ name: 1 })
+                .sort({ [sortField]: sortOrder })
                 .skip(offset)
                 .limit(limit)
                 .toArray(),
