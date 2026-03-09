@@ -14,19 +14,21 @@ import HomeSafetySection from "@/components/HomeSafetySection";
 import HomeFAQSection from "@/components/HomeFAQSection";
 import HomeFinalCTASection from "@/components/HomeFinalCTASection";
 import Footer from "@/components/Footer";
+import PageSchemaMarkup from "@/components/PageSchemaMarkup";
 
 import { getServices } from "@/lib/services";
-// Recoveries data not needed anymore for HomeRealRecoveriesSection (it's static)
-// but keeping import if future changes need it or for consistency
+import { getSettings } from "@/lib/settings";
 
 export default async function Home({ searchParams }) {
   const params = await searchParams;
   const location = params.loc || "United Kingdom";
   const services = await getServices();
-  // const recoveries = await getRecoveries(); // Not needed for static component
+  const settings = await getSettings();
 
   return (
     <main>
+      <PageSchemaMarkup pageType="home" settings={settings} />
+
       {/* 1. HERO + CTAs + Trust strip */}
       <HomeHeroSection location={location} />
 

@@ -1,6 +1,7 @@
 import { connectToDatabase } from '@/lib/db';
 import { getServices } from "@/lib/services";
 import { getRecoveries } from "@/lib/recoveries";
+import { getSettings } from "@/lib/settings";
 import { notFound } from 'next/navigation';
 import HeroSection from "@/components/HeroSection";
 import ImmediateHelpSection from "@/components/ImmediateHelpSection";
@@ -8,6 +9,7 @@ import StepsSection from "@/components/StepsSection";
 import ServicesSection from "@/components/ServicesSection";
 import CoverageSection from "@/components/CoverageSection";
 import MapSection from "@/components/MapSection";
+import AreaSchemaMarkup from "@/components/AreaSchemaMarkup";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import WhyChooseUsSection from "@/components/WhyChooseUsSection";
 import ServiceBoundaries from "@/components/ServiceBoundaries";
@@ -100,6 +102,7 @@ export default async function AreaPage({ params }) {
     const area = await getAreaBySlug(slug);
     const services = await getServices();
     const recoveries = await getRecoveries();
+    const settings = await getSettings();
 
     if (!area) {
         notFound();
@@ -110,6 +113,17 @@ export default async function AreaPage({ params }) {
     const majorRoads = area.major_roads ? (typeof area.major_roads === 'string' ? JSON.parse(area.major_roads) : area.major_roads) : [];
     const nearbyAreas = area.nearby_areas ? (typeof area.nearby_areas === 'string' ? JSON.parse(area.nearby_areas) : area.nearby_areas) : [];
     const customFaqs = area.custom_faqs ? (typeof area.custom_faqs === 'string' ? JSON.parse(area.custom_faqs) : area.custom_faqs) : [];
+
+    // Build the FAQ list for schema (use custom or default)
+    const defaultFaqs = [
+        { q: `How fast can you reach me in ${area.name}?`, a: "We typically arrive within 15 to 30 minutes depending on your location. Our local dispatch system ensures the nearest driver is sent to you immediately." },
+        { q: "Can you recover low cars or sports cars damage-free?", a: "Yes, we use specialized flatbed recovery trucks and ramps designed for low-clearance vehicles to ensure 100% damage-free loading." },
+        { q: "Can you tow my car to any garage or home address?", a: "Yes, we can recover your vehicle to any destination of your choice, whether it's your home address, a preferred local garage, or a dealership." },
+        { q: "What payment methods do you accept?", a: "We accept all major credit/debit cards, bank transfers, and cash. You will receive a full receipt for your insurance or records." },
+        { q: "Are you available 24/7 including bank holidays?", a: "Yes, we are open 24 hours a day, 365 days a year, including Christmas Day, New Year, and all Bank Holidays." },
+        { q: `How much does car recovery cost in ${area.name}?`, a: "Costs depend on distance and complexity. We provide a firm quote before we dispatch, so you know exactly what you'll pay." },
+    ];
+    const schemaFaqs = (customFaqs && customFaqs.length > 0) ? customFaqs : defaultFaqs;
 
     // Prioritize area-specific services if they exist
     const displayServices = area.custom_services
@@ -123,6 +137,9 @@ export default async function AreaPage({ params }) {
 
     return (
         <main>
+            {/* Schema Markup — all structured data for this area page */}
+            <AreaSchemaMarkup area={area} faqs={schemaFaqs} settings={settings} />
+
             {/* 1. HERO + CTAs + Trust strip */}
             <HeroSection location={location} />
 

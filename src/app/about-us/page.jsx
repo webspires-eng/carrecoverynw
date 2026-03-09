@@ -1,14 +1,19 @@
 import BasicPage from '@/components/BasicPage';
+import PageSchemaMarkup from '@/components/PageSchemaMarkup';
+import { getSettings } from '@/lib/settings';
 
 export const metadata = {
     title: 'About Us | Car Recovery UK',
     description: 'Learn more about the UK\'s most reliable 24/7 vehicle recovery and breakdown service.',
 };
 
-export default function AboutUs() {
+export default async function AboutUs() {
+    const settings = await getSettings();
+
     return (
         <BasicPage
             title="About Us"
+            schemaMarkup={<PageSchemaMarkup pageType="about" settings={settings} />}
             content={
                 <>
                     <p>Welcome to Car Recovery UK, your premier choice for professional vehicle recovery and breakdown assistance. With years of experience serving the West Midlands and beyond, we have established ourselves as a leader in the industry.</p>
@@ -26,3 +31,4 @@ export default function AboutUs() {
         />
     );
 }
+

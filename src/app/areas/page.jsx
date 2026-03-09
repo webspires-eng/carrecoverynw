@@ -1,5 +1,7 @@
 import { connectToDatabase } from '@/lib/db';
+import { getSettings } from '@/lib/settings';
 import Link from 'next/link';
+import PageSchemaMarkup from '@/components/PageSchemaMarkup';
 import '../../styles/sections/areas-archive.css';
 
 // Fetch all areas
@@ -33,6 +35,7 @@ export default async function AreasArchive({ searchParams }) {
     const params = await searchParams;
     const search = params.q || '';
     const areas = await getAreas(search);
+    const settings = await getSettings();
 
     // Group areas by first letter
     const groupedAreas = areas.reduce((acc, area) => {
@@ -46,6 +49,7 @@ export default async function AreasArchive({ searchParams }) {
 
     return (
         <main className="areas-archive">
+            <PageSchemaMarkup pageType="areas" settings={settings} />
             <div className="areas-hero">
                 <h1>Areas We Cover</h1>
                 <p>24/7 Car Recovery Services Across the West Midlands & Beyond</p>

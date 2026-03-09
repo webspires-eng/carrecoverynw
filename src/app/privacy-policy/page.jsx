@@ -1,13 +1,18 @@
 import BasicPage from '@/components/BasicPage';
+import PageSchemaMarkup from '@/components/PageSchemaMarkup';
+import { getSettings } from '@/lib/settings';
 
 export const metadata = {
     title: 'Privacy Policy | Car Recovery UK',
 };
 
-export default function PrivacyPolicy() {
+export default async function PrivacyPolicy() {
+    const settings = await getSettings();
+
     return (
         <BasicPage
             title="Privacy Policy"
+            schemaMarkup={<PageSchemaMarkup pageType="privacy" settings={settings} />}
             content={
                 <>
                     <p>Last updated: February 2026</p>

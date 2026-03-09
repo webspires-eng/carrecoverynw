@@ -1,13 +1,18 @@
 import BasicPage from '@/components/BasicPage';
+import PageSchemaMarkup from '@/components/PageSchemaMarkup';
+import { getSettings } from '@/lib/settings';
 
 export const metadata = {
     title: 'Terms of Service | Car Recovery UK',
 };
 
-export default function TermsOfService() {
+export default async function TermsOfService() {
+    const settings = await getSettings();
+
     return (
         <BasicPage
             title="Terms of Service"
+            schemaMarkup={<PageSchemaMarkup pageType="terms" settings={settings} />}
             content={
                 <>
                     <p>Last updated: February 2026</p>

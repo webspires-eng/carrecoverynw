@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 
-export default function BasicPage({ title, content }) {
+export default function BasicPage({ title, content, schemaMarkup }) {
     return (
         <main>
+            {schemaMarkup}
             <header style={{ padding: '20px', background: 'white', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Link href="/" style={{ fontSize: '1.2rem', fontWeight: '800', textDecoration: 'none', color: '#121212' }}>
                     CAR <span style={{ color: '#ed4705' }}>RECOVERY</span>
