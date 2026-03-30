@@ -17,6 +17,7 @@ export default function AdminDashboard() {
     const [sortBy, setSortBy] = useState('created_at');
     const [sortOrder, setSortOrder] = useState('desc');
     const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+    const [indexingStatus, setIndexingStatus] = useState({}); // { [areaId]: 'loading' | 'success' | 'error' }
 
     // Check for saved draft
     useEffect(() => {
@@ -87,6 +88,27 @@ export default function AdminDashboard() {
         } catch (error) {
             alert('Error deleting area');
         }
+    };
+
+    const handleIndex = async (area) => {
+        const siteUrl = window.location.origin;
+        const url = `${siteUrl}/area/${area.slug}`;
+        setIndexingStatus(prev => ({ ...prev, [area.id]: 'loading' }));
+        try {
+            const res = await fetch('/api/indexing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url, type: 'URL_UPDATED' }),
+            });
+            const data = await res.json();
+            setIndexingStatus(prev => ({ ...prev, [area.id]: data.success ? 'success' : 'error' }));
+        } catch {
+            setIndexingStatus(prev => ({ ...prev, [area.id]: 'error' }));
+        }
+        // Reset status after 3 seconds
+        setTimeout(() => {
+            setIndexingStatus(prev => ({ ...prev, [area.id]: null }));
+        }, 3000);
     };
 
     const handleLogout = async () => {
@@ -272,6 +294,14 @@ export default function AdminDashboard() {
                                         </svg>
                                         Edit
                                     </Link>
+                                    <button
+                                        onClick={() => handleIndex(area)}
+                                        className="btn-index"
+                                        disabled={indexingStatus[area.id] === 'loading'}
+                                        title="Submit to Google Indexing"
+                                    >
+                                        {indexingStatus[area.id] === 'loading' ? '⏳' : indexingStatus[area.id] === 'success' ? '✅' : indexingStatus[area.id] === 'error' ? '❌' : 'G'}
+                                    </button>
                                     <button onClick={() => handleDelete(area.id)} className="btn-delete">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                             <polyline points="3 6 5 6 21 6"></polyline>
@@ -321,6 +351,14 @@ export default function AdminDashboard() {
                                             <Link href={`/admin/areas/${area.id}/edit`} className="btn-edit">
                                                 Edit
                                             </Link>
+                                            <button
+                                                onClick={() => handleIndex(area)}
+                                                className="btn-index"
+                                                disabled={indexingStatus[area.id] === 'loading'}
+                                                title="Submit to Google Indexing"
+                                            >
+                                                {indexingStatus[area.id] === 'loading' ? '⏳' : indexingStatus[area.id] === 'success' ? '✅' : indexingStatus[area.id] === 'error' ? '❌' : 'G'}
+                                            </button>
                                             <button onClick={() => handleDelete(area.id)} className="btn-delete">
                                                 Delete
                                             </button>
