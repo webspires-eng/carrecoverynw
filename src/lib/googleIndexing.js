@@ -6,12 +6,26 @@ const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const SCOPE = 'https://www.googleapis.com/auth/indexing';
 
 /**
- * Load the service account key from the path specified by GOOGLE_INDEXING_KEY_PATH env var.
+ * Load the service account key.
+ * Supports two modes:
+ *   1. GOOGLE_INDEXING_KEY_JSON — inline JSON string (for Vercel / serverless)
+ *   2. GOOGLE_INDEXING_KEY_PATH — file path (for local dev)
  */
 function loadServiceAccountKey() {
+    // Priority 1: inline JSON (works on Vercel)
+    const keyJson = process.env.GOOGLE_INDEXING_KEY_JSON;
+    if (keyJson) {
+        try {
+            return JSON.parse(keyJson);
+        } catch (err) {
+            throw new Error(`Failed to parse GOOGLE_INDEXING_KEY_JSON: ${err.message}`);
+        }
+    }
+
+    // Priority 2: file path (works locally)
     const keyPath = process.env.GOOGLE_INDEXING_KEY_PATH;
     if (!keyPath) {
-        throw new Error('GOOGLE_INDEXING_KEY_PATH environment variable is not set');
+        throw new Error('Neither GOOGLE_INDEXING_KEY_JSON nor GOOGLE_INDEXING_KEY_PATH environment variable is set');
     }
     try {
         const raw = readFileSync(keyPath, 'utf-8');
