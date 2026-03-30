@@ -78,18 +78,25 @@ async function submitUrl(token, url, type) {
 }
 
 async function getAllAreaUrls() {
-    const { MongoClient } = await import('mongodb');
-    const uri = process.env.MONGODB_URI;
-    if (!uri) {
-        console.error('❌ MONGODB_URI environment variable not set');
-        process.exit(1);
+    // If MONGODB_URI is available, connect directly
+    if (process.env.MONGODB_URI) {
+        const { MongoClient } = await import('mongodb');
+        const client = new MongoClient(process.env.MONGODB_URI);
+        await client.connect();
+        const db = client.db();
+        const areas = await db.collection('areas').find({ is_active: true }, { projection: { slug: 1 } }).toArray();
+        await client.close();
+        return areas.map(a => `${SITE_URL}/areas/${a.slug}`);
     }
-    const client = new MongoClient(uri);
-    await client.connect();
-    const db = client.db();
-    const areas = await db.collection('areas').find({ is_active: true }, { projection: { slug: 1 } }).toArray();
-    await client.close();
-    return areas.map(a => `${SITE_URL}/areas/${a.slug}`);
+
+    // Otherwise, try fetching via the API
+    console.log('⚠️ MONGODB_URI not found. Fetching from API instead...');
+    const apiUrl = process.env.API_URL || `${SITE_URL}/api/areas?limit=1000`;
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error(`API fetch failed: ${res.status}`);
+    const data = await res.json();
+    if (!data.success || !data.data) throw new Error('Invalid API response format');
+    return data.data.filter(a => a.is_active !== false).map(a => `${SITE_URL}/areas/${a.slug}`);
 }
 
 async function main() {
