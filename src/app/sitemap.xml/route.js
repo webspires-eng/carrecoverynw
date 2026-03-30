@@ -32,7 +32,7 @@ export async function GET() {
     `).join('')}
     ${areas.map(area => `
     <url>
-        <loc>${baseUrl}/area/${area.slug}</loc>
+        <loc>${baseUrl}/areas/${area.slug}</loc>
         <lastmod>${new Date(area.updated_at || area.created_at || new Date()).toISOString()}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>

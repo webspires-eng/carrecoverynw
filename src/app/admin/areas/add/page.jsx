@@ -590,7 +590,7 @@ export default function AddAreaPage() {
                         />
                         <div className="cms-permalink">
                             <span className="cms-permalink-label">Permalink:</span>
-                            <span className="cms-permalink-base">/area/</span>
+                            <span className="cms-permalink-base">/areas/</span>
                             <input
                                 type="text"
                                 className="cms-permalink-slug"
@@ -709,7 +709,7 @@ export default function AddAreaPage() {
                                                 <div className="cms-seo-preview">
                                                     <div className="cms-seo-preview-label">Search Preview</div>
                                                     <div className="cms-seo-preview-title">{formData.meta_title || 'Page Title'}</div>
-                                                    <div className="cms-seo-preview-url">yoursite.com/area/{formData.slug || '...'}</div>
+                                                    <div className="cms-seo-preview-url">yoursite.com/areas/{formData.slug || '...'}</div>
                                                     <div className="cms-seo-preview-desc">{formData.meta_description || 'Page description...'}</div>
                                                 </div>
                                             )}
@@ -739,7 +739,7 @@ export default function AddAreaPage() {
                                         </div>
                                         <div className="cms-publish-row">
                                             <span className="cms-publish-label">URL:</span>
-                                            <span className="cms-publish-value cms-publish-url">/area/{formData.slug || '...'}</span>
+                                            <span className="cms-publish-value cms-publish-url">/areas/{formData.slug || '...'}</span>
                                         </div>
                                     </div>
                                 </div>

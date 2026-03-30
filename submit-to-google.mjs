@@ -13,7 +13,7 @@
  *   MONGODB_URI              - MongoDB connection string (required for --all-areas)
  *
  * Examples:
- *   GOOGLE_INDEXING_KEY_PATH=./service-account.json node submit-to-google.mjs https://cartowingnearme.co.uk/area/birmingham
+ *   GOOGLE_INDEXING_KEY_PATH=./service-account.json node submit-to-google.mjs https://cartowingnearme.co.uk/areas/birmingham
  *   GOOGLE_INDEXING_KEY_PATH=./service-account.json node submit-to-google.mjs --all-areas
  */
 
@@ -89,7 +89,7 @@ async function getAllAreaUrls() {
     const db = client.db();
     const areas = await db.collection('areas').find({ is_active: true }, { projection: { slug: 1 } }).toArray();
     await client.close();
-    return areas.map(a => `${SITE_URL}/area/${a.slug}`);
+    return areas.map(a => `${SITE_URL}/areas/${a.slug}`);
 }
 
 async function main() {

@@ -65,7 +65,7 @@ export async function generateMetadata({ params }) {
     }
 
     const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
-    const url = `${baseUrl}/area/${slug}`;
+    const url = `${baseUrl}/areas/${slug}`;
 
     return {
         title: area.meta_title || `24/7 Car Recovery in ${area.name} | Car Recovery UK`,

@@ -56,7 +56,7 @@ export default async function SitemapPage() {
                             <ul className="sitemap-links">
                                 {grouped[letter].map(area => (
                                     <li key={area.slug}>
-                                        <Link href={`/area/${area.slug}`}>
+                                        <Link href={`/areas/${area.slug}`}>
                                             Car Recovery {area.name}
                                         </Link>
                                     </li>

@@ -41,7 +41,7 @@ export default async function HtmlSitemap() {
                         <ul style={{ listStyle: 'none', padding: 0 }}>
                             {areas.map(area => (
                                 <li key={area.slug} style={{ marginBottom: '10px' }}>
-                                    <Link href={`/area/${area.slug}`}>{area.name}</Link>
+                                    <Link href={`/areas/${area.slug}`}>{area.name}</Link>
                                 </li>
                             ))}
                         </ul>

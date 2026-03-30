@@ -15,7 +15,7 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
     const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
     const location = area.name;
     const slug = area.slug;
-    const pageUrl = `${baseUrl}/area/${slug}`;
+    const pageUrl = `${baseUrl}/areas/${slug}`;
     const phone = settings.phone || '07360544819';
     const displayPhone = phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
     const email = settings.email || 'info@carrecoveryuk.co.uk';

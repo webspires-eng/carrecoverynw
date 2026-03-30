@@ -85,7 +85,7 @@ export default async function AreasArchive({ searchParams }) {
                                 {groupedAreas[letter].map(area => (
                                     <Link
                                         key={area.slug}
-                                        href={`/area/${area.slug}`}
+                                        href={`/areas/${area.slug}`}
                                         className="area-link"
                                     >
                                         <span className="area-name">{area.name}</span>

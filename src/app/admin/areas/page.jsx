@@ -92,7 +92,7 @@ export default function AdminDashboard() {
 
     const handleIndex = async (area) => {
         const siteUrl = window.location.origin;
-        const url = `${siteUrl}/area/${area.slug}`;
+        const url = `${siteUrl}/areas/${area.slug}`;
         setIndexingStatus(prev => ({ ...prev, [area.id]: 'loading' }));
         try {
             const res = await fetch('/api/indexing', {
@@ -276,7 +276,7 @@ export default function AdminDashboard() {
                                 </div>
                                 <div className="area-card-actions">
                                     <a
-                                        href={`/area/${area.slug}`}
+                                        href={`/areas/${area.slug}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="btn-view"
@@ -330,8 +330,8 @@ export default function AdminDashboard() {
                                 <tr key={area.id}>
                                     <td className="table-area-name">{area.name}</td>
                                     <td>
-                                        <a href={`/area/${area.slug}`} target="_blank" rel="noopener noreferrer">
-                                            /area/{area.slug}
+                                        <a href={`/areas/${area.slug}`} target="_blank" rel="noopener noreferrer">
+                                            /areas/{area.slug}
                                         </a>
                                     </td>
 

@@ -580,7 +580,7 @@ export default function EditAreaPage() {
                                 Saved!
                             </span>
                         )}
-                        <Link href={`/area/${formData.slug}`} target="_blank" className="btn btn-secondary cms-topbar-btn">
+                        <Link href={`/areas/${formData.slug}`} target="_blank" className="btn btn-secondary cms-topbar-btn">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                 <polyline points="15 3 21 3 21 9"></polyline>
@@ -616,7 +616,7 @@ export default function EditAreaPage() {
                         />
                         <div className="cms-permalink">
                             <span className="cms-permalink-label">Permalink:</span>
-                            <span className="cms-permalink-base">/area/</span>
+                            <span className="cms-permalink-base">/areas/</span>
                             <input
                                 type="text"
                                 className="cms-permalink-slug"
@@ -625,7 +625,7 @@ export default function EditAreaPage() {
                                 placeholder="slug"
                                 required
                             />
-                            <Link href={`/area/${formData.slug}`} target="_blank" className="cms-permalink-view">
+                            <Link href={`/areas/${formData.slug}`} target="_blank" className="cms-permalink-view">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                     <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                                     <polyline points="15 3 21 3 21 9"></polyline>
@@ -742,7 +742,7 @@ export default function EditAreaPage() {
                                                 <div className="cms-seo-preview">
                                                     <div className="cms-seo-preview-label">Search Preview</div>
                                                     <div className="cms-seo-preview-title">{formData.meta_title || 'Page Title'}</div>
-                                                    <div className="cms-seo-preview-url">yoursite.com/area/{formData.slug || '...'}</div>
+                                                    <div className="cms-seo-preview-url">yoursite.com/areas/{formData.slug || '...'}</div>
                                                     <div className="cms-seo-preview-desc">{formData.meta_description || 'Page description...'}</div>
                                                 </div>
                                             )}
@@ -772,8 +772,8 @@ export default function EditAreaPage() {
                                         </div>
                                         <div className="cms-publish-row">
                                             <span className="cms-publish-label">URL:</span>
-                                            <Link href={`/area/${formData.slug}`} target="_blank" className="cms-publish-value cms-publish-url">
-                                                /area/{formData.slug || '...'}
+                                            <Link href={`/areas/${formData.slug}`} target="_blank" className="cms-publish-value cms-publish-url">
+                                                /areas/{formData.slug || '...'}
                                             </Link>
                                         </div>
                                     </div>

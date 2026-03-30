@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         destination: '/areas',
         permanent: true,
       },
+      {
+        source: '/area/:path*',
+        destination: '/areas/:path*',
+        permanent: true,
+      },
     ];
   },
   images: {
