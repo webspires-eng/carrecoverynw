@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
+import { submitUrlToGoogle, buildAreaUrl } from '@/lib/googleIndexing';
 
 // GET all areas
 export async function GET(request) {
@@ -118,6 +119,11 @@ export async function POST(request) {
             is_active: true,
             created_at: new Date(),
             updated_at: new Date()
+        });
+
+        // Submit new area URL to Google Indexing API (fire-and-forget)
+        submitUrlToGoogle(buildAreaUrl(slug), 'URL_UPDATED').catch(err => {
+            console.error('[Google Indexing] Auto-submit failed for new area:', err.message);
         });
 
         return NextResponse.json({ success: true, id: result.insertedId.toString(), message: 'Area created successfully' });

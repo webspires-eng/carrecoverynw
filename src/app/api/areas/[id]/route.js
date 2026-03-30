@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { connectToDatabase } from '@/lib/db';
+import { submitUrlToGoogle, buildAreaUrl } from '@/lib/googleIndexing';
 
 // GET single area by ID
 export async function GET(request, { params }) {
@@ -79,6 +80,14 @@ export async function PUT(request, { params }) {
             { _id: new ObjectId(id) },
             { $set: { ...updateData, updated_at: new Date() } }
         );
+
+        // Submit updated area URL to Google Indexing API (fire-and-forget)
+        const updatedArea = await db.collection('areas').findOne({ _id: new ObjectId(id) }, { projection: { slug: 1 } });
+        if (updatedArea?.slug) {
+            submitUrlToGoogle(buildAreaUrl(updatedArea.slug), 'URL_UPDATED').catch(err => {
+                console.error('[Google Indexing] Auto-submit failed for updated area:', err.message);
+            });
+        }
 
         return NextResponse.json({ success: true, message: 'Area updated successfully' });
     } catch (error) {
