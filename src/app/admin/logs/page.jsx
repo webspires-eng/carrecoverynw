@@ -59,18 +59,23 @@ export default function LogsPage() {
     const renderDetails = (details) => {
         if (!details || Object.keys(details).length === 0) return '-';
         
-        // Custom formatting for common fields to make it readable
-        const parts = [];
-        if (details.name || details.slug) parts.push(`Area: ${details.name || details.slug}`);
-        if (details.url) parts.push(`URL: ${details.url}`);
-        if (details.type) parts.push(`Type: ${details.type}`);
-        
-        // Fallback to JSON if it's a completely unfamiliar object
-        if (parts.length === 0) {
-            return <pre style={{ margin: 0, fontSize: '0.85em', color: '#666', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '300px' }}>{JSON.stringify(details)}</pre>;
-        }
-
-        return parts.join(' | ');
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {details.name && <div style={{ fontSize: '0.85rem' }}><strong>Area:</strong> {details.name}</div>}
+                {details.slug && !details.name && <div style={{ fontSize: '0.85rem' }}><strong>Slug:</strong> {details.slug}</div>}
+                {details.url && (
+                    <div style={{ fontSize: '0.8rem', color: '#4f46e5', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '350px', whiteSpace: 'nowrap' }} title={details.url}>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ marginRight: '4px', verticalAlign: '-1px' }}>
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                        {details.url}
+                    </div>
+                )}
+                {details.type && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>📝 Type: {details.type}</div>}
+                {details.error && <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '4px', background: '#fef2f2', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}>{details.error}</div>}
+            </div>
+        );
     };
 
     return (
@@ -79,11 +84,14 @@ export default function LogsPage() {
                 <header className="admin-header">
                     <div className="admin-header-left">
                         <h1>📋 Activity & Audit Log</h1>
-                        <p>Track changes and SEO indexing events</p>
+                        <p>Track changes and SEO indexing events across the platform</p>
                     </div>
                     <div className="admin-header-actions">
                         <Link href="/admin/settings" className="btn btn-secondary">
-                            ⚙️ Back to Settings
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '6px'}}>
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                            Back to Settings
                         </Link>
                     </div>
                 </header>
@@ -91,55 +99,72 @@ export default function LogsPage() {
                 {loading && logs.length === 0 ? (
                     <div className="loading">
                         <div className="loading-spinner"></div>
-                        <p>Loading logs...</p>
+                        <p>Loading activity logs...</p>
                     </div>
                 ) : (
-                    <>
-                        <div className="admin-table-container">
-                            <table className="admin-table">
-                                <thead>
-                                    <tr>
-                                        <th>Date & Time</th>
-                                        <th>Action</th>
-                                        <th>Details</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {logs.length > 0 ? (
-                                        logs.map(log => (
-                                            <tr key={log.id}>
-                                                <td style={{ whiteSpace: 'nowrap', color: '#666' }}>{formatDate(log.created_at)}</td>
-                                                <td><strong>{formatAction(log.action)}</strong></td>
-                                                <td>{renderDetails(log.details)}</td>
-                                                <td>{getStatusBadge(log.status)}</td>
-                                            </tr>
-                                        ))
-                                    ) : (
-                                        <tr>
-                                            <td colSpan="4" className="empty-state">
-                                                No activity logs found.
+                    <div style={{ background: '#fff', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', border: '1px solid rgba(148, 163, 184, 0.2)' }}>
+                        <table className="areas-table" style={{ border: 'none', boxShadow: 'none' }}>
+                            <thead>
+                                <tr>
+                                    <th>Date & Time</th>
+                                    <th>Action</th>
+                                    <th>Context / Details</th>
+                                    <th style={{ textAlign: 'right' }}>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {logs.length > 0 ? (
+                                    logs.map(log => (
+                                        <tr key={log.id}>
+                                            <td style={{ whiteSpace: 'nowrap', color: '#475569', fontSize: '0.8rem', verticalAlign: 'top', paddingTop: '16px' }}>
+                                                {formatDate(log.created_at)}
+                                            </td>
+                                            <td style={{ verticalAlign: 'top', paddingTop: '16px' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                    <div style={{ padding: '6px', background: log.action.includes('GOOGLE') ? '#e0e7ff' : '#f1f5f9', borderRadius: '6px', color: log.action.includes('GOOGLE') ? '#4f46e5' : '#475569' }}>
+                                                        {log.action.includes('GOOGLE') ? (
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path><path d="M2 12h20"></path></svg>
+                                                        ) : log.action.includes('DELETE') ? (
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                        ) : (
+                                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                                        )}
+                                                    </div>
+                                                    <strong style={{ fontSize: '0.85rem', color: '#1e293b' }}>{formatAction(log.action)}</strong>
+                                                </div>
+                                            </td>
+                                            <td style={{ verticalAlign: 'top', paddingTop: '14px', paddingBottom: '14px' }}>
+                                                {renderDetails(log.details)}
+                                            </td>
+                                            <td style={{ textAlign: 'right', verticalAlign: 'top', paddingTop: '16px' }}>
+                                                {getStatusBadge(log.status)}
                                             </td>
                                         </tr>
-                                    )}
-                                </tbody>
-                            </table>
-                        </div>
+                                    ))
+                                ) : (
+                                    <tr>
+                                        <td colSpan="4" className="empty-state" style={{ border: 'none' }}>
+                                            <div className="empty-state-icon" style={{ fontSize: '2rem', opacity: 0.3 }}>📭</div>
+                                            <h3>No Activity Recorded</h3>
+                                            <p style={{ margin: 0 }}>System events and Google Index submissions will appear here.</p>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
 
                         {pagination.totalPages > 1 && (
-                            <div className="pagination">
-                                {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map(page => (
-                                    <button
-                                        key={page}
-                                        className={`btn-page ${pagination.page === page ? 'active' : ''}`}
-                                        onClick={() => fetchLogs(page)}
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
+                            <div className="pagination" style={{ marginTop: '24px', borderTop: '1px solid #e2e8f0', paddingTop: '20px' }}>
+                                <button className="pagination-btn" disabled={pagination.page <= 1} onClick={() => fetchLogs(pagination.page - 1)}>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"></polyline></svg> Previous
+                                </button>
+                                <span className="pagination-info">Page {pagination.page} of {pagination.totalPages}</span>
+                                <button className="pagination-btn" disabled={pagination.page >= pagination.totalPages} onClick={() => fetchLogs(pagination.page + 1)}>
+                                    Next <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </button>
                             </div>
                         )}
-                    </>
+                    </div>
                 )}
             </div>
         </div>
