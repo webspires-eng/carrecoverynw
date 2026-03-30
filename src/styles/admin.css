@@ -506,6 +506,28 @@
     color: var(--admin-danger);
 }
 
+/* General Log Status Badges */
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.status-badge.status-active {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--admin-success);
+}
+
+.status-badge.status-inactive {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--admin-danger);
+}
+
 .area-card-meta {
     display: flex;
     flex-wrap: wrap;

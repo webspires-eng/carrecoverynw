@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { sign } from 'crypto';
+import { logActivity } from './logger';
 
 const INDEXING_API_URL = 'https://indexing.googleapis.com/v3/urlNotifications:publish';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -122,17 +123,21 @@ export async function submitUrlToGoogle(url, type = 'URL_UPDATED') {
 
         if (!response.ok) {
             console.error('[Google Indexing] Error response:', JSON.stringify(responseData));
+            const errorMsg = responseData.error?.message || `HTTP ${response.status}`;
+            await logActivity('GOOGLE_INDEX_SUBMISSION', { url, type, error: errorMsg }, 'error');
             return {
                 success: false,
-                error: responseData.error?.message || `HTTP ${response.status}`,
+                error: errorMsg,
                 data: responseData,
             };
         }
 
         console.log(`[Google Indexing] Successfully submitted ${type} for: ${url}`);
+        await logActivity('GOOGLE_INDEX_SUBMISSION', { url, type }, 'success');
         return { success: true, data: responseData };
     } catch (error) {
         console.error(`[Google Indexing] Failed to submit ${url}:`, error.message);
+        await logActivity('GOOGLE_INDEX_SUBMISSION', { url, type, error: error.message }, 'error');
         return { success: false, error: error.message };
     }
 }

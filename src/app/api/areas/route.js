@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { submitUrlToGoogle, buildAreaUrl } from '@/lib/googleIndexing';
+import { logActivity } from '@/lib/logger';
 
 // GET all areas
 export async function GET(request) {
@@ -125,6 +126,8 @@ export async function POST(request) {
         submitUrlToGoogle(buildAreaUrl(slug), 'URL_UPDATED').catch(err => {
             console.error('[Google Indexing] Auto-submit failed for new area:', err.message);
         });
+
+        await logActivity('AREA_CREATED', { slug, name, region }, 'success');
 
         return NextResponse.json({ success: true, id: result.insertedId.toString(), message: 'Area created successfully' });
     } catch (error) {

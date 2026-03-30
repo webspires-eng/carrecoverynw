@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { connectToDatabase } from '@/lib/db';
 import { submitUrlToGoogle, buildAreaUrl } from '@/lib/googleIndexing';
+import { logActivity } from '@/lib/logger';
 
 // GET single area by ID
 export async function GET(request, { params }) {
@@ -82,11 +83,14 @@ export async function PUT(request, { params }) {
         );
 
         // Submit updated area URL to Google Indexing API (fire-and-forget)
-        const updatedArea = await db.collection('areas').findOne({ _id: new ObjectId(id) }, { projection: { slug: 1 } });
+        const updatedArea = await db.collection('areas').findOne({ _id: new ObjectId(id) }, { projection: { slug: 1, name: 1 } });
         if (updatedArea?.slug) {
             submitUrlToGoogle(buildAreaUrl(updatedArea.slug), 'URL_UPDATED').catch(err => {
                 console.error('[Google Indexing] Auto-submit failed for updated area:', err.message);
             });
+            await logActivity('AREA_UPDATED', { id, slug: updatedArea.slug, name: updatedArea.name }, 'success');
+        } else {
+            await logActivity('AREA_UPDATED', { id }, 'success');
         }
 
         return NextResponse.json({ success: true, message: 'Area updated successfully' });
@@ -105,7 +109,14 @@ export async function DELETE(request, { params }) {
         }
 
         const { db } = await connectToDatabase();
+        const areaToDelete = await db.collection('areas').findOne({ _id: new ObjectId(id) }, { projection: { slug: 1, name: 1 } });
         await db.collection('areas').deleteOne({ _id: new ObjectId(id) });
+
+        if (areaToDelete) {
+            await logActivity('AREA_DELETED', { id, slug: areaToDelete.slug, name: areaToDelete.name }, 'success');
+        } else {
+            await logActivity('AREA_DELETED', { id }, 'success');
+        }
 
         return NextResponse.json({ success: true, message: 'Area deleted successfully' });
     } catch (error) {
