@@ -11,14 +11,25 @@ export async function GET(request) {
 
         const { db } = await connectToDatabase();
 
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+        // Async cleanup (fire-and-forget delete for logs older than 1 month)
+        db.collection('activity_logs').deleteMany({ created_at: { $lt: oneMonthAgo } }).catch(err => {
+            console.error('[Activity Logger] Failed to clean up old logs:', err.message);
+        });
+
+        // Filter for exactly 1 month
+        const filterDate = { created_at: { $gte: oneMonthAgo } };
+
         const [rows, total] = await Promise.all([
             db.collection('activity_logs')
-                .find({})
+                .find(filterDate)
                 .sort({ created_at: -1 }) // Newest first
                 .skip(offset)
                 .limit(limit)
                 .toArray(),
-            db.collection('activity_logs').countDocuments({})
+            db.collection('activity_logs').countDocuments(filterDate)
         ]);
 
         const data = rows.map(row => ({
