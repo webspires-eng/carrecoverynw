@@ -18,6 +18,7 @@ export default function AdminDashboard() {
     const [sortOrder, setSortOrder] = useState('desc');
     const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
     const [indexingStatus, setIndexingStatus] = useState({}); // { [areaId]: 'loading' | 'success' | 'error' }
+    const [bulkIndexing, setBulkIndexing] = useState(false);
 
     // Check for saved draft
     useEffect(() => {
@@ -114,6 +115,33 @@ export default function AdminDashboard() {
     const handleLogout = async () => {
         await fetch('/api/auth/logout', { method: 'POST' });
         window.location.href = '/signin';
+    };
+
+    const handleBulkIndex = async () => {
+        if (!areas || areas.length === 0) return;
+        if (!window.confirm(`Are you sure you want to index all ${areas.length} areas on this page?`)) return;
+
+        setBulkIndexing(true);
+        const siteUrl = window.location.origin;
+        const urls = areas.map(area => `${siteUrl}/areas/${area.slug}`);
+
+        try {
+            const res = await fetch('/api/indexing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ urls, type: 'URL_UPDATED' }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(`Successfully bulk indexed: ${data.message || 'Check logs for details'}`);
+            } else {
+                alert(`Error: ${data.error || 'Failed to bulk index'}`);
+            }
+        } catch (error) {
+            console.error('Error bulk indexing:', error);
+            alert('Error performing bulk indexing. Check console for details.');
+        }
+        setBulkIndexing(false);
     };
 
     return (
@@ -231,9 +259,18 @@ export default function AdminDashboard() {
                             Table
                         </button>
                     </div>
-                    <Link href="/admin/areas/add" className="btn btn-accent">
-                        Add New Area
-                    </Link>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <button 
+                            className="btn btn-secondary" 
+                            disabled={bulkIndexing || areas.length === 0} 
+                            onClick={handleBulkIndex}
+                        >
+                            {bulkIndexing ? '⏳ Indexing...' : '🚀 Bulk Index Page'}
+                        </button>
+                        <Link href="/admin/areas/add" className="btn btn-accent">
+                            Add New Area
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Stats Bar */}
