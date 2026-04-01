@@ -19,6 +19,8 @@ export default function AdminDashboard() {
     const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
     const [indexingStatus, setIndexingStatus] = useState({}); // { [areaId]: 'loading' | 'success' | 'error' }
     const [bulkIndexing, setBulkIndexing] = useState(false);
+    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+    const [successPopupData, setSuccessPopupData] = useState({ message: '', count: 0 });
 
     // Check for saved draft
     useEffect(() => {
@@ -118,14 +120,23 @@ export default function AdminDashboard() {
     };
 
     const handleBulkIndex = async () => {
-        if (!areas || areas.length === 0) return;
-        if (!window.confirm(`Are you sure you want to index all ${areas.length} areas on this page?`)) return;
+        if (!window.confirm(`Are you sure you want to index ALL areas? This may take a moment.`)) return;
 
         setBulkIndexing(true);
-        const siteUrl = window.location.origin;
-        const urls = areas.map(area => `${siteUrl}/areas/${area.slug}`);
-
         try {
+            const areasRes = await fetch('/api/areas?limit=1000');
+            const areasData = await areasRes.json();
+            
+            if (!areasData.success || !areasData.data || areasData.data.length === 0) {
+                alert('No areas found to index or failed to fetch areas.');
+                setBulkIndexing(false);
+                return;
+            }
+
+            const allAreas = areasData.data;
+            const siteUrl = window.location.origin;
+            const urls = allAreas.map(area => `${siteUrl}/areas/${area.slug}`);
+
             const res = await fetch('/api/indexing', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -133,7 +144,8 @@ export default function AdminDashboard() {
             });
             const data = await res.json();
             if (data.success) {
-                alert(`Successfully bulk indexed: ${data.message || 'Check logs for details'}`);
+                setSuccessPopupData({ count: allAreas.length, message: data.message });
+                setShowSuccessPopup(true);
             } else {
                 alert(`Error: ${data.error || 'Failed to bulk index'}`);
             }
@@ -262,10 +274,10 @@ export default function AdminDashboard() {
                     <div style={{ display: 'flex', gap: '10px' }}>
                         <button 
                             className="btn btn-secondary" 
-                            disabled={bulkIndexing || areas.length === 0} 
+                            disabled={bulkIndexing || pagination.total === 0} 
                             onClick={handleBulkIndex}
                         >
-                            {bulkIndexing ? '⏳ Indexing...' : '🚀 Bulk Index Page'}
+                            {bulkIndexing ? '⏳ Indexing All...' : '🚀 Bulk Index All Areas'}
                         </button>
                         <Link href="/admin/areas/add" className="btn btn-accent">
                             Add New Area
@@ -436,6 +448,26 @@ export default function AdminDashboard() {
                     </div>
                 )}
             </div>
+
+            {/* Success Popup */}
+            {showSuccessPopup && (
+                <div className="modal-overlay">
+                    <div className="modal" style={{ textAlign: 'center', maxWidth: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚀</div>
+                        <h2 style={{ marginBottom: '8px', fontSize: '1.5rem', fontWeight: 700 }}>Indexing Initiated!</h2>
+                        <p style={{ color: 'var(--admin-gray-600)', marginBottom: '24px', lineHeight: '1.6' }}>
+                            Successfully submitted <strong>{successPopupData.count}</strong> areas to the Google Indexing API. Google will process these URLs shortly.
+                        </p>
+                        <button 
+                            className="btn btn-primary" 
+                            style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
+                            onClick={() => setShowSuccessPopup(false)}
+                        >
+                            Awesome!
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
