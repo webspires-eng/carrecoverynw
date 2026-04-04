@@ -27,7 +27,7 @@ export default function HomeWhyChooseUsSection() {
     return (
         <section className="layout-6">
             <div className="heading-6">
-                <h1>WHY CHOOSE US</h1>
+                <h2>WHY CHOOSE US</h2>
             </div>
 
             <div className="container-6">

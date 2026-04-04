@@ -17,7 +17,7 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
 
     const schemas = [];
 
-    // ── Organization (all pages) ──────────────────────────────
+    // Organization handle by LocalBusiness on home, contact, about, or below
     const organizationSchema = {
         '@context': 'https://schema.org',
         '@type': 'Organization',
@@ -34,7 +34,10 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
         },
         sameAs: [],
     };
-    schemas.push(organizationSchema);
+    // Only add Organization if it's NOT a local business page, or maybe just skip it on pages with LocalBusiness
+    if (!['home', 'contact', 'about'].includes(pageType)) {
+        schemas.push(organizationSchema);
+    }
 
     // ── LocalBusiness (home, contact, about) ──────────────────
     if (['home', 'contact', 'about'].includes(pageType)) {
@@ -129,11 +132,6 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
             mainEntity: homeFaqs.map(f => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
         });
 
-        schemas.push({
-            '@context': 'https://schema.org',
-            '@type': 'QAPage',
-            mainEntity: homeFaqs.map(f => ({ '@type': 'Question', name: f.q, answerCount: 1, acceptedAnswer: { '@type': 'Answer', text: f.a, upvoteCount: 0 } })),
-        });
     }
 
     // ── Contact page specific ─────────────────────────────────

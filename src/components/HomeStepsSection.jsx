@@ -29,7 +29,7 @@ export default function HomeStepsSection() {
 
     return (
         <section className="layout2">
-            <h1>Get Your Car Recovered</h1>
+            <h2>Get Your Car Recovered</h2>
             <h3>in 3 Easy Steps</h3>
 
             <div className="service">

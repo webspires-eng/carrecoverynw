@@ -81,10 +81,6 @@ export default function HomeFAQSection() {
 
     return (
         <section className="faq-section">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-            />
             <h2>Car Recovery & Towing FAQs</h2>
             <div className="faq-container">
                 {faqs.map((faq, index) => (

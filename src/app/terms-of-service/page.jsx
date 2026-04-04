@@ -4,6 +4,10 @@ import { getSettings } from '@/lib/settings';
 
 export const metadata = {
     title: 'Terms of Service | Car Recovery UK',
+    robots: {
+        index: false,
+        follow: false,
+    },
 };
 
 export default async function TermsOfService() {

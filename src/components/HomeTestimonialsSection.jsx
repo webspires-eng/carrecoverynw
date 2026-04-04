@@ -61,7 +61,7 @@ export default function HomeTestimonialsSection() {
                     Verified Google Reviews
                 </span>
             </div>
-            <h1>5.0 Rated on Google (1207 Reviews)</h1>
+            <h2>5.0 Rated on Google (1207 Reviews)</h2>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
                 <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary-blue)' }}>5.0</span>
                 <span style={{ color: '#ffb400', fontSize: '2rem' }}>★★★★★</span>

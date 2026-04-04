@@ -32,7 +32,8 @@ export default async function robots() {
                     const value = trimmed.split(':').slice(1).join(':').trim();
                     if (value) currentRule.disallow.push(value);
                 } else if (trimmed.toLowerCase().startsWith('sitemap:')) {
-                    sitemap = trimmed.split(':').slice(1).join(':').trim();
+                    // Enforce baseUrl (which has www) for the sitemap
+                    sitemap = `${baseUrl}/sitemap.xml`;
                 }
             }
 

@@ -92,10 +92,6 @@ export default function FAQSection({ customFaqs = [], location, majorRoads = [] 
 
     return (
         <section className="faq-section">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-            />
             <h2>Car Recovery & Towing FAQs</h2>
             <div className="faq-container">
                 {displayFaqs.map((faq, index) => (

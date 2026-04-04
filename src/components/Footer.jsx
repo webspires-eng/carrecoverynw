@@ -34,11 +34,11 @@ export default function Footer() {
                     <div className="footer-column">
                         <h4>Our Services</h4>
                         <ul>
-                            <li><Link href="#"><ArrowRight size={14} /> Emergency Towing</Link></li>
-                            <li><Link href="#"><ArrowRight size={14} /> Roadside Assistance</Link></li>
-                            <li><Link href="#"><ArrowRight size={14} /> Vehicle Transport</Link></li>
-                            <li><Link href="#"><ArrowRight size={14} /> Jump Start Services</Link></li>
-                            <li><Link href="#"><ArrowRight size={14} /> Battery Replacement</Link></li>
+                            <li><Link href="/"><ArrowRight size={14} /> Emergency Towing</Link></li>
+                            <li><Link href="/"><ArrowRight size={14} /> Roadside Assistance</Link></li>
+                            <li><Link href="/"><ArrowRight size={14} /> Vehicle Transport</Link></li>
+                            <li><Link href="/"><ArrowRight size={14} /> Jump Start Services</Link></li>
+                            <li><Link href="/"><ArrowRight size={14} /> Battery Replacement</Link></li>
                         </ul>
                     </div>
 

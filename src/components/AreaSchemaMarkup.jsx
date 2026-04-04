@@ -243,78 +243,13 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
         }
         : null;
 
-    // ── 7. QAPage ─────────────────────────────────────────────
-    const qaPageSchema = displayFaqs.length > 0
-        ? {
-            '@context': 'https://schema.org',
-            '@type': 'QAPage',
-            mainEntity: displayFaqs.map(faq => ({
-                '@type': 'Question',
-                name: faq.q,
-                answerCount: 1,
-                acceptedAnswer: {
-                    '@type': 'Answer',
-                    text: faq.a,
-                    upvoteCount: 0,
-                },
-            })),
-        }
-        : null;
-
-    // ── 8. BreadcrumbList ─────────────────────────────────────
-    const breadcrumbSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-            {
-                '@type': 'ListItem',
-                position: 1,
-                name: 'Home',
-                item: baseUrl,
-            },
-            {
-                '@type': 'ListItem',
-                position: 2,
-                name: 'Areas We Cover',
-                item: `${baseUrl}/areas`,
-            },
-            {
-                '@type': 'ListItem',
-                position: 3,
-                name: `Car Recovery ${location}`,
-                item: pageUrl,
-            },
-        ],
-    };
-
-    // ── 9. Service schema ─────────────────────────────────────
-    const serviceSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'Service',
-        name: `Car Recovery in ${location}`,
-        description: `Professional 24/7 car recovery, towing, and breakdown assistance in ${location} and surrounding areas.`,
-        provider: {
-            '@type': 'Organization',
-            name: businessName,
-            url: baseUrl,
-        },
-        areaServed: {
-            '@type': 'Place',
-            name: location,
-        },
-        serviceType: 'Emergency Vehicle Recovery',
-        url: pageUrl,
-    };
-
     // Collect all schemas, filter out nulls
     const schemas = [
         localBusinessSchema,
-        organizationSchema,
         personSchema,
         articleSchema,
         howToSchema,
         faqPageSchema,
-        qaPageSchema,
         breadcrumbSchema,
         serviceSchema,
     ].filter(Boolean);

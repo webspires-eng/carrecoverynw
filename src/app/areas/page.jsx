@@ -31,7 +31,7 @@ export const revalidate = 0;
 
 export const metadata = {
     title: 'Areas We Cover | Car Recovery UK',
-    description: 'Find car recovery services in your area. We cover Birmingham, Coventry, Wolverhampton, and 4000+ locations across the West Midlands.',
+    description: 'Find car recovery services across the UK. We cover 300+ locations including Birmingham, Manchester, Sheffield, and beyond. Available 24/7.',
     alternates: {
         canonical: 'https://www.cartowingnearme.co.uk/areas',
     },
