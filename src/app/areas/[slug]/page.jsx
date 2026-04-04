@@ -80,9 +80,10 @@ export async function generateMetadata({ params }) {
             siteName: "Car Recovery UK",
             images: [
                 {
-                    url: '/tow-truck-hero.png',
+                    url: `/api/og?city=${encodeURIComponent(area.name)}`,
                     width: 1200,
                     height: 630,
+                    alt: `Car Recovery in ${area.name}`
                 },
             ],
             locale: 'en_GB',
@@ -92,7 +93,7 @@ export async function generateMetadata({ params }) {
             card: 'summary_large_image',
             title: area.meta_title || `24/7 Car Recovery in ${area.name}`,
             description: area.meta_description,
-            images: ['/tow-truck-hero.png'],
+            images: [`/api/og?city=${encodeURIComponent(area.name)}`],
         },
     };
 }

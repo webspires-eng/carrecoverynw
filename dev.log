@@ -218,3 +218,4 @@ Database error: Error: Missing MONGODB_URI environment variable
 Database error fetching settings: Missing MONGODB_URI environment variable
  GET /areas 200 in 144ms (compile: 39ms, render: 105ms)
 ✓ Compiled in 160ms
+✓ Compiled in 60ms
