@@ -660,9 +660,13 @@ export default function EditAreaPage() {
                             <div className="cms-tab-content">
                                 {activeTab === 'content' && (
                                     <>
-
-
-                                        <div className="cms-panel">
+                                        {(() => {
+                                            const isContentEmpty = !formData.bottom_content || formData.bottom_content.trim() === '';
+                                            const isLocationEmpty = !formData.major_roads || !formData.nearby_areas || formData.major_roads.trim() === '' || formData.nearby_areas.trim() === '';
+                                            
+                                            return (
+                                                <>
+                                                    <div className="cms-panel" style={isContentEmpty ? { border: '2px solid #ef4444' } : {}}>
                                             <div className="cms-panel-header">
                                                 <div className="cms-panel-title">
                                                     <span className="cms-panel-icon">✏️</span>
@@ -679,7 +683,7 @@ export default function EditAreaPage() {
                                             </div>
                                         </div>
 
-                                        <div className="cms-panel">
+                                        <div className="cms-panel" style={isLocationEmpty ? { border: '2px solid #ef4444' } : {}}>
                                             <div className="cms-panel-header">
                                                 <div className="cms-panel-title">
                                                     <span>Location Details</span>
@@ -702,6 +706,9 @@ export default function EditAreaPage() {
                                                 </div>
                                             </div>
                                         </div>
+                                                </>
+                                            );
+                                        })()}
                                     </>
                                 )}
 

@@ -18,14 +18,13 @@ export async function generateMetadata() {
 
   return {
     metadataBase: new URL(baseUrl),
-    title: "24 Hours Car Recovery Service In West Midlands & Outskirts | 0736 054 4819",
-    description: "24/7 Emergency Car Recovery Service covering the entire UK. Arrive in less than 15 minutes. Call 0736 054 4819 for immediate assistance.",
-    keywords: "car recovery, emergency towing, 24/7 recovery, UK car recovery, roadside assistance, vehicle transport",
+    title: "24 Hours Car Recovery Service In United Kingdom | 0736 054 4819",
+    description: "Looking for a reliable car recovery and towing service in the UK? We offer 24/7 fast breakdown assistance and emergency towing near you. Call us now!",
     alternates: {
-      canonical: './',
+      canonical: "https://www.cartowingnearme.co.uk",
     },
     openGraph: {
-      title: "24 Hours Car Recovery Service In West Midlands",
+      title: "24 Hours Car Recovery Service In United Kingdom",
       description: "24/7 Emergency Car Recovery Service covering the entire UK.",
       url: baseUrl,
       siteName: "Car Recovery UK",
@@ -40,10 +39,9 @@ export async function generateMetadata() {
       type: 'website',
     },
     twitter: {
-      card: 'summary_large_image',
-      title: "24 Hours Car Recovery Service In West Midlands",
-      description: "24/7 Emergency Car Recovery Service covering the entire UK.",
-      images: ['/tow-truck-hero.png'],
+      card: "summary_large_image",
+      title: "24 Hours Car Recovery Service In United Kingdom",
+      description: "Looking for a reliable car recovery and towing service in the UK? We offer 24/7 fast breakdown assistance and emergency towing near you. Call us now!",
     },
     icons: {
       icon: settings.favicon || "/truckicon.png",
