@@ -76,7 +76,11 @@ export default function AddAreaPage() {
     }, []);
 
     useEffect(() => {
-        const hasContent = formData.name || formData.slug || formData.intro_text;
+        const hasContent = Object.values(formData).some(val => {
+            if (typeof val === 'string') return val.trim().length > 0;
+            if (Array.isArray(val)) return val.length > 0;
+            return !!val;
+        });
         if (!hasContent) return;
 
         setAutoSaveStatus('Saving...');
