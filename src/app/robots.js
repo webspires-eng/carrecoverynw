@@ -1,7 +1,7 @@
 import { connectToDatabase } from '@/lib/db';
 
 export default async function robots() {
-    const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
+    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
 
     try {
         const { db } = await connectToDatabase();

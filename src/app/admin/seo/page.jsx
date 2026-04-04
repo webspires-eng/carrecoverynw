@@ -59,7 +59,7 @@ export default function SEOPage() {
     };
 
     const handleViewRobotsLive = () => {
-        const baseUrl = seoSettings.canonical_base_url || 'https://cartowingnearme.co.uk';
+        const baseUrl = seoSettings.canonical_base_url || 'https://www.cartowingnearme.co.uk';
         window.open(`${baseUrl}/robots.txt`, '_blank');
     };
 
@@ -270,10 +270,10 @@ export default function SEOPage() {
                                     type="url"
                                     value={seoSettings.canonical_base_url}
                                     onChange={(e) => setSeoSettings({ ...seoSettings, canonical_base_url: e.target.value })}
-                                    placeholder="https://cartowingnearme.co.uk"
+                                    placeholder="https://www.cartowingnearme.co.uk"
                                 />
                                 <span className="seo-example-output">
-                                    Example output: <code>&lt;link rel=&quot;canonical&quot; href=&quot;{seoSettings.canonical_base_url || 'https://cartowingnearme.co.uk'}/product-1&amp;id=1&quot;&gt;</code>
+                                    Example output: <code>&lt;link rel=&quot;canonical&quot; href=&quot;{seoSettings.canonical_base_url || 'https://www.cartowingnearme.co.uk'}/product-1&amp;id=1&quot;&gt;</code>
                                 </span>
                             </div>
 

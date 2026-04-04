@@ -26,9 +26,15 @@ async function getAreas(search = '') {
     }
 }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata = {
     title: 'Areas We Cover | Car Recovery UK',
-    description: 'Find car recovery services in your area. We cover Birmingham, Coventry, Wolverhampton, and 4000+ locations across the West Midlands.'
+    description: 'Find car recovery services in your area. We cover Birmingham, Coventry, Wolverhampton, and 4000+ locations across the West Midlands.',
+    alternates: {
+        canonical: 'https://www.cartowingnearme.co.uk/areas',
+    },
 };
 
 export default async function AreasArchive({ searchParams }) {

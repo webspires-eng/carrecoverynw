@@ -64,7 +64,7 @@ export async function generateMetadata({ params }) {
         };
     }
 
-    const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
+    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
     const url = `${baseUrl}/areas/${slug}`;
 
     return {

@@ -12,7 +12,7 @@ export async function GET() {
                 "@context": "https://schema.org",
                 "@type": "LocalBusiness",
                 "name": "Car Recovery UK",
-                "url": process.env.SITE_URL || "https://cartowingnearme.co.uk",
+                "url": process.env.SITE_URL || "https://www.cartowingnearme.co.uk",
                 "description": "24/7 Emergency Car Recovery Service covering the entire UK.",
                 "telephone": "+447360544819",
                 "address": {
@@ -20,8 +20,8 @@ export async function GET() {
                     "addressCountry": "GB"
                 }
             }, null, 4),
-            robots_txt: `User-agent: *\nAllow: /\n\nSitemap: ${process.env.SITE_URL || 'https://cartowingnearme.co.uk'}/sitemap.xml\n\nDisallow: /admin/`,
-            canonical_base_url: process.env.SITE_URL || 'https://cartowingnearme.co.uk'
+            robots_txt: `User-agent: *\nAllow: /\n\nSitemap: ${process.env.SITE_URL || 'https://www.cartowingnearme.co.uk'}/sitemap.xml\n\nDisallow: /admin/`,
+            canonical_base_url: process.env.SITE_URL || 'https://www.cartowingnearme.co.uk'
         };
 
         const data = seoDoc ? {

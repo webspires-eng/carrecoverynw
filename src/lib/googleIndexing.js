@@ -95,7 +95,7 @@ async function getAccessToken() {
 /**
  * Submit a URL to Google's Indexing API.
  *
- * @param {string} url - The full URL to submit (e.g. https://cartowingnearme.co.uk/areas/birmingham)
+ * @param {string} url - The full URL to submit (e.g. https://www.cartowingnearme.co.uk/areas/birmingham)
  * @param {'URL_UPDATED' | 'URL_DELETED'} type - The notification type
  * @returns {Promise<{success: boolean, data?: object, error?: string}>}
  */
@@ -164,6 +164,6 @@ export async function submitUrlsToGoogle(urls, type = 'URL_UPDATED') {
  * Build the full public URL for an area slug.
  */
 export function buildAreaUrl(slug) {
-    const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
+    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
     return `${baseUrl}/areas/${slug}`;
 }

@@ -14,7 +14,7 @@ const rubik = Rubik({
 
 export async function generateMetadata() {
   const settings = await getSettings();
-  const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
+  const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
 
   return {
     metadataBase: new URL(baseUrl),
@@ -53,7 +53,7 @@ export async function generateMetadata() {
 
 export default async function RootLayout({ children }) {
   const settings = await getSettings();
-  const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
+  const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
 
   const organizationSchema = {
     "@context": "https://schema.org",

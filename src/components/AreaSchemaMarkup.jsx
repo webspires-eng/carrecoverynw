@@ -12,7 +12,7 @@
  */
 
 export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
-    const baseUrl = process.env.SITE_URL || 'https://cartowingnearme.co.uk';
+    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
     const location = area.name;
     const slug = area.slug;
     const pageUrl = `${baseUrl}/areas/${slug}`;
