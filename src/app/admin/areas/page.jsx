@@ -328,8 +328,16 @@ export default function AdminDashboard() {
                     </div>
                 ) : viewMode === 'cards' ? (
                     <div className="areas-grid">
-                        {areas.map((area) => (
-                            <div key={area.id} className="area-card">
+                        {areas.map((area) => {
+                            let isRoadsEmpty = !area.major_roads || area.major_roads === '[]' || area.major_roads.length === 0;
+                            if (typeof area.major_roads === 'string' && area.major_roads !== '[]' && area.major_roads.trim() !== '') {
+                                try {
+                                    const parsed = JSON.parse(area.major_roads);
+                                    isRoadsEmpty = Array.isArray(parsed) && parsed.length === 0;
+                                } catch(e) {}
+                            }
+                            return (
+                            <div key={area.id} className="area-card" style={isRoadsEmpty ? { border: '2px solid #ef4444' } : {}}>
                                 <div className="area-card-header">
                                     <div>
                                         <h3 className="area-card-title">{area.name}</h3>
@@ -378,7 +386,7 @@ export default function AdminDashboard() {
                                     </button>
                                 </div>
                             </div>
-                        ))}
+                        )})}
                     </div>
                 ) : (
                     <table className="areas-table">
