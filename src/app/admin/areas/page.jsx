@@ -11,6 +11,7 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(25);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
     const [hasDraft, setHasDraft] = useState(false);
     const [draftName, setDraftName] = useState('');
@@ -49,7 +50,7 @@ export default function AdminDashboard() {
     const fetchAreas = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/areas?page=${page}&limit=25&search=${search}&sort_by=${sortBy}&sort_order=${sortOrder}`);
+            const res = await fetch(`/api/areas?page=${page}&limit=${limit}&search=${search}&sort_by=${sortBy}&sort_order=${sortOrder}`);
             const data = await res.json();
             if (data.success) {
                 setAreas(data.data);
@@ -63,7 +64,7 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         fetchAreas();
-    }, [page, search, sortBy, sortOrder]);
+    }, [page, limit, search, sortBy, sortOrder]);
 
     const handleSort = (field) => {
         if (sortBy === field) {
@@ -244,6 +245,23 @@ export default function AdminDashboard() {
                         />
                     </div>
                     <div className="view-toggle">
+                        <select 
+                            value={limit} 
+                            onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+                            style={{ 
+                                padding: '6px 12px', 
+                                borderRadius: '6px', 
+                                border: '1px solid #e2e8f0',
+                                backgroundColor: 'white',
+                                marginRight: '10px',
+                                fontSize: '0.85rem'
+                            }}
+                        >
+                            <option value={25}>25 Per Page</option>
+                            <option value={50}>50 Per Page</option>
+                            <option value={100}>100 Per Page</option>
+                            <option value={1000}>View All</option>
+                        </select>
                         <button
                             className={`view-toggle-btn ${viewMode === 'cards' ? 'active' : ''}`}
                             onClick={() => setViewMode('cards')}
