@@ -127,23 +127,7 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
         sameAs: [],
     };
 
-    // ── 2. Organization ───────────────────────────────────────
-    const organizationSchema = {
-        '@context': 'https://schema.org',
-        '@type': 'Organization',
-        '@id': `${baseUrl}/#organization`,
-        name: businessName,
-        url: baseUrl,
-        logo: logoUrl,
-        contactPoint: {
-            '@type': 'ContactPoint',
-            telephone: displayPhone,
-            contactType: 'emergency service',
-            areaServed: 'GB',
-            availableLanguage: 'en',
-        },
-        sameAs: [],
-    };
+    // Organization Schema handled by LocalBusiness OR PageSchemaMarkup
 
     // ── 3. Person (founder / lead operator) ───────────────────
     const personSchema = {
@@ -242,6 +226,53 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
             })),
         }
         : null;
+
+    // QAPage disabled
+
+    // ── 8. BreadcrumbList ─────────────────────────────────────
+    const breadcrumbSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+            {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: baseUrl,
+            },
+            {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Areas We Cover',
+                item: `${baseUrl}/areas`,
+            },
+            {
+                '@type': 'ListItem',
+                position: 3,
+                name: `Car Recovery ${location}`,
+                item: pageUrl,
+            },
+        ],
+    };
+
+    // ── 9. Service schema ─────────────────────────────────────
+    const serviceSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'Service',
+        name: `Car Recovery in ${location}`,
+        description: `Professional 24/7 car recovery, towing, and breakdown assistance in ${location} and surrounding areas.`,
+        provider: {
+            '@type': 'Organization',
+            name: businessName,
+            url: baseUrl,
+        },
+        areaServed: {
+            '@type': 'Place',
+            name: location,
+        },
+        serviceType: 'Emergency Vehicle Recovery',
+        url: pageUrl,
+    };
 
     // Collect all schemas, filter out nulls
     const schemas = [
