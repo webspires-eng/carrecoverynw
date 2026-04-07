@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, MapPin, Clock, ShieldCheck, ArrowRight } from "lucide-react";
+import { Phone, Clock, ShieldCheck } from "lucide-react";
 
 import { useSettings } from "@/components/SettingsProvider";
 

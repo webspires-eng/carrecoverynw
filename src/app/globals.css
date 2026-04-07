@@ -790,9 +790,10 @@ body {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+  grid-template-columns: 1.4fr 1fr 1.2fr;
   gap: 40px;
   margin-bottom: 20px;
+  align-items: start;
 }
 
 .footer-brand .logo-text {
@@ -871,6 +872,9 @@ body {
   padding: 30px;
   border-radius: 15px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  justify-self: end;
+  max-width: 360px;
+  width: 100%;
 }
 
 .footer-contact-box h4 {
@@ -937,12 +941,22 @@ body {
   .footer-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .footer-contact-box {
+    justify-self: stretch;
+    max-width: none;
+  }
 }
 
 @media (max-width: 600px) {
+  .footer-container {
+    padding: 56px 20px 32px;
+  }
+
   .footer-grid {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 28px;
   }
 
   .footer-column h4::after {
@@ -952,6 +966,11 @@ body {
 
   .footer-column ul li a {
     justify-content: center;
+  }
+
+  .footer-contact-box {
+    justify-self: center;
+    max-width: 420px;
   }
 
   .footer-bottom {
