@@ -22,9 +22,6 @@ export default async function ContactUs() {
                         <h3>Emergency Hotline</h3>
                         <p style={{ fontSize: '1.5rem', fontWeight: '800', color: '#ed4705' }}>0736 054 4819</p>
 
-                        <h3 style={{ marginTop: '20px' }}>Email Enquiries</h3>
-                        <p>info@carrecoveryuk.co.uk</p>
-
                         <h3 style={{ marginTop: '20px' }}>Headquarters</h3>
                         <p>West Midlands, UK</p>
                     </div>
