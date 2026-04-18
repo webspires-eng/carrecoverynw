@@ -39,6 +39,7 @@ const SERVICE_TYPES = [
     "Vehicle Transport",
     "Long Distance Towing",
     "Motorcycle Recovery",
+    "Other",
 ];
 
 export default function BookingPage() {
@@ -171,13 +172,14 @@ export default function BookingPage() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Email Address</label>
+                                <label>Email Address <span className="required">*</span></label>
                                 <input
                                     type="email"
                                     name="email"
                                     placeholder="john@example.com"
                                     value={formData.email}
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
                             <div className="form-group">
@@ -210,13 +212,14 @@ export default function BookingPage() {
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Drop-off Location</label>
+                                <label>Drop-off Location <span className="required">*</span></label>
                                 <input
                                     type="text"
                                     name="dropoffLocation"
                                     placeholder="e.g. Your home address or garage"
                                     value={formData.dropoffLocation}
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
 
@@ -224,23 +227,25 @@ export default function BookingPage() {
 
                             {/* Vehicle Details */}
                             <div className="form-group">
-                                <label>Vehicle Make</label>
+                                <label>Vehicle Make <span className="required">*</span></label>
                                 <input
                                     type="text"
                                     name="vehicleMake"
                                     placeholder="e.g. BMW, Ford, Toyota"
                                     value={formData.vehicleMake}
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
                             <div className="form-group">
-                                <label>Vehicle Model</label>
+                                <label>Vehicle Model <span className="required">*</span></label>
                                 <input
                                     type="text"
                                     name="vehicleModel"
                                     placeholder="e.g. 3 Series, Focus, Corolla"
                                     value={formData.vehicleModel}
                                     onChange={handleChange}
+                                    required
                                 />
                             </div>
 
