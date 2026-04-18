@@ -35,6 +35,7 @@ export default function Footer() {
                     <div className="footer-column">
                         <h4>Quick Links</h4>
                         <ul>
+                            <li><Link href="/booking" style={{ color: '#ff8c42', fontWeight: '700' }}>📅 Book Now</Link></li>
                             <li><Link href="/about-us">About Our Company</Link></li>
                             <li><Link href="/contact-us">Contact Us</Link></li>
                             <li><Link href="/areas">Areas We Cover</Link></li>

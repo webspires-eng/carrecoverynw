@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, MessageSquare, Star, Clock, Shield, MapPin } from "lucide-react";
+import { Phone, MessageSquare, Star, Clock, Shield, MapPin, CalendarCheck } from "lucide-react";
 import "../styles/sections/final-cta.css";
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -49,6 +49,15 @@ export default function FinalCTASection({ location = "West Midlands" }) {
                         <div className="btn-text">
                             <span className="btn-label">WhatsApp</span>
                             <span className="btn-number">Send Location</span>
+                        </div>
+                    </Link>
+                    <Link href="/booking" className="cta-btn-main" style={{ background: 'linear-gradient(135deg, #253d98, #1a3a8f)' }}>
+                        <div className="btn-icon">
+                            <CalendarCheck size={28} />
+                        </div>
+                        <div className="btn-text">
+                            <span className="btn-label">Book Online</span>
+                            <span className="btn-number">Quick Form</span>
                         </div>
                     </Link>
                 </div>

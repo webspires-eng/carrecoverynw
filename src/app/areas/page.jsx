@@ -69,6 +69,12 @@ export default async function AreasArchive({ searchParams }) {
                     />
                     <button type="submit">Search</button>
                 </form>
+
+                <div style={{ textAlign: 'center', marginTop: '18px' }}>
+                    <a href="/booking" className="book-now-btn" style={{ display: 'inline-flex' }}>
+                        Book Now Online
+                    </a>
+                </div>
             </div>
 
             <div className="areas-container">

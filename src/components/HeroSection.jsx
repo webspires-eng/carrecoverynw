@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, CalendarCheck } from "lucide-react";
 
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -75,6 +75,10 @@ export default function HeroSection({ location = "West Midlands" }) {
                                 {displayPhone}
                                 <span>24/7 Service • Call Now</span>
                             </button>
+                        </Link>
+                        <Link href="/booking" className="book-now-btn" style={{ marginTop: '12px', width: '290px', justifyContent: 'center', padding: '16px 24px', fontSize: '1.1rem' }}>
+                            <CalendarCheck size={22} />
+                            Book Now Online
                         </Link>
                         <div className="contact-button">
                             <p>Arrive in less than 15 Mins</p>

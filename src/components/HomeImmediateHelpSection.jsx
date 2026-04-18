@@ -48,6 +48,12 @@ export default function HomeImmediateHelpSection() {
                 </div>
             </div>
 
+            <div style={{ textAlign: 'center', marginTop: '20px' }}>
+                <a href="/booking" className="book-now-btn" style={{ display: 'inline-flex' }}>
+                    📅 Or Book Online Now
+                </a>
+            </div>
+
             <div className="safety-strip">
                 <p><strong>Safety First:</strong> Please turn your hazards on and move to a safe place. If you are on a motorway, wait behind the crash barrier away from traffic.</p>
             </div>

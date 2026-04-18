@@ -9,7 +9,10 @@ export default function BasicPage({ title, content, schemaMarkup }) {
                 <Link href="/" style={{ fontSize: '1.2rem', fontWeight: '800', textDecoration: 'none', color: '#121212' }}>
                     CAR <span style={{ color: '#ed4705' }}>RECOVERY</span>
                 </Link>
-                <Link href="/" style={{ color: '#ed4705', fontWeight: '600' }}>← Back to Home</Link>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                    <Link href="/booking" className="book-now-btn small">Book Now</Link>
+                    <Link href="/" style={{ color: '#ed4705', fontWeight: '600' }}>← Back to Home</Link>
+                </div>
             </header>
 
             <section style={{ padding: '80px 5%', maxWidth: '1400px', margin: '0 auto', minHeight: '60vh' }}>

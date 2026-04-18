@@ -1,7 +1,7 @@
 "use client";
 
 import { useSettings } from "@/components/SettingsProvider";
-import { Phone } from "lucide-react";
+import { Phone, CalendarCheck } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -50,6 +50,13 @@ export default function FloatingActions() {
 
     return (
         <div style={containerStyle}>
+            {/* Book Now Button */}
+            <Link href="/booking" aria-label="Book Now" style={{ textDecoration: 'none' }}>
+                <div style={{ ...iconWrapperBase, background: 'linear-gradient(135deg, #253d98, #1a3a8f)' }}>
+                    <CalendarCheck size={28} color="white" />
+                </div>
+            </Link>
+            {/* WhatsApp Button */}
             <Link href={whatsappLink} aria-label="WhatsApp" style={{ textDecoration: 'none' }}>
                 <div style={{ ...iconWrapperBase, background: '#25D366' }}>
                     <FaWhatsapp size={32} color="white" />
@@ -58,4 +65,3 @@ export default function FloatingActions() {
         </div>
     );
 }
-
