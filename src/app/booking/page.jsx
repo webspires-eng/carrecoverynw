@@ -76,7 +76,6 @@ export default function BookingPage() {
         setStatus("submitting");
 
         try {
-            // Save to database
             const res = await fetch('/api/bookings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -89,41 +88,21 @@ export default function BookingPage() {
                 setTimeout(() => setStatus(null), 5000);
                 return;
             }
+
+            setStatus("success");
+
+            // Reset form
+            setFormData({
+                name: "", phone: "", email: "", pickupLocation: "", dropoffLocation: "",
+                serviceType: "", vehicleMake: "", vehicleModel: "", message: "",
+            });
+            setSelectedLocation("");
+
+            setTimeout(() => setStatus(null), 5000);
         } catch {
-            // Still open WhatsApp even if DB save fails
-            console.error('Failed to save booking to database');
+            setStatus("error");
+            setTimeout(() => setStatus(null), 5000);
         }
-
-        // Build WhatsApp message
-        const msg = [
-            `📋 *New Booking Request*`,
-            ``,
-            `👤 *Name:* ${formData.name}`,
-            `📱 *Phone:* ${formData.phone}`,
-            formData.email ? `📧 *Email:* ${formData.email}` : "",
-            ``,
-            `📍 *Pickup:* ${formData.pickupLocation}`,
-            formData.dropoffLocation ? `🏁 *Drop-off:* ${formData.dropoffLocation}` : "",
-            `🔧 *Service:* ${formData.serviceType}`,
-            ``,
-            formData.vehicleMake ? `🚗 *Vehicle:* ${formData.vehicleMake} ${formData.vehicleModel}` : "",
-            formData.message ? `💬 *Notes:* ${formData.message}` : "",
-        ].filter(Boolean).join("\n");
-
-        const whatsappNumber = whatsapp || (linkPhone.startsWith('0') ? '44' + linkPhone.substring(1) : linkPhone);
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`;
-
-        window.open(whatsappUrl, "_blank");
-        setStatus("success");
-
-        // Reset form
-        setFormData({
-            name: "", phone: "", email: "", pickupLocation: "", dropoffLocation: "",
-            serviceType: "", vehicleMake: "", vehicleModel: "", message: "",
-        });
-        setSelectedLocation("");
-
-        setTimeout(() => setStatus(null), 5000);
     };
 
     return (
