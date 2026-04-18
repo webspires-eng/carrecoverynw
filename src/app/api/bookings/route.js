@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
+import { sendBookingEmail } from '@/lib/email';
 
 // GET all bookings
 export async function GET(request) {
@@ -88,6 +89,11 @@ export async function POST(request) {
             status: 'new',
             created_at: new Date(),
             updated_at: new Date(),
+        });
+
+        // Send email notification (fire-and-forget)
+        sendBookingEmail({ name, phone, email, pickupLocation, dropoffLocation, serviceType, vehicleMake, vehicleModel, message }).catch(err => {
+            console.error('[Bookings] Email notification failed:', err.message);
         });
 
         return NextResponse.json({
