@@ -71,8 +71,28 @@ export default function BookingPage() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setStatus("submitting");
+
+        try {
+            // Save to database
+            const res = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+            });
+            const data = await res.json();
+
+            if (!data.success) {
+                setStatus("error");
+                setTimeout(() => setStatus(null), 5000);
+                return;
+            }
+        } catch {
+            // Still open WhatsApp even if DB save fails
+            console.error('Failed to save booking to database');
+        }
 
         // Build WhatsApp message
         const msg = [
@@ -95,6 +115,13 @@ export default function BookingPage() {
 
         window.open(whatsappUrl, "_blank");
         setStatus("success");
+
+        // Reset form
+        setFormData({
+            name: "", phone: "", email: "", pickupLocation: "", dropoffLocation: "",
+            serviceType: "", vehicleMake: "", vehicleModel: "", message: "",
+        });
+        setSelectedLocation("");
 
         setTimeout(() => setStatus(null), 5000);
     };
@@ -137,6 +164,12 @@ export default function BookingPage() {
                         <div className="booking-status success">
                             <CheckCircle size={20} />
                             Your booking request has been sent! We'll contact you shortly.
+                        </div>
+                    )}
+
+                    {status === "error" && (
+                        <div className="booking-status error">
+                            Something went wrong. Please try again or call us directly.
                         </div>
                     )}
 
