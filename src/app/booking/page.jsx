@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     MapPin, Phone, Clock, Shield, CheckCircle, Send,
     CalendarDays, Car, ArrowRight, Truck
@@ -44,6 +45,7 @@ export default function BookingPage() {
     const { phone, whatsapp } = useSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
+    const router = useRouter();
 
     const [selectedLocation, setSelectedLocation] = useState("");
     const [formData, setFormData] = useState({
@@ -89,16 +91,7 @@ export default function BookingPage() {
                 return;
             }
 
-            setStatus("success");
-
-            // Reset form
-            setFormData({
-                name: "", phone: "", email: "", pickupLocation: "", dropoffLocation: "",
-                serviceType: "", vehicleMake: "", vehicleModel: "", message: "",
-            });
-            setSelectedLocation("");
-
-            setTimeout(() => setStatus(null), 5000);
+            router.push('/booking/thank-you');
         } catch {
             setStatus("error");
             setTimeout(() => setStatus(null), 5000);
