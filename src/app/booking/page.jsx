@@ -225,29 +225,7 @@ export default function BookingPage() {
 
                             <div className="form-divider" />
 
-                            {/* Quick Location Selector */}
-                            <div className="form-group full-width location-selector-section">
-                                <div className="location-selector-title">
-                                    <MapPin size={20} />
-                                    Quick Pickup Location
-                                </div>
-                                <div className="pickup-locations-grid">
-                                    {POPULAR_LOCATIONS.slice(0, 9).map(loc => (
-                                        <div
-                                            key={loc.slug}
-                                            className={`location-chip ${selectedLocation === loc.name ? "active" : ""}`}
-                                            onClick={() => handleLocationChip(loc.name)}
-                                        >
-                                            <span className="chip-icon">
-                                                <MapPin size={14} />
-                                            </span>
-                                            {loc.name}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Manual Location Inputs */}
+                            {/* Location Inputs */}
                             <div className="form-group">
                                 <label>Pickup Location <span className="required">*</span></label>
                                 <input
@@ -308,7 +286,7 @@ export default function BookingPage() {
                             {/* Submit */}
                             <button type="submit" className="booking-submit-btn">
                                 <Send size={22} />
-                                Send Booking Request via WhatsApp
+                                Get a Quote Now
                                 <ArrowRight size={20} />
                             </button>
                         </div>
