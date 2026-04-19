@@ -138,18 +138,45 @@ export default function AdminDashboard() {
             const siteUrl = window.location.origin;
             const urls = allAreas.map(area => `${siteUrl}/areas/${area.slug}`);
 
-            const res = await fetch('/api/indexing', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ urls, type: 'URL_UPDATED' }),
-            });
-            const data = await res.json();
-            if (data.success) {
-                setSuccessPopupData({ count: allAreas.length, message: data.message });
-                setShowSuccessPopup(true);
-            } else {
-                alert(`Error: ${data.error || 'Failed to bulk index'}`);
+            // Split URLs into chunks of 200 (API limit)
+            const BATCH_SIZE = 200;
+            const chunks = [];
+            for (let i = 0; i < urls.length; i += BATCH_SIZE) {
+                chunks.push(urls.slice(i, i + BATCH_SIZE));
             }
+
+            let totalSuccess = 0;
+            let totalFail = 0;
+            let hasError = false;
+
+            for (const chunk of chunks) {
+                try {
+                    const res = await fetch('/api/indexing', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ urls: chunk, type: 'URL_UPDATED' }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        const successCount = data.results ? data.results.filter(r => r.success).length : chunk.length;
+                        const failCount = data.results ? data.results.filter(r => !r.success).length : 0;
+                        totalSuccess += successCount;
+                        totalFail += failCount;
+                    } else {
+                        hasError = true;
+                        totalFail += chunk.length;
+                    }
+                } catch {
+                    hasError = true;
+                    totalFail += chunk.length;
+                }
+            }
+
+            setSuccessPopupData({ 
+                count: totalSuccess, 
+                message: `Batch complete: ${totalSuccess} succeeded, ${totalFail} failed` 
+            });
+            setShowSuccessPopup(true);
         } catch (error) {
             console.error('Error bulk indexing:', error);
             alert('Error performing bulk indexing. Check console for details.');
