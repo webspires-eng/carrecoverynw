@@ -19,9 +19,6 @@ export default function AdminDashboard() {
     const [sortOrder, setSortOrder] = useState('desc');
     const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
     const [indexingStatus, setIndexingStatus] = useState({}); // { [areaId]: 'loading' | 'success' | 'error' }
-    const [bulkIndexing, setBulkIndexing] = useState(false);
-    const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-    const [successPopupData, setSuccessPopupData] = useState({ message: '', count: 0 });
 
     // Check for saved draft
     useEffect(() => {
@@ -120,69 +117,6 @@ export default function AdminDashboard() {
         window.location.href = '/signin';
     };
 
-    const handleBulkIndex = async () => {
-        if (!window.confirm(`Are you sure you want to index ALL areas? This may take a moment.`)) return;
-
-        setBulkIndexing(true);
-        try {
-            const areasRes = await fetch('/api/areas?limit=1000');
-            const areasData = await areasRes.json();
-            
-            if (!areasData.success || !areasData.data || areasData.data.length === 0) {
-                alert('No areas found to index or failed to fetch areas.');
-                setBulkIndexing(false);
-                return;
-            }
-
-            const allAreas = areasData.data;
-            const siteUrl = window.location.origin;
-            const urls = allAreas.map(area => `${siteUrl}/areas/${area.slug}`);
-
-            // Split URLs into chunks of 200 (API limit)
-            const BATCH_SIZE = 200;
-            const chunks = [];
-            for (let i = 0; i < urls.length; i += BATCH_SIZE) {
-                chunks.push(urls.slice(i, i + BATCH_SIZE));
-            }
-
-            let totalSuccess = 0;
-            let totalFail = 0;
-            let hasError = false;
-
-            for (const chunk of chunks) {
-                try {
-                    const res = await fetch('/api/indexing', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ urls: chunk, type: 'URL_UPDATED' }),
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                        const successCount = data.results ? data.results.filter(r => r.success).length : chunk.length;
-                        const failCount = data.results ? data.results.filter(r => !r.success).length : 0;
-                        totalSuccess += successCount;
-                        totalFail += failCount;
-                    } else {
-                        hasError = true;
-                        totalFail += chunk.length;
-                    }
-                } catch {
-                    hasError = true;
-                    totalFail += chunk.length;
-                }
-            }
-
-            setSuccessPopupData({ 
-                count: totalSuccess, 
-                message: `Batch complete: ${totalSuccess} succeeded, ${totalFail} failed` 
-            });
-            setShowSuccessPopup(true);
-        } catch (error) {
-            console.error('Error bulk indexing:', error);
-            alert('Error performing bulk indexing. Check console for details.');
-        }
-        setBulkIndexing(false);
-    };
 
     return (
         <div className="admin-dashboard">
@@ -332,13 +266,6 @@ export default function AdminDashboard() {
                         </button>
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
-                        <button 
-                            className="btn btn-secondary" 
-                            disabled={bulkIndexing || pagination.total === 0} 
-                            onClick={handleBulkIndex}
-                        >
-                            {bulkIndexing ? '⏳ Indexing All...' : '🚀 Bulk Index All Areas'}
-                        </button>
                         <Link href="/admin/areas/add" className="btn btn-accent">
                             Add New Area
                         </Link>
@@ -513,26 +440,7 @@ export default function AdminDashboard() {
                     </div>
                 )}
             </div>
-
-            {/* Success Popup */}
-            {showSuccessPopup && (
-                <div className="modal-overlay">
-                    <div className="modal" style={{ textAlign: 'center', maxWidth: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🚀</div>
-                        <h2 style={{ marginBottom: '8px', fontSize: '1.5rem', fontWeight: 700 }}>Indexing Initiated!</h2>
-                        <p style={{ color: 'var(--admin-gray-600)', marginBottom: '24px', lineHeight: '1.6' }}>
-                            Successfully submitted <strong>{successPopupData.count}</strong> areas to the Google Indexing API. Google will process these URLs shortly.
-                        </p>
-                        <button 
-                            className="btn btn-primary" 
-                            style={{ width: '100%', justifyContent: 'center', padding: '12px' }}
-                            onClick={() => setShowSuccessPopup(false)}
-                        >
-                            Awesome!
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
+
