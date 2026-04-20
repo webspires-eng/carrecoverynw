@@ -167,3 +167,41 @@ export function buildAreaUrl(slug) {
     const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
     return `${baseUrl}/areas/${slug}`;
 }
+
+/**
+ * Submit a URL and persist the outcome to the indexing_submissions collection
+ * so the admin dashboard reflects auto-submissions (not just manual batches).
+ * Fire-and-forget safe — catches its own errors.
+ */
+export async function submitAndTrack(url, type = 'URL_UPDATED') {
+    const { connectToDatabase } = await import('./db.js');
+    try {
+        const result = await submitUrlToGoogle(url, type);
+        const { db } = await connectToDatabase();
+        const col = db.collection('indexing_submissions');
+
+        if (type === 'URL_DELETED' && result.success) {
+            await col.deleteOne({ url });
+            return result;
+        }
+
+        await col.updateOne(
+            { url },
+            {
+                $set: {
+                    url,
+                    status: result.success ? 'submitted' : 'failed',
+                    error: result.success ? null : result.error || 'Unknown error',
+                    last_attempt_at: new Date(),
+                    ...(result.success ? { submitted_at: new Date() } : {}),
+                },
+                $inc: { attempts: 1 },
+            },
+            { upsert: true },
+        );
+        return result;
+    } catch (err) {
+        console.error(`[submitAndTrack] Failed for ${url}:`, err.message);
+        return { success: false, error: err.message };
+    }
+}

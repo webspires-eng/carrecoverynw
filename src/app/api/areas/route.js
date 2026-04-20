@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
-import { submitUrlToGoogle, buildAreaUrl } from '@/lib/googleIndexing';
+import { submitAndTrack, buildAreaUrl } from '@/lib/googleIndexing';
 import { logActivity } from '@/lib/logger';
 
 // GET all areas
@@ -122,8 +122,8 @@ export async function POST(request) {
             updated_at: new Date()
         });
 
-        // Submit new area URL to Google Indexing API (fire-and-forget)
-        submitUrlToGoogle(buildAreaUrl(slug), 'URL_UPDATED').catch(err => {
+        // Submit new area URL to Google Indexing API (fire-and-forget, tracked in indexing_submissions)
+        submitAndTrack(buildAreaUrl(slug), 'URL_UPDATED').catch(err => {
             console.error('[Google Indexing] Auto-submit failed for new area:', err.message);
         });
 

@@ -171,8 +171,8 @@ export default function IndexingAdmin() {
                             fontSize: '0.9rem',
                             color: '#14532d',
                         }}>
-                            <strong>🤖 Automatic daily run:</strong> A Vercel Cron job runs at <strong>03:00 UTC</strong> every day and
-                            submits the next {190} URLs. You don't need to press the button manually — it's just there if you want to force a run.
+                            <strong>🤖 Automatic weekly run:</strong> A Vercel Cron job runs every <strong>Monday at 03:00 UTC</strong> and
+                            submits the next {190} pending URLs. Manual button below is only needed to force a run sooner.
                         </div>
 
                         <div className="admin-controls" style={{ gap: 12, flexWrap: 'wrap' }}>
