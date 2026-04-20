@@ -13,7 +13,8 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
     const displayPhone = phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
     const email = settings.email || 'info@carrecoveryuk.co.uk';
     const businessName = settings.business_name || 'Car Recovery UK';
-    const logoUrl = `${baseUrl}${settings.favicon || '/truckicon.png'}`;
+    const favicon = settings.favicon || '/truckicon.png';
+    const logoUrl = /^https?:\/\//i.test(favicon) ? favicon : `${baseUrl}${favicon}`;
 
     const schemas = [];
 
@@ -50,18 +51,12 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
             url: baseUrl,
             telephone: displayPhone,
             email: email,
-            description: '24/7 emergency car recovery, breakdown assistance and vehicle towing service covering the West Midlands and beyond.',
+            description: '24/7 emergency car recovery, breakdown assistance and vehicle towing service covering the UK.',
             address: {
                 '@type': 'PostalAddress',
-                addressLocality: 'West Midlands',
-                addressRegion: 'West Midlands',
                 addressCountry: 'GB',
             },
-            geo: {
-                '@type': 'GeoCoordinates',
-                latitude: 52.4862,
-                longitude: -1.8904,
-            },
+            areaServed: { '@type': 'Country', name: 'United Kingdom' },
             openingHoursSpecification: [{
                 '@type': 'OpeningHoursSpecification',
                 dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -82,7 +77,7 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
             jobTitle: 'Recovery Specialist',
             worksFor: { '@type': 'Organization', name: businessName },
             url: `${baseUrl}/about-us`,
-            description: `Lead recovery specialist at ${businessName}, providing 24/7 emergency vehicle recovery across the West Midlands and beyond.`,
+            description: `Lead recovery specialist at ${businessName}, providing 24/7 emergency vehicle recovery across the UK.`,
         });
 
         schemas.push({
@@ -157,7 +152,7 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
             '@context': 'https://schema.org',
             '@type': 'CollectionPage',
             name: 'Areas We Cover | Car Recovery UK',
-            description: 'Find car recovery services in your area. We cover Birmingham, Coventry, Wolverhampton, and 4000+ locations across the West Midlands.',
+            description: 'Find car recovery services in your area. We cover thousands of locations across the UK — 24/7 emergency towing and breakdown recovery near you.',
             url: `${baseUrl}/areas`,
             isPartOf: { '@type': 'WebSite', name: businessName, url: baseUrl },
         });

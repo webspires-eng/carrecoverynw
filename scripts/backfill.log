@@ -1,0 +1,12 @@
+[dotenv@17.2.3] injecting env (1) from .env.local -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+To process: 310
+[1/310] OK   London Borough of Lambeth -> Greater London (51.460, -0.121)
+[2/310] OK   Abingdon -> Oxfordshire (51.671, -1.278)
+[3/310] OK   Accrington -> Lancashire (53.754, -2.366)
+[4/310] OK   Acle -> Norfolk (52.639, 1.548)
+[5/310] OK   Addlestone -> Surrey (51.371, -0.490)
+[6/310] OK   Alcester -> Warwickshire (52.215, -1.870)
+[7/310] OK   Alconbury -> Cambridgeshire (52.358, -0.268)
+[8/310] OK   Aldbourne -> Wiltshire (51.484, -1.651)
+[9/310] OK   Alderley Edge -> Cheshire East (53.306, -2.238)
+[10/310] OK   Aldermaston -> West Berkshire (51.383, -1.152)

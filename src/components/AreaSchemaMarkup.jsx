@@ -20,7 +20,8 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
     const displayPhone = phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
     const email = settings.email || 'info@carrecoveryuk.co.uk';
     const businessName = settings.business_name || 'Car Recovery UK';
-    const logoUrl = `${baseUrl}${settings.favicon || '/truckicon.png'}`;
+    const favicon = settings.favicon || '/truckicon.png';
+    const logoUrl = /^https?:\/\//i.test(favicon) ? favicon : `${baseUrl}${favicon}`;
 
     const majorRoads = area.major_roads
         ? (typeof area.major_roads === 'string' ? JSON.parse(area.major_roads) : area.major_roads)
@@ -52,16 +53,18 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
         address: {
             '@type': 'PostalAddress',
             addressLocality: location,
-            addressRegion: area.county || 'West Midlands',
+            ...(area.county ? { addressRegion: area.county } : {}),
             addressCountry: 'GB',
         },
-        geo: area.latitude && area.longitude
+        ...(area.latitude && area.longitude
             ? {
-                '@type': 'GeoCoordinates',
-                latitude: area.latitude,
-                longitude: area.longitude,
+                geo: {
+                    '@type': 'GeoCoordinates',
+                    latitude: area.latitude,
+                    longitude: area.longitude,
+                },
             }
-            : undefined,
+            : {}),
         openingHoursSpecification: [
             {
                 '@type': 'OpeningHoursSpecification',
@@ -140,7 +143,7 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
             name: businessName,
         },
         url: `${baseUrl}/about-us`,
-        description: `Lead recovery specialist at ${businessName}, providing 24/7 emergency vehicle recovery across the West Midlands and beyond.`,
+        description: `Lead recovery specialist at ${businessName}, providing 24/7 emergency vehicle recovery across the UK.`,
     };
 
     // ── 4. Article ────────────────────────────────────────────

@@ -58,7 +58,10 @@ export default async function RootLayout({ children }) {
     "@type": "Organization",
     "name": "Car Recovery UK",
     "url": baseUrl,
-    "logo": `${baseUrl}${settings.favicon || "/truckicon.png"}`,
+    "logo": (() => {
+      const fav = settings.favicon || "/truckicon.png";
+      return /^https?:\/\//i.test(fav) ? fav : `${baseUrl}${fav}`;
+    })(),
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": settings.phone || "07360544819",
