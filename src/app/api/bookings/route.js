@@ -23,6 +23,7 @@ export async function GET(request) {
                 { email: regex },
                 { pickupLocation: regex },
                 { dropoffLocation: regex },
+                { registrationNumber: regex },
             ];
         }
 
@@ -65,7 +66,7 @@ export async function GET(request) {
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { name, phone, email, pickupLocation, dropoffLocation, serviceType, vehicleMake, vehicleModel, message } = body;
+        const { name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message } = body;
 
         if (!name || !phone || !pickupLocation || !serviceType) {
             return NextResponse.json(
@@ -83,6 +84,7 @@ export async function POST(request) {
             pickupLocation,
             dropoffLocation: dropoffLocation || null,
             serviceType,
+            registrationNumber: registrationNumber || null,
             vehicleMake: vehicleMake || null,
             vehicleModel: vehicleModel || null,
             message: message || null,
@@ -92,7 +94,7 @@ export async function POST(request) {
         });
 
         // Send email notification (fire-and-forget)
-        sendBookingEmail({ name, phone, email, pickupLocation, dropoffLocation, serviceType, vehicleMake, vehicleModel, message }).catch(err => {
+        sendBookingEmail({ name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message }).catch(err => {
             console.error('[Bookings] Email notification failed:', err.message);
         });
 

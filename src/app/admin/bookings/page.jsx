@@ -291,6 +291,12 @@ export default function AdminBookings() {
                                                         <div style={{ fontSize: '0.9rem', color: '#334155' }}>{booking.email}</div>
                                                     </div>
                                                 )}
+                                                {booking.registrationNumber && (
+                                                    <div>
+                                                        <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: 600, marginBottom: '4px' }}>Reg Number</div>
+                                                        <div style={{ fontSize: '0.9rem', color: '#334155', textTransform: 'uppercase' }}>{booking.registrationNumber}</div>
+                                                    </div>
+                                                )}
                                                 {(booking.vehicleMake || booking.vehicleModel) && (
                                                     <div>
                                                         <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: '#94a3b8', fontWeight: 600, marginBottom: '4px' }}>Vehicle</div>

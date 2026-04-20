@@ -53,6 +53,11 @@ export async function sendBookingEmail(booking) {
                         <td style="padding: 12px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 13px; font-weight: 600;">🏁 Drop-off</td>
                         <td style="padding: 12px 8px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 14px;">${booking.dropoffLocation}</td>
                     </tr>` : ''}
+                    ${booking.registrationNumber ? `
+                    <tr>
+                        <td style="padding: 12px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 13px; font-weight: 600;">#️⃣ Reg Number</td>
+                        <td style="padding: 12px 8px; border-bottom: 1px solid #e2e8f0; color: #1e293b; font-size: 14px; text-transform: uppercase;">${booking.registrationNumber}</td>
+                    </tr>` : ''}
                     ${booking.vehicleMake ? `
                     <tr>
                         <td style="padding: 12px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 13px; font-weight: 600;">🚗 Vehicle</td>
