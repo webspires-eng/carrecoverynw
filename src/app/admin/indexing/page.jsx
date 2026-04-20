@@ -159,7 +159,20 @@ export default function IndexingAdmin() {
                             color: '#78350f',
                         }}>
                             <strong>Quota:</strong> Google limits this API to <strong>200 URL notifications/day</strong> per project.
-                            Used in last 24h: <strong>{stats.recent24h}</strong>. Re-run daily until everything is submitted.
+                            Used in last 24h: <strong>{stats.recent24h}</strong>.
+                        </div>
+
+                        <div style={{
+                            background: '#dcfce7',
+                            border: '1px solid #22c55e',
+                            borderRadius: 8,
+                            padding: 14,
+                            margin: '18px 0',
+                            fontSize: '0.9rem',
+                            color: '#14532d',
+                        }}>
+                            <strong>🤖 Automatic daily run:</strong> A Vercel Cron job runs at <strong>03:00 UTC</strong> every day and
+                            submits the next {190} URLs. You don't need to press the button manually — it's just there if you want to force a run.
                         </div>
 
                         <div className="admin-controls" style={{ gap: 12, flexWrap: 'wrap' }}>
