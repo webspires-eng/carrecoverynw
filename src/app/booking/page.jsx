@@ -56,11 +56,47 @@ export default function BookingPage() {
         pickupLocation: "",
         dropoffLocation: "",
         serviceType: "",
+        registrationNumber: "",
         vehicleMake: "",
         vehicleModel: "",
         message: "",
     });
     const [status, setStatus] = useState(null);
+    const [dvlaStatus, setDvlaStatus] = useState(null);
+    const [step, setStep] = useState(1);
+
+    const handleDvlaLookup = async () => {
+        if (!formData.registrationNumber) return;
+        
+        setDvlaStatus("looking_up");
+        try {
+            const res = await fetch('/api/dvla', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ registrationNumber: formData.registrationNumber }),
+            });
+            const data = await res.json();
+
+            if (data.success && data.data) {
+                const make = data.data.make || formData.vehicleMake;
+                const model = data.data.model || formData.vehicleModel;
+                
+                setFormData(prev => ({
+                    ...prev,
+                    vehicleMake: make,
+                    vehicleModel: model,
+                }));
+                setDvlaStatus("success");
+                setTimeout(() => setDvlaStatus(null), 3000);
+            } else {
+                setDvlaStatus("error");
+                setTimeout(() => setDvlaStatus(null), 3000);
+            }
+        } catch (error) {
+            setDvlaStatus("error");
+            setTimeout(() => setDvlaStatus(null), 3000);
+        }
+    };
 
     const handleLocationChip = (locName) => {
         setSelectedLocation(locName);
@@ -147,126 +183,193 @@ export default function BookingPage() {
                     )}
 
                     <form onSubmit={handleSubmit}>
-                        <div className="form-grid">
-                            {/* Personal Details */}
-                            <div className="form-group">
-                                <label>Full Name <span className="required">*</span></label>
-                                <input
-                                    type="text"
-                                    name="name"
-                                    placeholder="John Smith"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    required
-                                />
+                        {step === 1 && (
+                            <div className="form-grid">
+                                <div className="form-group full-width">
+                                    <h3 style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: "600" }}>Step 1: Recovery Locations</h3>
+                                </div>
+                                <div className="form-group">
+                                    <label>Pickup Location <span className="required">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="pickupLocation"
+                                        placeholder="e.g. M6 Junction 7, Birmingham"
+                                        value={formData.pickupLocation}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Drop-off Location <span className="required">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="dropoffLocation"
+                                        placeholder="e.g. Your home address or garage"
+                                        value={formData.dropoffLocation}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group full-width" style={{ marginTop: "1rem" }}>
+                                    <button 
+                                        type="button" 
+                                        className="booking-submit-btn"
+                                        onClick={() => {
+                                            if (!formData.pickupLocation || !formData.dropoffLocation) {
+                                                alert("Please fill in both pickup and drop-off locations");
+                                                return;
+                                            }
+                                            setStep(2);
+                                        }}
+                                    >
+                                        Next: Vehicle Details
+                                        <ArrowRight size={20} />
+                                    </button>
+                                </div>
                             </div>
-                            <div className="form-group">
-                                <label>Phone Number <span className="required">*</span></label>
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    placeholder="07XXX XXXXXX"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Email Address <span className="required">*</span></label>
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="john@example.com"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Service Type <span className="required">*</span></label>
-                                <select
-                                    name="serviceType"
-                                    value={formData.serviceType}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Select a service...</option>
-                                    {SERVICE_TYPES.map(s => (
-                                        <option key={s} value={s}>{s}</option>
-                                    ))}
-                                </select>
-                            </div>
+                        )}
 
-                            <div className="form-divider" />
+                        {step === 2 && (
+                            <div className="form-grid">
+                                <div className="form-group full-width" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                                    <h3 style={{ fontSize: "1.25rem", fontWeight: "600" }}>Step 2: Vehicle & Contact Info</h3>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setStep(1)}
+                                        style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: "600", padding: "0.5rem" }}
+                                    >
+                                        ← Back to Step 1
+                                    </button>
+                                </div>
 
-                            {/* Location Inputs */}
-                            <div className="form-group">
-                                <label>Pickup Location <span className="required">*</span></label>
-                                <input
-                                    type="text"
-                                    name="pickupLocation"
-                                    placeholder="e.g. M6 Junction 7, Birmingham"
-                                    value={formData.pickupLocation}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Drop-off Location <span className="required">*</span></label>
-                                <input
-                                    type="text"
-                                    name="dropoffLocation"
-                                    placeholder="e.g. Your home address or garage"
-                                    value={formData.dropoffLocation}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
+                                {/* Vehicle Details */}
+                                <div className="form-group full-width">
+                                    <label>Registration Number (Optional)</label>
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <input
+                                            type="text"
+                                            name="registrationNumber"
+                                            placeholder="e.g. AB12 CDE"
+                                            value={formData.registrationNumber}
+                                            onChange={(e) => setFormData({...formData, registrationNumber: e.target.value.toUpperCase()})}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleDvlaLookup}
+                                            disabled={dvlaStatus === "looking_up" || !formData.registrationNumber}
+                                            style={{
+                                                padding: '0 20px',
+                                                backgroundColor: '#2563eb',
+                                                color: '#fff',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                fontWeight: '600',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.2s',
+                                                whiteSpace: 'nowrap'
+                                            }}
+                                        >
+                                            {dvlaStatus === "looking_up" ? "Looking up..." : "Find Vehicle"}
+                                        </button>
+                                    </div>
+                                    {dvlaStatus === "success" && <small style={{ color: 'green', marginTop: '6px', display: 'block', fontWeight: '500' }}>Vehicle found! Details auto-filled.</small>}
+                                    {dvlaStatus === "error" && <small style={{ color: 'red', marginTop: '6px', display: 'block', fontWeight: '500' }}>Could not find vehicle. Please enter details manually.</small>}
+                                </div>
+                                <div className="form-group">
+                                    <label>Vehicle Make <span className="required">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="vehicleMake"
+                                        placeholder="e.g. BMW, Ford, Toyota"
+                                        value={formData.vehicleMake}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Vehicle Model <span className="required">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="vehicleModel"
+                                        placeholder="e.g. 3 Series, Focus, Corolla"
+                                        value={formData.vehicleModel}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
 
-                            <div className="form-divider" />
+                                <div className="form-divider" />
 
-                            {/* Vehicle Details */}
-                            <div className="form-group">
-                                <label>Vehicle Make <span className="required">*</span></label>
-                                <input
-                                    type="text"
-                                    name="vehicleMake"
-                                    placeholder="e.g. BMW, Ford, Toyota"
-                                    value={formData.vehicleMake}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Vehicle Model <span className="required">*</span></label>
-                                <input
-                                    type="text"
-                                    name="vehicleModel"
-                                    placeholder="e.g. 3 Series, Focus, Corolla"
-                                    value={formData.vehicleModel}
-                                    onChange={handleChange}
-                                    required
-                                />
-                            </div>
+                                {/* Personal Details */}
+                                <div className="form-group">
+                                    <label>Full Name <span className="required">*</span></label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        placeholder="John Smith"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Phone Number <span className="required">*</span></label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        placeholder="07XXX XXXXXX"
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Email Address <span className="required">*</span></label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        placeholder="john@example.com"
+                                        value={formData.email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>Service Type <span className="required">*</span></label>
+                                    <select
+                                        name="serviceType"
+                                        value={formData.serviceType}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="">Select a service...</option>
+                                        {SERVICE_TYPES.map(s => (
+                                            <option key={s} value={s}>{s}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                            {/* Additional Notes */}
-                            <div className="form-group full-width">
-                                <label>Additional Notes</label>
-                                <textarea
-                                    name="message"
-                                    placeholder="Any additional details about your situation (e.g. car won't start, flat tyre on highway, accident scene)..."
-                                    value={formData.message}
-                                    onChange={handleChange}
-                                />
-                            </div>
+                                <div className="form-divider" />
 
-                            {/* Submit */}
-                            <button type="submit" className="booking-submit-btn">
-                                <Send size={22} />
-                                Get a Quote Now
-                                <ArrowRight size={20} />
-                            </button>
-                        </div>
+                                {/* Additional Notes */}
+                                <div className="form-group full-width">
+                                    <label>Additional Notes</label>
+                                    <textarea
+                                        name="message"
+                                        placeholder="Any additional details about your situation (e.g. car won't start, flat tyre on highway, accident scene)..."
+                                        value={formData.message}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                {/* Submit */}
+                                <button type="submit" className="booking-submit-btn">
+                                    <Send size={22} />
+                                    Get a Quote Now
+                                    <ArrowRight size={20} />
+                                </button>
+                            </div>
+                        )}
                     </form>
 
                     {/* Trust Badges */}
