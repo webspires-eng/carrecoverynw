@@ -63,6 +63,7 @@ export default function BookingPage() {
     });
     const [status, setStatus] = useState(null);
     const [dvlaStatus, setDvlaStatus] = useState(null);
+    const [dvlaDetails, setDvlaDetails] = useState(null);
     const [step, setStep] = useState(1);
 
     const handleDvlaLookup = async () => {
@@ -86,6 +87,7 @@ export default function BookingPage() {
                     vehicleMake: make,
                     vehicleModel: model,
                 }));
+                setDvlaDetails(data.data);
                 setDvlaStatus("success");
                 setTimeout(() => setDvlaStatus(null), 3000);
             } else {
@@ -232,7 +234,7 @@ export default function BookingPage() {
                         {step === 2 && (
                             <div className="form-grid">
                                 <div className="form-group full-width" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                                    <h3 style={{ fontSize: "1.25rem", fontWeight: "600" }}>Step 2: Vehicle & Contact Info</h3>
+                                    <h3 style={{ fontSize: "1.25rem", fontWeight: "600" }}>Step 2: Vehicle Details</h3>
                                     <button 
                                         type="button" 
                                         onClick={() => setStep(1)}
@@ -242,7 +244,6 @@ export default function BookingPage() {
                                     </button>
                                 </div>
 
-                                {/* Vehicle Details */}
                                 <div className="form-group full-width">
                                     <label>Registration Number (Optional)</label>
                                     <div style={{ display: 'flex', gap: '10px' }}>
@@ -251,7 +252,11 @@ export default function BookingPage() {
                                             name="registrationNumber"
                                             placeholder="e.g. AB12 CDE"
                                             value={formData.registrationNumber}
-                                            onChange={(e) => setFormData({...formData, registrationNumber: e.target.value.toUpperCase()})}
+                                            style={{ textTransform: 'uppercase' }}
+                                            onChange={(e) => {
+                                                setFormData({...formData, registrationNumber: e.target.value.toUpperCase()});
+                                                setDvlaDetails(null);
+                                            }}
                                         />
                                         <button
                                             type="button"
@@ -272,35 +277,115 @@ export default function BookingPage() {
                                             {dvlaStatus === "looking_up" ? "Looking up..." : "Find Vehicle"}
                                         </button>
                                     </div>
-                                    {dvlaStatus === "success" && <small style={{ color: 'green', marginTop: '6px', display: 'block', fontWeight: '500' }}>Vehicle found! Details auto-filled.</small>}
                                     {dvlaStatus === "error" && <small style={{ color: 'red', marginTop: '6px', display: 'block', fontWeight: '500' }}>Could not find vehicle. Please enter details manually.</small>}
                                 </div>
-                                <div className="form-group">
-                                    <label>Vehicle Make <span className="required">*</span></label>
-                                    <input
-                                        type="text"
-                                        name="vehicleMake"
-                                        placeholder="e.g. BMW, Ford, Toyota"
-                                        value={formData.vehicleMake}
-                                        onChange={handleChange}
-                                        required
-                                    />
+
+                                {dvlaDetails ? (
+                                    <div className="form-group full-width">
+                                        <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                                                <div style={{ background: '#fbbf24', borderRadius: '6px', display: 'flex', alignItems: 'center', border: '2px solid #000', overflow: 'hidden', width: '280px', height: '60px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
+                                                    <div style={{ background: '#1d4ed8', color: '#fff', padding: '0 12px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>
+                                                        <span style={{ fontSize: '10px' }}>🇬🇧</span>
+                                                        <span style={{ fontSize: '12px' }}>UK</span>
+                                                    </div>
+                                                    <div style={{ flex: 1, textAlign: 'center', fontSize: '28px', fontWeight: 'bold', color: '#000', letterSpacing: '2px', fontFamily: 'monospace' }}>
+                                                        {formData.registrationNumber.toUpperCase()}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                                                <h3 style={{ margin: 0, fontSize: '22px', fontWeight: '800' }}>{dvlaDetails.make}</h3>
+                                                <p style={{ margin: '6px 0 0', color: '#64748b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                                    {dvlaDetails.yearOfManufacture || 'N/A'} • {dvlaDetails.colour || 'N/A'} • {dvlaDetails.fuelType || 'N/A'}
+                                                </p>
+                                            </div>
+                                            
+                                            <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0 0 16px' }} />
+                                            
+                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '14px' }}>
+                                                <div style={{ color: '#64748b' }}>Engine</div>
+                                                <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.engineCapacity ? `${dvlaDetails.engineCapacity}cc` : 'N/A'}</div>
+                                                
+                                                <div style={{ color: '#64748b' }}>Tax</div>
+                                                <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.taxStatus || 'N/A'}</div>
+                                                
+                                                <div style={{ color: '#64748b' }}>MOT</div>
+                                                <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.motStatus || 'N/A'}</div>
+                                                
+                                                {dvlaDetails.co2Emissions && dvlaDetails.co2Emissions > 0 ? (
+                                                    <>
+                                                        <div style={{ color: '#64748b' }}>CO₂</div>
+                                                        <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.co2Emissions} g/km</div>
+                                                    </>
+                                                ): null}
+                                            </div>
+
+                                            <button type="button" onClick={() => setDvlaDetails(null)} style={{ marginTop: '24px', width: '100%', padding: '14px', background: '#000', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '16px' }}>
+                                                Change car
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="form-group">
+                                            <label>Vehicle Make <span className="required">*</span></label>
+                                            <input
+                                                type="text"
+                                                name="vehicleMake"
+                                                placeholder="e.g. BMW, Ford, Toyota"
+                                                value={formData.vehicleMake}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>Vehicle Model <span className="required">*</span></label>
+                                            <input
+                                                type="text"
+                                                name="vehicleModel"
+                                                placeholder="e.g. 3 Series, Focus, Corolla"
+                                                value={formData.vehicleModel}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+                                    </>
+                                )}
+
+                                <div className="form-group full-width" style={{ marginTop: "1rem" }}>
+                                    <button 
+                                        type="button" 
+                                        className="booking-submit-btn"
+                                        onClick={() => {
+                                            if (!dvlaDetails && (!formData.vehicleMake || !formData.vehicleModel)) {
+                                                alert("Please enter your vehicle make and model.");
+                                                return;
+                                            }
+                                            setStep(3);
+                                        }}
+                                    >
+                                        Next: Contact Details
+                                        <ArrowRight size={20} />
+                                    </button>
                                 </div>
-                                <div className="form-group">
-                                    <label>Vehicle Model <span className="required">*</span></label>
-                                    <input
-                                        type="text"
-                                        name="vehicleModel"
-                                        placeholder="e.g. 3 Series, Focus, Corolla"
-                                        value={formData.vehicleModel}
-                                        onChange={handleChange}
-                                        required
-                                    />
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div className="form-grid">
+                                <div className="form-group full-width" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                                    <h3 style={{ fontSize: "1.25rem", fontWeight: "600" }}>Step 3: Contact Info & Service</h3>
+                                    <button 
+                                        type="button" 
+                                        onClick={() => setStep(2)}
+                                        style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: "600", padding: "0.5rem" }}
+                                    >
+                                        ← Back to Step 2
+                                    </button>
                                 </div>
 
-                                <div className="form-divider" />
-
-                                {/* Personal Details */}
                                 <div className="form-group">
                                     <label>Full Name <span className="required">*</span></label>
                                     <input
@@ -351,7 +436,6 @@ export default function BookingPage() {
 
                                 <div className="form-divider" />
 
-                                {/* Additional Notes */}
                                 <div className="form-group full-width">
                                     <label>Additional Notes</label>
                                     <textarea
@@ -362,7 +446,6 @@ export default function BookingPage() {
                                     />
                                 </div>
 
-                                {/* Submit */}
                                 <button type="submit" className="booking-submit-btn">
                                     <Send size={22} />
                                     Get a Quote Now
