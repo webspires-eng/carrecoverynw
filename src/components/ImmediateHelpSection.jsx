@@ -1,7 +1,7 @@
 "use client";
 
 import "../styles/sections/immediate-help.css";
-import { Phone, MapPin, Truck } from "lucide-react";
+import { Phone, MapPin, Truck, CalendarDays } from "lucide-react";
 import Link from "next/link";
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -49,8 +49,9 @@ export default function ImmediateHelpSection() {
             </div>
 
             <div style={{ textAlign: 'center', marginTop: '20px' }}>
-                <a href="/booking" className="book-now-btn" style={{ display: 'inline-flex' }}>
-                    📅 Or Book Online Now
+                <a href="/booking" className="book-now-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '12px' }}>
+                    <CalendarDays size={18} />
+                    <span>Or Book Online Now</span>
                 </a>
             </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Clock, ShieldCheck } from "lucide-react";
+import { Phone, Clock, ShieldCheck, CalendarDays } from "lucide-react";
 
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -35,7 +35,7 @@ export default function Footer() {
                     <div className="footer-column">
                         <h4>Quick Links</h4>
                         <ul>
-                            <li><Link href="/booking" style={{ color: '#ff8c42', fontWeight: '700' }}>📅 Book Now</Link></li>
+                            <li><Link href="/booking" style={{ color: '#ff8c42', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '10px' }}><CalendarDays size={15} /><span>Book Now</span></Link></li>
                             <li><Link href="/about-us">About Our Company</Link></li>
                             <li><Link href="/contact-us">Contact Us</Link></li>
                             <li><Link href="/areas">Areas We Cover</Link></li>

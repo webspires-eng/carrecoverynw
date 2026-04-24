@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Bot, Loader2, Rocket, RotateCcw, Trash2, RefreshCw } from 'lucide-react';
 import '../../../styles/admin.css';
 
 export default function IndexingAdmin() {
@@ -171,7 +172,7 @@ export default function IndexingAdmin() {
                             fontSize: '0.9rem',
                             color: '#14532d',
                         }}>
-                            <strong>🤖 Automatic weekly run:</strong> A Vercel Cron job runs every <strong>Monday at 03:00 UTC</strong> and
+                            <strong style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Bot size={16} />Automatic weekly run:</strong> A Vercel Cron job runs every <strong>Monday at 03:00 UTC</strong> and
                             submits the next {190} pending URLs. Manual button below is only needed to force a run sooner.
                         </div>
 
@@ -202,14 +203,16 @@ export default function IndexingAdmin() {
                                 disabled={running || stats.pending === 0}
                                 onClick={runBatch}
                             >
-                                {running ? '⏳ Running...' : `🚀 Submit Next ${Math.min(batchSize, stats.pending)}`}
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                                    {running ? <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />Running…</> : <><Rocket size={14} />Submit Next {Math.min(batchSize, stats.pending)}</>}
+                                </span>
                             </button>
                             <button
                                 className="btn btn-secondary"
                                 disabled={running || stats.failed === 0}
                                 onClick={retryFailed}
                             >
-                                🔁 Retry Failed ({stats.failed})
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RotateCcw size={14} />Retry Failed ({stats.failed})</span>
                             </button>
                             <button
                                 className="btn btn-secondary"
@@ -217,14 +220,14 @@ export default function IndexingAdmin() {
                                 onClick={resetProgress}
                                 style={{ color: '#ef4444' }}
                             >
-                                🗑 Reset Progress
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Trash2 size={14} />Reset Progress</span>
                             </button>
                             <button
                                 className="btn btn-secondary"
                                 disabled={running}
                                 onClick={fetchStatus}
                             >
-                                ↻ Refresh
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><RefreshCw size={14} />Refresh</span>
                             </button>
                         </div>
 

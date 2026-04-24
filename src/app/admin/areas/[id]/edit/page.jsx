@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import RichTextEditor from '@/components/RichTextEditor';
+import { Wrench, Car } from 'lucide-react';
 import '../../../../../styles/admin.css';
 
 const DEFAULT_SERVICES_LIST = [
@@ -282,7 +283,7 @@ export default function EditAreaPage() {
         <div className="cms-panel">
             <div className="cms-panel-header">
                 <div className="cms-panel-title">
-                    <span className="cms-panel-icon">🔧</span>
+                    <span className="cms-panel-icon"><Wrench size={18} /></span>
                     <span>Services</span>
                     {formData.custom_services.length > 0 && (
                         <span className="cms-count-badge">{formData.custom_services.length}</span>
@@ -330,7 +331,7 @@ export default function EditAreaPage() {
             <div className="cms-panel-body">
                 {formData.custom_services.length === 0 ? (
                     <div className="cms-empty-state">
-                        <span className="cms-empty-icon">🔧</span>
+                        <span className="cms-empty-icon"><Wrench size={32} strokeWidth={1.5} /></span>
                         <p>Using default services</p>
                         <span className="cms-empty-hint">Add custom services to override defaults for this area</span>
                     </div>
@@ -406,7 +407,7 @@ export default function EditAreaPage() {
         <div className="cms-panel">
             <div className="cms-panel-header">
                 <div className="cms-panel-title">
-                    <span className="cms-panel-icon">🚗</span>
+                    <span className="cms-panel-icon"><Car size={18} /></span>
                     <span>Real Recoveries</span>
                     {formData.custom_recoveries.length > 0 && (
                         <span className="cms-count-badge">{formData.custom_recoveries.length}</span>
@@ -454,7 +455,7 @@ export default function EditAreaPage() {
             <div className="cms-panel-body">
                 {formData.custom_recoveries.length === 0 ? (
                     <div className="cms-empty-state">
-                        <span className="cms-empty-icon">🚗</span>
+                        <span className="cms-empty-icon"><Car size={32} strokeWidth={1.5} /></span>
                         <p>Using default recoveries</p>
                         <span className="cms-empty-hint">Add custom recovery examples for this area</span>
                     </div>
@@ -523,24 +524,24 @@ export default function EditAreaPage() {
                                                 <label>Icon</label>
                                                 <select value={recovery.icon_name} className="select-input"
                                                     onChange={(e) => { const r = [...formData.custom_recoveries]; r[index].icon_name = e.target.value; setFormData({ ...formData, custom_recoveries: r }); }}>
-                                                    <option value="Battery">🔋 Battery</option>
-                                                    <option value="Car">🚗 Car</option>
-                                                    <option value="Route">🛣️ Route</option>
-                                                    <option value="Lock">🔒 Lock</option>
-                                                    <option value="TriangleAlert">⚠️ Alert</option>
-                                                    <option value="Truck">🚚 Truck</option>
+                                                    <option value="Battery">Battery</option>
+                                                    <option value="Car">Car</option>
+                                                    <option value="Route">Route</option>
+                                                    <option value="Lock">Lock</option>
+                                                    <option value="TriangleAlert">Alert</option>
+                                                    <option value="Truck">Truck</option>
                                                 </select>
                                             </div>
                                             <div className="form-group">
                                                 <label>Color</label>
                                                 <select value={recovery.color_theme} className="select-input"
                                                     onChange={(e) => { const r = [...formData.custom_recoveries]; r[index].color_theme = e.target.value; setFormData({ ...formData, custom_recoveries: r }); }}>
-                                                    <option value="yellow">🟡 Yellow</option>
-                                                    <option value="blue">🔵 Blue</option>
-                                                    <option value="orange">🟠 Orange</option>
-                                                    <option value="green">🟢 Green</option>
-                                                    <option value="red">🔴 Red</option>
-                                                    <option value="purple">🟣 Purple</option>
+                                                    <option value="yellow">Yellow</option>
+                                                    <option value="blue">Blue</option>
+                                                    <option value="orange">Orange</option>
+                                                    <option value="green">Green</option>
+                                                    <option value="red">Red</option>
+                                                    <option value="purple">Purple</option>
                                                 </select>
                                             </div>
                                         </div>

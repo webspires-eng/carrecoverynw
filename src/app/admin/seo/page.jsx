@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Search, FileCode, Bot, Link2 } from 'lucide-react';
 import '../../../styles/admin.css';
 
 export default function SEOPage() {
@@ -120,7 +121,7 @@ export default function SEOPage() {
                 {/* Header */}
                 <header className="admin-header">
                     <div className="admin-header-left">
-                        <h1>🔍 SEO</h1>
+                        <h1 style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}><Search size={24} strokeWidth={2.2} />SEO</h1>
                         <p>Manage schema markup, robots.txt, and canonical tags for your site.</p>
                     </div>
                     <div className="admin-header-actions">
@@ -178,7 +179,7 @@ export default function SEOPage() {
                     <div className="seo-section">
                         <div className="seo-section-header">
                             <div className="seo-section-title">
-                                <span className="seo-section-icon">🏗️</span>
+                                <span className="seo-section-icon"><FileCode size={22} /></span>
                                 <div>
                                     <h2>Schema Markup (JSON-LD)</h2>
                                     <p className="seo-section-desc">
@@ -225,7 +226,7 @@ export default function SEOPage() {
                     <div className="seo-section">
                         <div className="seo-section-header">
                             <div className="seo-section-title">
-                                <span className="seo-section-icon">🤖</span>
+                                <span className="seo-section-icon"><Bot size={22} /></span>
                                 <div>
                                     <h2>robots.txt</h2>
                                     <p className="seo-section-desc">
@@ -262,7 +263,7 @@ export default function SEOPage() {
                     <div className="seo-section">
                         <div className="seo-section-header">
                             <div className="seo-section-title">
-                                <span className="seo-section-icon">🔗</span>
+                                <span className="seo-section-icon"><Link2 size={22} /></span>
                                 <div>
                                     <h2>Canonical Tags</h2>
                                     <p className="seo-section-desc">

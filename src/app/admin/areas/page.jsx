@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Map, FileEdit, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import '../../../styles/admin.css';
 
 const AUTOSAVE_KEY = 'area_form_autosave';
@@ -172,7 +173,7 @@ export default function AdminDashboard() {
                 {hasDraft && (
                     <div className="draft-banner">
                         <div className="draft-info">
-                            <span className="draft-icon">📝</span>
+                            <span className="draft-icon"><FileEdit size={20} /></span>
                             <div>
                                 <strong>You have an unsaved draft</strong>
                                 <span className="draft-name">"{draftName}"</span>
@@ -286,7 +287,7 @@ export default function AdminDashboard() {
                     </div>
                 ) : areas.length === 0 ? (
                     <div className="empty-state">
-                        <div className="empty-state-icon">🗺️</div>
+                        <div className="empty-state-icon"><Map size={48} strokeWidth={1.5} /></div>
                         <h3>No areas found</h3>
                         <p>{search ? 'Try a different search term' : 'Get started by adding your first area'}</p>
                         {!search && (
@@ -341,7 +342,7 @@ export default function AdminDashboard() {
                                         disabled={indexingStatus[area.id] === 'loading'}
                                         title="Submit to Google Indexing"
                                     >
-                                        {indexingStatus[area.id] === 'loading' ? '⏳' : indexingStatus[area.id] === 'success' ? '✅' : indexingStatus[area.id] === 'error' ? '❌' : 'G'}
+                                        {indexingStatus[area.id] === 'loading' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : indexingStatus[area.id] === 'success' ? <CheckCircle2 size={14} /> : indexingStatus[area.id] === 'error' ? <XCircle size={14} /> : 'G'}
                                     </button>
                                     <button onClick={() => handleDelete(area.id)} className="btn-delete">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -398,7 +399,7 @@ export default function AdminDashboard() {
                                                 disabled={indexingStatus[area.id] === 'loading'}
                                                 title="Submit to Google Indexing"
                                             >
-                                                {indexingStatus[area.id] === 'loading' ? '⏳' : indexingStatus[area.id] === 'success' ? '✅' : indexingStatus[area.id] === 'error' ? '❌' : 'G'}
+                                                {indexingStatus[area.id] === 'loading' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : indexingStatus[area.id] === 'success' ? <CheckCircle2 size={14} /> : indexingStatus[area.id] === 'error' ? <XCircle size={14} /> : 'G'}
                                             </button>
                                             <button onClick={() => handleDelete(area.id)} className="btn-delete">
                                                 Delete

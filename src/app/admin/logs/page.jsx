@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ScrollText, Inbox, Tag } from 'lucide-react';
 import '../../../styles/admin.css';
 
 export default function LogsPage() {
@@ -72,7 +73,7 @@ export default function LogsPage() {
                         {details.url}
                     </div>
                 )}
-                {details.type && <div style={{ fontSize: '0.75rem', color: '#64748b' }}>📝 Type: {details.type}</div>}
+                {details.type && <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: 5 }}><Tag size={11} />Type: {details.type}</div>}
                 {details.error && <div style={{ fontSize: '0.75rem', color: '#ef4444', marginTop: '4px', background: '#fef2f2', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}>{details.error}</div>}
             </div>
         );
@@ -83,7 +84,7 @@ export default function LogsPage() {
             <div className="admin-main">
                 <header className="admin-header">
                     <div className="admin-header-left">
-                        <h1>📋 Activity & Audit Log</h1>
+                        <h1 style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}><ScrollText size={24} strokeWidth={2.2} />Activity &amp; Audit Log</h1>
                         <p>Track changes and SEO indexing events across the platform</p>
                     </div>
                     <div className="admin-header-actions">
@@ -144,7 +145,7 @@ export default function LogsPage() {
                                 ) : (
                                     <tr>
                                         <td colSpan="4" className="empty-state" style={{ border: 'none' }}>
-                                            <div className="empty-state-icon" style={{ fontSize: '2rem', opacity: 0.3 }}>📭</div>
+                                            <div className="empty-state-icon" style={{ opacity: 0.4 }}><Inbox size={42} strokeWidth={1.5} /></div>
                                             <h3>No Activity Recorded</h3>
                                             <p style={{ margin: 0 }}>System events and Google Index submissions will appear here.</p>
                                         </td>
