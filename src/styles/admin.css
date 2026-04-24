@@ -2657,3 +2657,428 @@
         width: 100%;
     }
 }
+/* ========================================
+   ADMIN BOOKINGS — REDESIGNED
+   ======================================== */
+
+.admin-header h1 {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-header-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.bk-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.bk-stat {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.bk-stat--accent {
+    border-left: 3px solid #ea580c;
+}
+
+.bk-stat-label {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.bk-stat-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.bk-controls {
+    margin: 24px 0 16px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.bk-search {
+    flex: 1;
+    min-width: 240px;
+    position: relative;
+}
+
+.bk-search .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.bk-search .search-input {
+    width: 100%;
+    padding: 11px 14px 11px 42px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #fff;
+    font-size: 0.92rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.bk-search .search-input:focus {
+    outline: none;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+}
+
+.bk-filter-select {
+    padding: 11px 36px 11px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    font-size: 0.92rem;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+
+.bk-filter-select:focus {
+    outline: none;
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+}
+
+.bk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.bk-card {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.bk-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+
+.bk-card--new {
+    border-color: #fed7aa;
+    box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.08);
+}
+
+.bk-card--open {
+    border-color: #cbd5e1;
+}
+
+.bk-card-row {
+    width: 100%;
+    background: transparent;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1.1fr 1.3fr 1fr 130px 170px;
+    gap: 16px;
+    padding: 16px 20px;
+    align-items: center;
+    color: inherit;
+    font: inherit;
+}
+
+.bk-cell {
+    min-width: 0;
+}
+
+.bk-customer-name {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+}
+
+.bk-customer-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: #2563eb;
+    font-size: 0.83rem;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.bk-customer-phone:hover {
+    text-decoration: underline;
+}
+
+.bk-route-from {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.86rem;
+    color: #334155;
+}
+
+.bk-route-from svg {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.bk-route-from span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bk-route-to {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    margin-top: 3px;
+    margin-left: 19px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bk-cell--service {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.86rem;
+    color: #334155;
+}
+
+.bk-cell--service svg {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.bk-cell--service span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.bk-cell--date {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.bk-chev {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+.bk-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border: 1px solid;
+    white-space: nowrap;
+}
+
+.bk-details {
+    border-top: 1px solid #f1f5f9;
+    padding: 18px 20px 18px;
+    background: #fafbfc;
+    animation: bkSlideIn 0.18s ease;
+}
+
+@keyframes bkSlideIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.bk-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px 20px;
+    margin-bottom: 16px;
+}
+
+.bk-detail-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    font-weight: 600;
+    margin-bottom: 3px;
+}
+
+.bk-detail-value {
+    font-size: 0.9rem;
+    color: #0f172a;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.bk-detail-value--mono {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.bk-link {
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.bk-link:hover {
+    text-decoration: underline;
+}
+
+.bk-message {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+.bk-message svg {
+    color: #94a3b8;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.bk-message p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: #475569;
+    line-height: 1.55;
+}
+
+.bk-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.bk-status-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.bk-status-toggle-label {
+    font-size: 0.78rem;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.bk-status-toggle-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.bk-status-pill {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.bk-status-pill:hover:not(:disabled) {
+    border-color: #cbd5e1;
+    color: #0f172a;
+    background: #f8fafc;
+}
+
+.bk-status-pill--active {
+    cursor: default;
+}
+
+.bk-btn-delete {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid #fecaca;
+    background: #fff;
+    color: #dc2626;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.bk-btn-delete:hover {
+    background: #fef2f2;
+    border-color: #fca5a5;
+}
+
+@media (max-width: 1024px) {
+    .bk-card-row {
+        grid-template-columns: 1.2fr 1.2fr 1fr 130px;
+    }
+    .bk-cell--date {
+        display: none;
+    }
+}
+
+@media (max-width: 760px) {
+    .bk-stats {
+        grid-template-columns: 1fr;
+    }
+    .bk-card-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .bk-cell--status {
+        order: -1;
+    }
+    .bk-actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .bk-btn-delete {
+        align-self: flex-end;
+    }
+}

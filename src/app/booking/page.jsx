@@ -5,7 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
     MapPin, Phone, Clock, Shield, CheckCircle, Send,
-    CalendarDays, Car, ArrowRight, Truck
+    Car, ArrowRight, ArrowLeft, Truck, Search, AlertCircle,
+    User, Mail, Wrench, MessageSquare, Check
 } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
 import Footer from "@/components/Footer";
@@ -42,13 +43,18 @@ const SERVICE_TYPES = [
     "Other",
 ];
 
+const STEPS = [
+    { id: 1, label: "Location", icon: MapPin },
+    { id: 2, label: "Vehicle", icon: Car },
+    { id: 3, label: "Contact", icon: User },
+];
+
 export default function BookingPage() {
-    const { phone, whatsapp } = useSettings();
+    const { phone } = useSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
     const router = useRouter();
 
-    const [selectedLocation, setSelectedLocation] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
@@ -65,10 +71,11 @@ export default function BookingPage() {
     const [dvlaStatus, setDvlaStatus] = useState(null);
     const [dvlaDetails, setDvlaDetails] = useState(null);
     const [step, setStep] = useState(1);
+    const [stepError, setStepError] = useState("");
 
     const handleDvlaLookup = async () => {
         if (!formData.registrationNumber) return;
-        
+
         setDvlaStatus("looking_up");
         try {
             const res = await fetch('/api/dvla', {
@@ -79,41 +86,54 @@ export default function BookingPage() {
             const data = await res.json();
 
             if (data.success && data.data) {
-                const make = data.data.make || formData.vehicleMake;
-                const model = data.data.model || formData.vehicleModel;
-                
                 setFormData(prev => ({
                     ...prev,
-                    vehicleMake: make,
-                    vehicleModel: model,
+                    vehicleMake: data.data.make || prev.vehicleMake,
+                    vehicleModel: data.data.model || prev.vehicleModel,
                 }));
                 setDvlaDetails(data.data);
                 setDvlaStatus("success");
-                setTimeout(() => setDvlaStatus(null), 3000);
             } else {
                 setDvlaStatus("error");
-                setTimeout(() => setDvlaStatus(null), 3000);
+                setTimeout(() => setDvlaStatus(null), 4000);
             }
-        } catch (error) {
+        } catch {
             setDvlaStatus("error");
-            setTimeout(() => setDvlaStatus(null), 3000);
+            setTimeout(() => setDvlaStatus(null), 4000);
         }
-    };
-
-    const handleLocationChip = (locName) => {
-        setSelectedLocation(locName);
-        setFormData(prev => ({ ...prev, pickupLocation: locName }));
     };
 
     const handleChange = (e) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-        if (e.target.name === "pickupLocation") {
-            setSelectedLocation(e.target.value);
+        if (stepError) setStepError("");
+    };
+
+    const goNext = () => {
+        setStepError("");
+        if (step === 1) {
+            if (!formData.pickupLocation.trim() || !formData.dropoffLocation.trim()) {
+                setStepError("Please enter both pickup and drop-off locations.");
+                return;
+            }
         }
+        if (step === 2) {
+            if (!dvlaDetails && (!formData.vehicleMake.trim() || !formData.vehicleModel.trim())) {
+                setStepError("Please enter your vehicle make and model, or use the registration lookup.");
+                return;
+            }
+        }
+        setStep(s => s + 1);
+        if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const goBack = () => {
+        setStepError("");
+        setStep(s => s - 1);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setStepError("");
         setStatus("submitting");
 
         try {
@@ -139,13 +159,12 @@ export default function BookingPage() {
 
     return (
         <main className="booking-page">
-            {/* Header */}
             <header className="booking-header">
                 <Link href="/" className="booking-header-logo">
                     CAR <span>RECOVERY</span>
                 </Link>
                 <nav className="booking-header-nav">
-                    <Link href="/">← Home</Link>
+                    <Link href="/">Home</Link>
                     <Link href={`tel:${linkPhone}`} className="booking-header-call">
                         <Phone size={18} />
                         <span>{displayPhone}</span>
@@ -153,79 +172,84 @@ export default function BookingPage() {
                 </nav>
             </header>
 
-            {/* Hero */}
-            <section className="booking-hero">
+            <section className="booking-hero booking-hero--compact">
                 <div className="booking-hero-content">
-                    <div className="badge">
-                        <CalendarDays size={16} />
-                        Quick Online Booking
-                    </div>
-                    <h1>Book Your <span>Car Recovery</span> Now</h1>
-                    <p>Fill in the form below and we'll get back to you within minutes. Available 24/7 across the UK for all types of vehicle recovery.</p>
+                    <h1>Book Your <span>Recovery</span> in 60 Seconds</h1>
+                    <p>No payment details needed. We&rsquo;ll call or WhatsApp you within minutes to confirm.</p>
                 </div>
             </section>
 
-            {/* Booking Form */}
             <div className="booking-form-container">
                 <div className="booking-form-card">
-                    <h2 className="form-title">Request a Recovery</h2>
-                    <p className="form-subtitle">All fields marked with * are required. We'll respond via WhatsApp instantly.</p>
-
-                    {status === "success" && (
-                        <div className="booking-status success">
-                            <CheckCircle size={20} />
-                            Your booking request has been sent! We'll contact you shortly.
-                        </div>
-                    )}
+                    {/* Stepper */}
+                    <ol className="bk-stepper" aria-label="Booking progress">
+                        {STEPS.map((s, i) => {
+                            const StepIcon = s.icon;
+                            const state = step > s.id ? "done" : step === s.id ? "current" : "upcoming";
+                            return (
+                                <li key={s.id} className={`bk-step bk-step--${state}`}>
+                                    <div className="bk-step-circle">
+                                        {state === "done" ? <Check size={16} strokeWidth={3} /> : <StepIcon size={16} />}
+                                    </div>
+                                    <span className="bk-step-label">{s.label}</span>
+                                    {i < STEPS.length - 1 && <span className="bk-step-bar" />}
+                                </li>
+                            );
+                        })}
+                    </ol>
 
                     {status === "error" && (
                         <div className="booking-status error">
+                            <AlertCircle size={18} />
                             Something went wrong. Please try again or call us directly.
                         </div>
                     )}
 
-                    <form onSubmit={handleSubmit}>
+                    {stepError && (
+                        <div className="booking-status error">
+                            <AlertCircle size={18} />
+                            {stepError}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} noValidate>
                         {step === 1 && (
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <h3 style={{ marginBottom: "0.5rem", fontSize: "1.25rem", fontWeight: "600" }}>Step 1: Recovery Locations</h3>
-                                </div>
-                                <div className="form-group">
-                                    <label>Pickup Location <span className="required">*</span></label>
+                                    <label htmlFor="pickupLocation">
+                                        Pickup Location <span className="required">*</span>
+                                    </label>
                                     <input
+                                        id="pickupLocation"
                                         type="text"
                                         name="pickupLocation"
                                         placeholder="e.g. M6 Junction 7, Birmingham"
                                         value={formData.pickupLocation}
                                         onChange={handleChange}
+                                        autoComplete="street-address"
                                         required
                                     />
+                                    <small className="form-hint">Postcode, road, junction, or what3words.</small>
                                 </div>
-                                <div className="form-group">
-                                    <label>Drop-off Location <span className="required">*</span></label>
+                                <div className="form-group full-width">
+                                    <label htmlFor="dropoffLocation">
+                                        Drop-off Location <span className="required">*</span>
+                                    </label>
                                     <input
+                                        id="dropoffLocation"
                                         type="text"
                                         name="dropoffLocation"
-                                        placeholder="e.g. Your home address or garage"
+                                        placeholder="e.g. Home address or garage"
                                         value={formData.dropoffLocation}
                                         onChange={handleChange}
+                                        autoComplete="street-address"
                                         required
                                     />
                                 </div>
-                                <div className="form-group full-width" style={{ marginTop: "1rem" }}>
-                                    <button 
-                                        type="button" 
-                                        className="booking-submit-btn"
-                                        onClick={() => {
-                                            if (!formData.pickupLocation || !formData.dropoffLocation) {
-                                                alert("Please fill in both pickup and drop-off locations");
-                                                return;
-                                            }
-                                            setStep(2);
-                                        }}
-                                    >
-                                        Next: Vehicle Details
-                                        <ArrowRight size={20} />
+                                <div className="bk-actions">
+                                    <button type="button" className="bk-btn bk-btn--primary" onClick={goNext}>
+                                        Continue
+                                        <ArrowRight size={18} />
                                     </button>
                                 </div>
                             </div>
@@ -233,119 +257,118 @@ export default function BookingPage() {
 
                         {step === 2 && (
                             <div className="form-grid">
-                                <div className="form-group full-width" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                                    <h3 style={{ fontSize: "1.25rem", fontWeight: "600" }}>Step 2: Vehicle Details</h3>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setStep(1)}
-                                        style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: "600", padding: "0.5rem" }}
-                                    >
-                                        ← Back to Step 1
-                                    </button>
-                                </div>
-
                                 <div className="form-group full-width">
-                                    <label>Registration Number (Optional)</label>
-                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                    <label htmlFor="registrationNumber">
+                                        Registration Number <span className="form-optional">(recommended)</span>
+                                    </label>
+                                    <div className="bk-reg-input">
                                         <input
+                                            id="registrationNumber"
                                             type="text"
                                             name="registrationNumber"
-                                            placeholder="e.g. AB12 CDE"
+                                            placeholder="AB12 CDE"
                                             value={formData.registrationNumber}
-                                            style={{ textTransform: 'uppercase' }}
                                             onChange={(e) => {
-                                                setFormData({...formData, registrationNumber: e.target.value.toUpperCase()});
+                                                setFormData({ ...formData, registrationNumber: e.target.value.toUpperCase() });
                                                 setDvlaDetails(null);
+                                                if (dvlaStatus === "error") setDvlaStatus(null);
                                             }}
+                                            style={{ textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600 }}
                                         />
                                         <button
                                             type="button"
+                                            className="bk-btn bk-btn--secondary"
                                             onClick={handleDvlaLookup}
                                             disabled={dvlaStatus === "looking_up" || !formData.registrationNumber}
-                                            style={{
-                                                padding: '0 20px',
-                                                backgroundColor: '#2563eb',
-                                                color: '#fff',
-                                                border: 'none',
-                                                borderRadius: '6px',
-                                                fontWeight: '600',
-                                                cursor: 'pointer',
-                                                transition: 'all 0.2s',
-                                                whiteSpace: 'nowrap'
-                                            }}
                                         >
-                                            {dvlaStatus === "looking_up" ? "Looking up..." : "Find Vehicle"}
+                                            <Search size={16} />
+                                            {dvlaStatus === "looking_up" ? "Searching…" : "Find vehicle"}
                                         </button>
                                     </div>
-                                    {dvlaStatus === "error" && <small style={{ color: 'red', marginTop: '6px', display: 'block', fontWeight: '500' }}>Could not find vehicle. Please enter details manually.</small>}
+                                    {dvlaStatus === "error" && (
+                                        <small className="form-error">
+                                            <AlertCircle size={14} />
+                                            We couldn&rsquo;t find that vehicle. Enter make &amp; model below.
+                                        </small>
+                                    )}
+                                    {!dvlaDetails && (
+                                        <small className="form-hint">We use the DVLA database to fill in your vehicle details automatically.</small>
+                                    )}
                                 </div>
 
                                 {dvlaDetails ? (
                                     <div className="form-group full-width">
-                                        <div style={{ border: '1px solid #e2e8f0', borderRadius: '12px', padding: '24px', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                                                <div style={{ background: '#fbbf24', borderRadius: '6px', display: 'flex', alignItems: 'center', border: '2px solid #000', overflow: 'hidden', width: '280px', height: '60px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-                                                    <div style={{ background: '#1d4ed8', color: '#fff', padding: '0 12px', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold' }}>
-                                                        <span style={{ fontSize: '10px' }}>🇬🇧</span>
-                                                        <span style={{ fontSize: '12px' }}>UK</span>
-                                                    </div>
-                                                    <div style={{ flex: 1, textAlign: 'center', fontSize: '28px', fontWeight: 'bold', color: '#000', letterSpacing: '2px', fontFamily: 'monospace' }}>
-                                                        {formData.registrationNumber.toUpperCase()}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
-                                            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                                                <h3 style={{ margin: 0, fontSize: '22px', fontWeight: '800' }}>{dvlaDetails.make}</h3>
-                                                <p style={{ margin: '6px 0 0', color: '#64748b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                                    {dvlaDetails.yearOfManufacture || 'N/A'} • {dvlaDetails.colour || 'N/A'} • {dvlaDetails.fuelType || 'N/A'}
-                                                </p>
-                                            </div>
-                                            
-                                            <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '0 0 16px' }} />
-                                            
-                                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '14px' }}>
-                                                <div style={{ color: '#64748b' }}>Engine</div>
-                                                <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.engineCapacity ? `${dvlaDetails.engineCapacity}cc` : 'N/A'}</div>
-                                                
-                                                <div style={{ color: '#64748b' }}>Tax</div>
-                                                <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.taxStatus || 'N/A'}</div>
-                                                
-                                                <div style={{ color: '#64748b' }}>MOT</div>
-                                                <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.motStatus || 'N/A'}</div>
-                                                
-                                                {dvlaDetails.co2Emissions && dvlaDetails.co2Emissions > 0 ? (
-                                                    <>
-                                                        <div style={{ color: '#64748b' }}>CO₂</div>
-                                                        <div style={{ textAlign: 'right', fontWeight: '600' }}>{dvlaDetails.co2Emissions} g/km</div>
-                                                    </>
-                                                ): null}
+                                        <div className="bk-vehicle-card">
+                                            <div className="bk-plate" aria-label="Vehicle registration plate">
+                                                <span className="bk-plate-flag">UK</span>
+                                                <span className="bk-plate-text">{formData.registrationNumber.toUpperCase()}</span>
                                             </div>
 
-                                            <button type="button" onClick={() => setDvlaDetails(null)} style={{ marginTop: '24px', width: '100%', padding: '14px', background: '#000', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: 'pointer', fontSize: '16px' }}>
-                                                Change car
+                                            <div className="bk-vehicle-title">
+                                                <h3>{dvlaDetails.make}</h3>
+                                                <p>
+                                                    {[dvlaDetails.yearOfManufacture, dvlaDetails.colour, dvlaDetails.fuelType]
+                                                        .filter(Boolean).join(' · ') || 'Vehicle details'}
+                                                </p>
+                                            </div>
+
+                                            <dl className="bk-vehicle-meta">
+                                                {dvlaDetails.engineCapacity && (
+                                                    <>
+                                                        <dt>Engine</dt>
+                                                        <dd>{dvlaDetails.engineCapacity}cc</dd>
+                                                    </>
+                                                )}
+                                                {dvlaDetails.taxStatus && (
+                                                    <>
+                                                        <dt>Tax</dt>
+                                                        <dd>{dvlaDetails.taxStatus}</dd>
+                                                    </>
+                                                )}
+                                                {dvlaDetails.motStatus && (
+                                                    <>
+                                                        <dt>MOT</dt>
+                                                        <dd>{dvlaDetails.motStatus}</dd>
+                                                    </>
+                                                )}
+                                                {dvlaDetails.co2Emissions > 0 && (
+                                                    <>
+                                                        <dt>CO₂</dt>
+                                                        <dd>{dvlaDetails.co2Emissions} g/km</dd>
+                                                    </>
+                                                )}
+                                            </dl>
+
+                                            <button
+                                                type="button"
+                                                className="bk-btn bk-btn--ghost"
+                                                onClick={() => setDvlaDetails(null)}
+                                            >
+                                                Use a different vehicle
                                             </button>
                                         </div>
                                     </div>
                                 ) : (
                                     <>
                                         <div className="form-group">
-                                            <label>Vehicle Make <span className="required">*</span></label>
+                                            <label htmlFor="vehicleMake">Make <span className="required">*</span></label>
                                             <input
+                                                id="vehicleMake"
                                                 type="text"
                                                 name="vehicleMake"
-                                                placeholder="e.g. BMW, Ford, Toyota"
+                                                placeholder="BMW, Ford, Toyota"
                                                 value={formData.vehicleMake}
                                                 onChange={handleChange}
                                                 required
                                             />
                                         </div>
                                         <div className="form-group">
-                                            <label>Vehicle Model <span className="required">*</span></label>
+                                            <label htmlFor="vehicleModel">Model <span className="required">*</span></label>
                                             <input
+                                                id="vehicleModel"
                                                 type="text"
                                                 name="vehicleModel"
-                                                placeholder="e.g. 3 Series, Focus, Corolla"
+                                                placeholder="3 Series, Focus, Corolla"
                                                 value={formData.vehicleModel}
                                                 onChange={handleChange}
                                                 required
@@ -354,20 +377,14 @@ export default function BookingPage() {
                                     </>
                                 )}
 
-                                <div className="form-group full-width" style={{ marginTop: "1rem" }}>
-                                    <button 
-                                        type="button" 
-                                        className="booking-submit-btn"
-                                        onClick={() => {
-                                            if (!dvlaDetails && (!formData.vehicleMake || !formData.vehicleModel)) {
-                                                alert("Please enter your vehicle make and model.");
-                                                return;
-                                            }
-                                            setStep(3);
-                                        }}
-                                    >
-                                        Next: Contact Details
-                                        <ArrowRight size={20} />
+                                <div className="bk-actions bk-actions--split">
+                                    <button type="button" className="bk-btn bk-btn--ghost" onClick={goBack}>
+                                        <ArrowLeft size={18} />
+                                        Back
+                                    </button>
+                                    <button type="button" className="bk-btn bk-btn--primary" onClick={goNext}>
+                                        Continue
+                                        <ArrowRight size={18} />
                                     </button>
                                 </div>
                             </div>
@@ -375,111 +392,117 @@ export default function BookingPage() {
 
                         {step === 3 && (
                             <div className="form-grid">
-                                <div className="form-group full-width" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                                    <h3 style={{ fontSize: "1.25rem", fontWeight: "600" }}>Step 3: Contact Info & Service</h3>
-                                    <button 
-                                        type="button" 
-                                        onClick={() => setStep(2)}
-                                        style={{ background: "none", border: "none", color: "#2563eb", cursor: "pointer", fontWeight: "600", padding: "0.5rem" }}
-                                    >
-                                        ← Back to Step 2
-                                    </button>
-                                </div>
-
                                 <div className="form-group">
-                                    <label>Full Name <span className="required">*</span></label>
+                                    <label htmlFor="name">Full Name <span className="required">*</span></label>
                                     <input
+                                        id="name"
                                         type="text"
                                         name="name"
                                         placeholder="John Smith"
                                         value={formData.name}
                                         onChange={handleChange}
+                                        autoComplete="name"
                                         required
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Phone Number <span className="required">*</span></label>
+                                    <label htmlFor="phone">Phone / WhatsApp <span className="required">*</span></label>
                                     <input
+                                        id="phone"
                                         type="tel"
+                                        inputMode="tel"
                                         name="phone"
                                         placeholder="07XXX XXXXXX"
                                         value={formData.phone}
                                         onChange={handleChange}
+                                        autoComplete="tel"
                                         required
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Email Address <span className="required">*</span></label>
+                                    <label htmlFor="email">Email <span className="form-optional">(optional)</span></label>
                                     <input
+                                        id="email"
                                         type="email"
                                         name="email"
                                         placeholder="john@example.com"
                                         value={formData.email}
                                         onChange={handleChange}
-                                        required
+                                        autoComplete="email"
                                     />
                                 </div>
                                 <div className="form-group">
-                                    <label>Service Type <span className="required">*</span></label>
+                                    <label htmlFor="serviceType">Service Type <span className="required">*</span></label>
                                     <select
+                                        id="serviceType"
                                         name="serviceType"
                                         value={formData.serviceType}
                                         onChange={handleChange}
                                         required
                                     >
-                                        <option value="">Select a service...</option>
+                                        <option value="">Select a service…</option>
                                         {SERVICE_TYPES.map(s => (
                                             <option key={s} value={s}>{s}</option>
                                         ))}
                                     </select>
                                 </div>
 
-                                <div className="form-divider" />
-
                                 <div className="form-group full-width">
-                                    <label>Additional Notes</label>
+                                    <label htmlFor="message">
+                                        Anything Else? <span className="form-optional">(optional)</span>
+                                    </label>
                                     <textarea
+                                        id="message"
                                         name="message"
-                                        placeholder="Any additional details about your situation (e.g. car won't start, flat tyre on highway, accident scene)..."
+                                        placeholder="e.g. Car won't start, flat tyre on motorway, accident scene…"
                                         value={formData.message}
                                         onChange={handleChange}
                                     />
                                 </div>
 
-                                <button type="submit" className="booking-submit-btn">
-                                    <Send size={22} />
-                                    Get a Quote Now
-                                    <ArrowRight size={20} />
-                                </button>
+                                <div className="bk-actions bk-actions--split">
+                                    <button type="button" className="bk-btn bk-btn--ghost" onClick={goBack} disabled={status === "submitting"}>
+                                        <ArrowLeft size={18} />
+                                        Back
+                                    </button>
+                                    <button type="submit" className="bk-btn bk-btn--primary" disabled={status === "submitting"}>
+                                        {status === "submitting" ? (
+                                            <>Sending…</>
+                                        ) : (
+                                            <>
+                                                <Send size={18} />
+                                                Request Recovery
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                         )}
                     </form>
 
-                    {/* Trust Badges */}
                     <div className="booking-trust-row">
                         <div className="trust-item">
                             <Clock size={16} />
-                            <span>Response in Minutes</span>
+                            <span>Response in minutes</span>
                         </div>
                         <div className="trust-item">
                             <Shield size={16} />
-                            <span>Fully Insured</span>
+                            <span>Fully insured</span>
                         </div>
                         <div className="trust-item">
                             <CheckCircle size={16} />
-                            <span>No Hidden Fees</span>
+                            <span>No hidden fees</span>
                         </div>
                         <div className="trust-item">
                             <Truck size={16} />
-                            <span>Nationwide Coverage</span>
+                            <span>UK-wide cover</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Popular Locations  */}
             <section className="popular-locations">
-                <h2 className="popular-locations-title">Popular Recovery Locations</h2>
+                <h2 className="popular-locations-title">Popular Recovery Areas</h2>
                 <p className="popular-locations-subtitle">Quick access to our most requested service areas</p>
                 <div className="locations-grid">
                     {POPULAR_LOCATIONS.map(loc => (
@@ -489,7 +512,7 @@ export default function BookingPage() {
                             className="location-card"
                         >
                             <div className="loc-icon">
-                                <MapPin size={22} />
+                                <MapPin size={20} />
                             </div>
                             <h3>{loc.name}</h3>
                             <p>{loc.county}</p>

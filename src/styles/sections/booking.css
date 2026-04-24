@@ -16,6 +16,10 @@
   overflow: hidden;
 }
 
+.booking-hero--compact {
+  padding: 48px 20px 70px;
+}
+
 .booking-hero::before {
   content: '';
   position: absolute;
@@ -563,6 +567,291 @@
    RESPONSIVE
    ======================================== */
 
+/* ========================================
+   STEPPER
+   ======================================== */
+.bk-stepper {
+  list-style: none;
+  margin: 0 0 32px;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  position: relative;
+}
+
+.bk-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  text-align: center;
+}
+
+.bk-step-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef0f4;
+  color: #94a3b8;
+  border: 2px solid #eef0f4;
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.bk-step--current .bk-step-circle {
+  background: var(--primary-orange);
+  border-color: var(--primary-orange);
+  color: #fff;
+  box-shadow: 0 0 0 6px rgba(237, 71, 5, 0.12);
+}
+
+.bk-step--done .bk-step-circle {
+  background: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: #fff;
+}
+
+.bk-step-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bk-step--current .bk-step-label {
+  color: var(--primary-orange);
+}
+
+.bk-step--done .bk-step-label {
+  color: var(--primary-blue);
+}
+
+.bk-step-bar {
+  position: absolute;
+  top: 19px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
+  height: 2px;
+  background: #eef0f4;
+  z-index: 1;
+}
+
+.bk-step--done + .bk-step .bk-step-bar,
+.bk-step--done .bk-step-bar {
+  background: var(--primary-blue);
+}
+
+/* ========================================
+   FORM HELPERS
+   ======================================== */
+.form-hint {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
+.form-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #d63031;
+  font-size: 0.82rem;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+.form-optional {
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.78rem;
+  margin-left: 4px;
+}
+
+/* ========================================
+   BUTTONS (booking step actions)
+   ======================================== */
+.bk-actions {
+  grid-column: 1 / -1;
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.bk-actions--split {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 26px;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: 'Rubik', sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  border: none;
+  min-height: 48px;
+}
+
+.bk-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.bk-btn--primary {
+  background: linear-gradient(135deg, var(--primary-orange), #ff6b2b);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(237, 71, 5, 0.28);
+  flex: 1;
+  max-width: 320px;
+}
+
+.bk-btn--primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(237, 71, 5, 0.36);
+}
+
+.bk-btn--secondary {
+  background: var(--primary-blue);
+  color: #fff;
+  padding: 0 22px;
+  white-space: nowrap;
+  border-radius: 10px;
+  min-height: 48px;
+}
+
+.bk-btn--secondary:hover:not(:disabled) {
+  background: #1a3a8f;
+}
+
+.bk-btn--ghost {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.bk-btn--ghost:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* ========================================
+   REG INPUT
+   ======================================== */
+.bk-reg-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.bk-reg-input input {
+  font-size: 1.1rem !important;
+}
+
+/* ========================================
+   VEHICLE CARD (DVLA result)
+   ======================================== */
+.bk-vehicle-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 28px 24px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.bk-plate {
+  display: flex;
+  align-items: center;
+  width: 280px;
+  height: 56px;
+  margin: 0 auto 22px;
+  border: 2px solid #0f172a;
+  border-radius: 6px;
+  background: #fbbf24;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.bk-plate-flag {
+  background: #1d4ed8;
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  height: 100%;
+  width: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bk-plate-text {
+  flex: 1;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: 3px;
+}
+
+.bk-vehicle-title {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.bk-vehicle-title h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #0f172a;
+  font-family: 'Rubik', sans-serif;
+}
+
+.bk-vehicle-title p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.bk-vehicle-meta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px 18px;
+  margin: 0 0 22px;
+  padding: 18px 0 0;
+  border-top: 1px solid #e2e8f0;
+  font-size: 0.92rem;
+}
+
+.bk-vehicle-meta dt {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.bk-vehicle-meta dd {
+  margin: 0;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: right;
+}
+
 @media (max-width: 768px) {
   .booking-hero {
     padding: 40px 15px 70px;
@@ -606,6 +895,40 @@
 
   .booking-header-call span {
     display: none;
+  }
+
+  .bk-step-label {
+    font-size: 0.7rem;
+  }
+
+  .bk-reg-input {
+    grid-template-columns: 1fr;
+  }
+
+  .bk-actions {
+    flex-direction: column-reverse;
+  }
+
+  .bk-actions--split {
+    flex-direction: row;
+  }
+
+  .bk-btn--primary {
+    max-width: none;
+    width: 100%;
+  }
+
+  .bk-actions--split .bk-btn--ghost {
+    flex: 0 0 auto;
+  }
+
+  .bk-actions--split .bk-btn--primary {
+    flex: 1;
+  }
+
+  .bk-plate {
+    width: 100%;
+    max-width: 260px;
   }
 }
 
