@@ -6,6 +6,10 @@ import '../../styles/sections/sitemap-html.css';
 export const metadata = {
     title: 'HTML Sitemap | Car Recovery UK',
     description: 'A comprehensive list of all pages on the Car Recovery UK website.',
+    robots: {
+        index: false,
+        follow: true,
+    },
 };
 
 export default async function HtmlSitemap() {
@@ -65,7 +69,6 @@ export default async function HtmlSitemap() {
                             <ul className="html-sitemap-links">
                                 <li><Link href="/privacy-policy">Privacy Policy</Link></li>
                                 <li><Link href="/terms-of-service">Terms of Service</Link></li>
-                                <li><Link href="/signin">Admin Sign In</Link></li>
                             </ul>
                         </div>
                     </div>

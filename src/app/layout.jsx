@@ -1,6 +1,7 @@
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import { getSettings } from "@/lib/settings";
+import { getSiteUrl } from "@/lib/siteUrl";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
 import { Analytics } from "@vercel/analytics/next";
@@ -14,7 +15,7 @@ const rubik = Rubik({
 
 export async function generateMetadata() {
   const settings = await getSettings();
-  const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
+  const baseUrl = getSiteUrl();
 
   return {
     metadataBase: new URL(baseUrl),
@@ -51,7 +52,7 @@ export async function generateMetadata() {
 
 export default async function RootLayout({ children }) {
   const settings = await getSettings();
-  const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
+  const baseUrl = getSiteUrl();
 
   const organizationSchema = {
     "@context": "https://schema.org",

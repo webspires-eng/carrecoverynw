@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
+import { getSiteUrl } from '@/lib/siteUrl';
 
 // GET SEO settings
 export async function GET() {
     try {
+        const siteUrl = getSiteUrl();
         const { db } = await connectToDatabase();
         const seoDoc = await db.collection('seo_settings').findOne({ _id: 'seo_config' });
 
@@ -12,7 +14,7 @@ export async function GET() {
                 "@context": "https://schema.org",
                 "@type": "LocalBusiness",
                 "name": "Car Recovery UK",
-                "url": process.env.SITE_URL || "https://www.cartowingnearme.co.uk",
+                "url": siteUrl,
                 "description": "24/7 Emergency Car Recovery Service covering the entire UK.",
                 "telephone": "+447360544819",
                 "address": {
@@ -20,8 +22,8 @@ export async function GET() {
                     "addressCountry": "GB"
                 }
             }, null, 4),
-            robots_txt: `User-agent: *\nAllow: /\n\nSitemap: ${process.env.SITE_URL || 'https://www.cartowingnearme.co.uk'}/sitemap.xml\n\nDisallow: /admin/`,
-            canonical_base_url: process.env.SITE_URL || 'https://www.cartowingnearme.co.uk'
+            robots_txt: `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n\nDisallow: /admin/`,
+            canonical_base_url: siteUrl
         };
 
         const data = seoDoc ? {

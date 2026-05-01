@@ -6,9 +6,10 @@
  *   pageType  – 'home' | 'about' | 'contact' | 'areas' | 'privacy' | 'terms'
  *   settings  – { business_name, phone, email, ... }
  */
+import { getSiteUrl } from '@/lib/siteUrl';
 
 export default function PageSchemaMarkup({ pageType, settings = {} }) {
-    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
+    const baseUrl = getSiteUrl();
     const phone = settings.phone || '07360544819';
     const displayPhone = phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3');
     const email = settings.email || 'info@carrecoveryuk.co.uk';
@@ -185,9 +186,11 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
         <>
             {schemas.map((schema, i) => (
                 <script
+            import { getSiteUrl } from '@/lib/siteUrl';
+
                     key={`page-schema-${i}`}
                     type="application/ld+json"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+                const baseUrl = getSiteUrl();
                 />
             ))}
         </>

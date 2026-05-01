@@ -1,6 +1,7 @@
 import { readFileSync } from 'fs';
 import { sign } from 'crypto';
 import { logActivity } from './logger';
+import { getSiteUrl } from './siteUrl';
 
 const INDEXING_API_URL = 'https://indexing.googleapis.com/v3/urlNotifications:publish';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -164,7 +165,7 @@ export async function submitUrlsToGoogle(urls, type = 'URL_UPDATED') {
  * Build the full public URL for an area slug.
  */
 export function buildAreaUrl(slug) {
-    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
+    const baseUrl = getSiteUrl();
     return `${baseUrl}/areas/${slug}`;
 }
 

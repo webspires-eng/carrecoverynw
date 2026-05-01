@@ -4,7 +4,11 @@ import '../../styles/sections/sitemap.css';
 
 export const metadata = {
     title: 'Sitemap | Car Recovery UK',
-    description: 'Overview of all pages on our website.'
+    description: 'Overview of all pages on our website.',
+    robots: {
+        index: false,
+        follow: true,
+    },
 };
 
 async function getAreas() {
@@ -43,7 +47,6 @@ export default async function SitemapPage() {
                 <ul className="sitemap-links">
                     <li><Link href="/">Home</Link></li>
                     <li><Link href="/areas">Areas We Cover (Full Archive)</Link></li>
-                    <li><Link href="/signin">Admin Login</Link></li>
                 </ul>
             </div>
 

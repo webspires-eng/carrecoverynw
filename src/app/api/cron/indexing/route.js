@@ -7,8 +7,9 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { submitUrlToGoogle } from '@/lib/googleIndexing';
+import { getSiteUrl } from '@/lib/siteUrl';
 
-const SITE_URL = (process.env.SITE_URL || 'https://www.cartowingnearme.co.uk').replace(/\/$/, '');
+const SITE_URL = getSiteUrl();
 const DAILY_BATCH = 190;          // under Google's 200/day quota
 const CORE_PAGES = ['/', '/areas', '/about-us', '/contact-us', '/booking'];
 

@@ -21,6 +21,7 @@ import FAQSection from "@/components/FAQSection";
 import ExtraContentSection from "@/components/ExtraContentSection";
 import FinalCTASection from "@/components/FinalCTASection";
 import Footer from "@/components/Footer";
+import { getSiteUrl } from '@/lib/siteUrl';
 
 // Fetch area data from database
 async function getAreaBySlug(slug) {
@@ -64,7 +65,7 @@ export async function generateMetadata({ params }) {
         };
     }
 
-    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
+    const baseUrl = getSiteUrl();
     const url = `${baseUrl}/areas/${slug}`;
 
     return {

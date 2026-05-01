@@ -1,9 +1,10 @@
 import { connectToDatabase } from '@/lib/db';
+import { getSiteUrl } from '@/lib/siteUrl';
 
 export const dynamic = 'force-dynamic'; // Ensure it's not cached static
 
 export async function GET() {
-    const baseUrl = process.env.SITE_URL || 'https://www.cartowingnearme.co.uk';
+    const baseUrl = getSiteUrl();
 
     let areas = [];
     try {
