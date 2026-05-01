@@ -186,11 +186,9 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
         <>
             {schemas.map((schema, i) => (
                 <script
-            import { getSiteUrl } from '@/lib/siteUrl';
-
                     key={`page-schema-${i}`}
                     type="application/ld+json"
-                const baseUrl = getSiteUrl();
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
                 />
             ))}
         </>

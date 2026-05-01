@@ -1,7 +1,7 @@
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import { getSettings } from "@/lib/settings";
-import { getSiteUrl } from "@/lib/siteUrl";
+import { absoluteUrl, getSiteUrl } from "@/lib/siteUrl";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
 import { Analytics } from "@vercel/analytics/next";
@@ -22,7 +22,7 @@ export async function generateMetadata() {
     title: "24 Hours Car Recovery Service In United Kingdom | 0736 054 4819",
     description: "Looking for a reliable car recovery and towing service in the UK? We offer 24/7 fast breakdown assistance and emergency towing near you. Call us now!",
     alternates: {
-      canonical: "https://www.cartowingnearme.co.uk",
+      canonical: absoluteUrl('/'),
     },
     openGraph: {
       title: "24 Hours Car Recovery Service In United Kingdom",
