@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { getSiteUrl } from '@/lib/siteUrl';
 
+function normalizeCanonicalBaseUrl(value, fallback) {
+    const candidate = (typeof value === 'string' ? value.trim() : '') || fallback;
+
+    try {
+        const parsed = new URL(candidate);
+        return parsed.origin;
+    } catch {
+        return null;
+    }
+}
+
 // GET SEO settings
 export async function GET() {
     try {
@@ -29,7 +40,7 @@ export async function GET() {
         const data = seoDoc ? {
             schema_markup: seoDoc.schema_markup || defaults.schema_markup,
             robots_txt: seoDoc.robots_txt || defaults.robots_txt,
-            canonical_base_url: seoDoc.canonical_base_url || defaults.canonical_base_url
+            canonical_base_url: normalizeCanonicalBaseUrl(seoDoc.canonical_base_url, siteUrl) || siteUrl
         } : defaults;
 
         return NextResponse.json({ success: true, data });
@@ -43,6 +54,7 @@ export async function GET() {
 export async function PUT(request) {
     try {
         const body = await request.json();
+        const siteUrl = getSiteUrl();
         const { db } = await connectToDatabase();
 
         // Validate schema markup JSON if provided
@@ -57,13 +69,21 @@ export async function PUT(request) {
             }
         }
 
+        const canonicalBaseUrl = normalizeCanonicalBaseUrl(body.canonical_base_url, siteUrl);
+        if (!canonicalBaseUrl) {
+            return NextResponse.json({
+                success: false,
+                error: 'Canonical Base URL must be a valid absolute URL (e.g. https://www.cartowingnearme.co.uk).'
+            }, { status: 400 });
+        }
+
         await db.collection('seo_settings').updateOne(
             { _id: 'seo_config' },
             {
                 $set: {
                     schema_markup: body.schema_markup,
                     robots_txt: body.robots_txt,
-                    canonical_base_url: body.canonical_base_url,
+                    canonical_base_url: canonicalBaseUrl,
                     updated_at: new Date()
                 }
             },

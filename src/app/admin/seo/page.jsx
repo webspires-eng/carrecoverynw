@@ -21,6 +21,17 @@ export default function SEOPage() {
         fetchSEOSettings();
     }, []);
 
+    const getCanonicalBaseUrl = () => {
+        const fallback = 'https://www.cartowingnearme.co.uk';
+        const candidate = (seoSettings.canonical_base_url || '').trim() || fallback;
+
+        try {
+            return new URL(candidate).origin;
+        } catch {
+            return fallback;
+        }
+    };
+
     const fetchSEOSettings = async () => {
         try {
             const res = await fetch('/api/seo');
@@ -60,7 +71,7 @@ export default function SEOPage() {
     };
 
     const handleViewRobotsLive = () => {
-        const baseUrl = seoSettings.canonical_base_url || 'https://www.cartowingnearme.co.uk';
+        const baseUrl = getCanonicalBaseUrl();
         window.open(`${baseUrl}/robots.txt`, '_blank');
     };
 
@@ -267,7 +278,7 @@ export default function SEOPage() {
                                 <div>
                                     <h2>Canonical Tags</h2>
                                     <p className="seo-section-desc">
-                                        The canonical base URL is used to generate <code>&lt;link rel=&quot;canonical&quot;&gt;</code> tags on all pages. This prevents duplicate content issues in search engines.
+                                        The canonical base URL should be a clean site origin (no parameters), for example <code>https://www.cartowingnearme.co.uk</code>. Canonical tags should always point to clean final URLs.
                                     </p>
                                 </div>
                             </div>
@@ -283,7 +294,7 @@ export default function SEOPage() {
                                     placeholder="https://www.cartowingnearme.co.uk"
                                 />
                                 <span className="seo-example-output">
-                                    Example output: <code>&lt;link rel=&quot;canonical&quot; href=&quot;{seoSettings.canonical_base_url || 'https://www.cartowingnearme.co.uk'}/product-1&amp;id=1&quot;&gt;</code>
+                                    Example output: <code>&lt;link rel=&quot;canonical&quot; href=&quot;{getCanonicalBaseUrl()}/areas/london&quot;&gt;</code>
                                 </span>
                             </div>
 
