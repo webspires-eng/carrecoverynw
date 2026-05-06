@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { connectToDatabase } from '@/lib/db';
+import '../styles/sections/nearby-areas.css';
 
 async function fetchAreasBySlugs(slugs) {
     if (!slugs || slugs.length === 0) return [];
