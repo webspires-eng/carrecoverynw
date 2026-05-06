@@ -1,0 +1,245 @@
+[
+  {
+    "inputUrl": "https://cartowingnearme.co.uk/area/london-borough-of-lambeth",
+    "finalUrl": "https://www.cartowingnearme.co.uk/areas/london-borough-of-lambeth",
+    "finalStatus": 200,
+    "hopCount": 2,
+    "chain": [
+      {
+        "url": "https://cartowingnearme.co.uk/area/london-borough-of-lambeth",
+        "status": 301,
+        "location": "https://www.cartowingnearme.co.uk/area/london-borough-of-lambeth"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/area/london-borough-of-lambeth",
+        "status": 308,
+        "location": "/areas/london-borough-of-lambeth"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/areas/london-borough-of-lambeth",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [
+      "WWW_INCONSISTENCY",
+      "CHAIN_TOO_LONG"
+    ],
+    "summary": "WWW_INCONSISTENCY + CHAIN_TOO_LONG",
+    "suggestedFix": "Collapse the chain to a single 301: https://cartowingnearme.co.uk/area/london-borough-of-lambeth → https://www.cartowingnearme.co.uk/areas/london-borough-of-lambeth. Add a single rule in next.config.ts that points the original source straight at the final destination. Enforce a single canonical host (www.cartowingnearme.co.uk) via a host-based redirect in next.config.ts. Make sure no other rule strips or adds the www after this redirect."
+  },
+  {
+    "inputUrl": "https://cartowingnearme.co.uk/areas/braintree",
+    "finalUrl": "https://www.cartowingnearme.co.uk/areas/braintree",
+    "finalStatus": 200,
+    "hopCount": 1,
+    "chain": [
+      {
+        "url": "https://cartowingnearme.co.uk/areas/braintree",
+        "status": 301,
+        "location": "https://www.cartowingnearme.co.uk/areas/braintree"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/areas/braintree",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [
+      "WWW_INCONSISTENCY"
+    ],
+    "summary": "WWW_INCONSISTENCY",
+    "suggestedFix": "Enforce a single canonical host (www.cartowingnearme.co.uk) via a host-based redirect in next.config.ts. Make sure no other rule strips or adds the www after this redirect."
+  },
+  {
+    "inputUrl": "https://www.cartowingnearme.co.uk/area/ashford",
+    "finalUrl": "https://www.cartowingnearme.co.uk/areas/ashford",
+    "finalStatus": 200,
+    "hopCount": 1,
+    "chain": [
+      {
+        "url": "https://www.cartowingnearme.co.uk/area/ashford",
+        "status": 308,
+        "location": "/areas/ashford"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/areas/ashford",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [],
+    "summary": "OK",
+    "suggestedFix": "No action required."
+  },
+  {
+    "inputUrl": "https://www.cartowingnearme.co.uk/area/barnstaple",
+    "finalUrl": "https://www.cartowingnearme.co.uk/areas/barnstaple",
+    "finalStatus": 200,
+    "hopCount": 1,
+    "chain": [
+      {
+        "url": "https://www.cartowingnearme.co.uk/area/barnstaple",
+        "status": 308,
+        "location": "/areas/barnstaple"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/areas/barnstaple",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [],
+    "summary": "OK",
+    "suggestedFix": "No action required."
+  },
+  {
+    "inputUrl": "http://www.cartowingnearme.co.uk/",
+    "finalUrl": "https://www.cartowingnearme.co.uk/",
+    "finalStatus": 200,
+    "hopCount": 1,
+    "chain": [
+      {
+        "url": "http://www.cartowingnearme.co.uk/",
+        "status": 308,
+        "location": "https://www.cartowingnearme.co.uk/"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [
+      "MIXED_HTTP_HTTPS"
+    ],
+    "summary": "MIXED_HTTP_HTTPS",
+    "suggestedFix": "Force HTTPS at the platform level (Vercel does this automatically when the domain is attached). Remove any explicit http→https rule if Vercel is already handling it, to avoid double hops."
+  },
+  {
+    "inputUrl": "https://cartowingnearme.co.uk/area/aylesbury",
+    "finalUrl": "https://www.cartowingnearme.co.uk/areas/aylesbury",
+    "finalStatus": 200,
+    "hopCount": 2,
+    "chain": [
+      {
+        "url": "https://cartowingnearme.co.uk/area/aylesbury",
+        "status": 301,
+        "location": "https://www.cartowingnearme.co.uk/area/aylesbury"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/area/aylesbury",
+        "status": 308,
+        "location": "/areas/aylesbury"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/areas/aylesbury",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [
+      "WWW_INCONSISTENCY",
+      "CHAIN_TOO_LONG"
+    ],
+    "summary": "WWW_INCONSISTENCY + CHAIN_TOO_LONG",
+    "suggestedFix": "Collapse the chain to a single 301: https://cartowingnearme.co.uk/area/aylesbury → https://www.cartowingnearme.co.uk/areas/aylesbury. Add a single rule in next.config.ts that points the original source straight at the final destination. Enforce a single canonical host (www.cartowingnearme.co.uk) via a host-based redirect in next.config.ts. Make sure no other rule strips or adds the www after this redirect."
+  },
+  {
+    "inputUrl": "https://www.cartowingnearme.co.uk/area/aylesbury",
+    "finalUrl": "https://www.cartowingnearme.co.uk/areas/aylesbury",
+    "finalStatus": 200,
+    "hopCount": 1,
+    "chain": [
+      {
+        "url": "https://www.cartowingnearme.co.uk/area/aylesbury",
+        "status": 308,
+        "location": "/areas/aylesbury"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/areas/aylesbury",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [],
+    "summary": "OK",
+    "suggestedFix": "No action required."
+  },
+  {
+    "inputUrl": "http://cartowingnearme.co.uk/",
+    "finalUrl": "https://www.cartowingnearme.co.uk/",
+    "finalStatus": 200,
+    "hopCount": 2,
+    "chain": [
+      {
+        "url": "http://cartowingnearme.co.uk/",
+        "status": 308,
+        "location": "https://cartowingnearme.co.uk/"
+      },
+      {
+        "url": "https://cartowingnearme.co.uk/",
+        "status": 301,
+        "location": "https://www.cartowingnearme.co.uk/"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [
+      "MIXED_HTTP_HTTPS",
+      "WWW_INCONSISTENCY",
+      "CHAIN_TOO_LONG"
+    ],
+    "summary": "MIXED_HTTP_HTTPS + WWW_INCONSISTENCY + CHAIN_TOO_LONG",
+    "suggestedFix": "Collapse the chain to a single 301: http://cartowingnearme.co.uk/ → https://www.cartowingnearme.co.uk/. Add a single rule in next.config.ts that points the original source straight at the final destination. Force HTTPS at the platform level (Vercel does this automatically when the domain is attached). Remove any explicit http→https rule if Vercel is already handling it, to avoid double hops. Enforce a single canonical host (www.cartowingnearme.co.uk) via a host-based redirect in next.config.ts. Make sure no other rule strips or adds the www after this redirect."
+  },
+  {
+    "inputUrl": "https://cartowingnearme.co.uk/",
+    "finalUrl": "https://www.cartowingnearme.co.uk/",
+    "finalStatus": 200,
+    "hopCount": 1,
+    "chain": [
+      {
+        "url": "https://cartowingnearme.co.uk/",
+        "status": 301,
+        "location": "https://www.cartowingnearme.co.uk/"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [
+      "WWW_INCONSISTENCY"
+    ],
+    "summary": "WWW_INCONSISTENCY",
+    "suggestedFix": "Enforce a single canonical host (www.cartowingnearme.co.uk) via a host-based redirect in next.config.ts. Make sure no other rule strips or adds the www after this redirect."
+  },
+  {
+    "inputUrl": "https://cartowingnearme.co.uk/areas/buxton",
+    "finalUrl": "https://www.cartowingnearme.co.uk/areas/buxton",
+    "finalStatus": 200,
+    "hopCount": 1,
+    "chain": [
+      {
+        "url": "https://cartowingnearme.co.uk/areas/buxton",
+        "status": 301,
+        "location": "https://www.cartowingnearme.co.uk/areas/buxton"
+      },
+      {
+        "url": "https://www.cartowingnearme.co.uk/areas/buxton",
+        "status": 200,
+        "location": null
+      }
+    ],
+    "issues": [
+      "WWW_INCONSISTENCY"
+    ],
+    "summary": "WWW_INCONSISTENCY",
+    "suggestedFix": "Enforce a single canonical host (www.cartowingnearme.co.uk) via a host-based redirect in next.config.ts. Make sure no other rule strips or adds the www after this redirect."
+  }
+]

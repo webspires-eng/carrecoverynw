@@ -16,9 +16,16 @@ const CANONICAL_HOST = 'www.cartowingnearme.co.uk';
 const MAX_HOPS = 10;
 
 const INPUT_URLS: string[] = [
-    // PASTE the URLs from Search Console CSV exports here, e.g.:
-    // 'https://cartowingnearme.co.uk/old-page',
-    // 'https://www.cartowingnearme.co.uk/looping-page',
+    'https://cartowingnearme.co.uk/area/london-borough-of-lambeth',
+    'https://cartowingnearme.co.uk/areas/braintree',
+    'https://www.cartowingnearme.co.uk/area/ashford',
+    'https://www.cartowingnearme.co.uk/area/barnstaple',
+    'http://www.cartowingnearme.co.uk/',
+    'https://cartowingnearme.co.uk/area/aylesbury',
+    'https://www.cartowingnearme.co.uk/area/aylesbury',
+    'http://cartowingnearme.co.uk/',
+    'https://cartowingnearme.co.uk/',
+    'https://cartowingnearme.co.uk/areas/buxton',
 ];
 
 type Hop = {
