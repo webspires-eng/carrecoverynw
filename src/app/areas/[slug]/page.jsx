@@ -24,6 +24,7 @@ import ExtraContentSection from "@/components/ExtraContentSection";
 import FinalCTASection from "@/components/FinalCTASection";
 import Footer from "@/components/Footer";
 import { getSiteUrl } from '@/lib/siteUrl';
+import { canonicalUrl } from '@/lib/seoSettings';
 
 // Fetch area data from database
 async function getAreaBySlug(slug) {
@@ -68,18 +69,18 @@ export async function generateMetadata({ params }) {
     }
 
     const baseUrl = getSiteUrl();
-    const url = `${baseUrl}/areas/${slug}`;
+    const canonical = await canonicalUrl(`/areas/${slug}`);
 
     return {
         title: area.meta_title || `24/7 Car Recovery in ${area.name} | Car Recovery UK`,
         description: area.meta_description || `Fast and reliable car recovery services in ${area.name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
         alternates: {
-            canonical: url,
+            canonical: canonical,
         },
         openGraph: {
             title: area.meta_title || `24/7 Car Recovery in ${area.name}`,
             description: area.meta_description,
-            url: url,
+            url: canonical,
             siteName: "Car Recovery UK",
             images: [
                 {

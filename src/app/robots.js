@@ -1,12 +1,11 @@
-import { connectToDatabase } from '@/lib/db';
 import { getSiteUrl } from '@/lib/siteUrl';
+import { getRobotsDoc } from '@/lib/seoSettings';
 
 export default async function robots() {
     const baseUrl = getSiteUrl();
 
     try {
-        const { db } = await connectToDatabase();
-        const seoDoc = await db.collection('seo_settings').findOne({ _id: 'seo_config' });
+        const seoDoc = await getRobotsDoc();
 
         if (seoDoc && seoDoc.robots_txt) {
             // Parse the custom robots.txt content from the database

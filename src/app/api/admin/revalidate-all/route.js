@@ -52,6 +52,7 @@ export async function POST(request) {
         revalidatePath('/areas');
         revalidatePath('/');
         revalidatePath('/sitemap.xml');
+        revalidatePath('/robots.txt');
     } catch (err) {
         errors.push(`root paths: ${err.message}`);
     }

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
 import { getSiteUrl } from '@/lib/siteUrl';
+import { SEO_CACHE_TAG } from '@/lib/seoSettings';
 
 function normalizeCanonicalBaseUrl(value, fallback) {
     const candidate = (typeof value === 'string' ? value.trim() : '') || fallback;
@@ -89,6 +91,15 @@ export async function PUT(request) {
             },
             { upsert: true }
         );
+
+        // Flush cached SEO reads + force regeneration of cached pages that consume them.
+        try {
+            revalidateTag(SEO_CACHE_TAG);
+            revalidatePath('/robots.txt');
+            revalidatePath('/', 'layout');
+        } catch (err) {
+            console.error('[seo PUT] revalidate failed:', err.message);
+        }
 
         return NextResponse.json({ success: true, message: 'SEO settings saved successfully' });
     } catch (error) {

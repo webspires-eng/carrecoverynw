@@ -2,7 +2,7 @@ import { connectToDatabase } from '@/lib/db';
 import { getSettings } from '@/lib/settings';
 import Link from 'next/link';
 import PageSchemaMarkup from '@/components/PageSchemaMarkup';
-import { absoluteUrl } from '@/lib/siteUrl';
+import { canonicalUrl } from '@/lib/seoSettings';
 import '../../styles/sections/areas-archive.css';
 
 // Fetch all areas
@@ -30,13 +30,15 @@ async function getAreas(search = '') {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export const metadata = {
-    title: 'Areas We Cover | Car Recovery UK',
-    description: 'Find car recovery services across the UK. We cover 300+ locations including Birmingham, Manchester, Sheffield, and beyond. Available 24/7.',
-    alternates: {
-        canonical: absoluteUrl('/areas'),
-    },
-};
+export async function generateMetadata() {
+    return {
+        title: 'Areas We Cover | Car Recovery UK',
+        description: 'Find car recovery services across the UK. We cover 300+ locations including Birmingham, Manchester, Sheffield, and beyond. Available 24/7.',
+        alternates: {
+            canonical: await canonicalUrl('/areas'),
+        },
+    };
+}
 
 export default async function AreasArchive({ searchParams }) {
     const params = await searchParams;

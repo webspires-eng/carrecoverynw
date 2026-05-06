@@ -1,7 +1,8 @@
 import { Rubik } from "next/font/google";
 import "./globals.css";
 import { getSettings } from "@/lib/settings";
-import { absoluteUrl, getSiteUrl } from "@/lib/siteUrl";
+import { getSiteUrl } from "@/lib/siteUrl";
+import { canonicalUrl, getCustomSchemaMarkup } from "@/lib/seoSettings";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
 import { Analytics } from "@vercel/analytics/next";
@@ -16,13 +17,14 @@ const rubik = Rubik({
 export async function generateMetadata() {
   const settings = await getSettings();
   const baseUrl = getSiteUrl();
+  const homeCanonical = await canonicalUrl('/');
 
   return {
     metadataBase: new URL(baseUrl),
     title: "24 Hours Car Recovery Service In United Kingdom | 0736 054 4819",
     description: "Looking for a reliable car recovery and towing service in the UK? We offer 24/7 fast breakdown assistance and emergency towing near you. Call us now!",
     alternates: {
-      canonical: absoluteUrl('/'),
+      canonical: homeCanonical,
     },
     openGraph: {
       title: "24 Hours Car Recovery Service In United Kingdom",
@@ -53,6 +55,7 @@ export async function generateMetadata() {
 export default async function RootLayout({ children }) {
   const settings = await getSettings();
   const baseUrl = getSiteUrl();
+  const customSchema = await getCustomSchemaMarkup();
 
   const organizationSchema = {
     "@context": "https://schema.org",
@@ -97,6 +100,12 @@ export default async function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
+        {customSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(customSchema) }}
+          />
+        )}
         <script
           dangerouslySetInnerHTML={{
             __html: `
