@@ -34,10 +34,12 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
             .replace(/\{\{location\}\}/g, location)
             .replace(/\{\{majorRoads\}\}/g, majorRoadsStr);
 
-    const displayFaqs = faqs.map(f => ({
-        q: replacePlaceholders(f.question || f.q),
-        a: replacePlaceholders(f.answer || f.a),
-    }));
+    const displayFaqs = faqs
+        .map(f => ({
+            q: replacePlaceholders(f.question || f.q || ''),
+            a: replacePlaceholders(f.answer || f.a || ''),
+        }))
+        .filter(f => f.q && f.a);
 
     // ── 1. LocalBusiness ──────────────────────────────────────
     const localBusinessSchema = {
