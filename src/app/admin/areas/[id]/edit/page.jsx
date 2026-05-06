@@ -706,6 +706,35 @@ export default function EditAreaPage() {
                                                         placeholder="Solihull, Sutton Coldfield" />
                                                     <span className="input-hint">Comma-separated</span>
                                                 </div>
+                                                <div className="form-grid">
+                                                    <div className="form-group">
+                                                        <label htmlFor="latitude">Latitude</label>
+                                                        <input
+                                                            id="latitude"
+                                                            type="number"
+                                                            name="latitude"
+                                                            step="0.0001"
+                                                            placeholder="51.5033"
+                                                            value={formData.latitude}
+                                                            onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label htmlFor="longitude">Longitude</label>
+                                                        <input
+                                                            id="longitude"
+                                                            type="number"
+                                                            name="longitude"
+                                                            step="0.0001"
+                                                            placeholder="-0.1817"
+                                                            value={formData.longitude}
+                                                            onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <span className="input-hint">Used for the auto-linked &ldquo;Also Covering Nearby Areas&rdquo; section. Preview updates ~400ms after edits.</span>
                                             </div>
                                         </div>
                                                 </>
