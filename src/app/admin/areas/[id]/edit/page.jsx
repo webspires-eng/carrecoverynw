@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import RichTextEditor from '@/components/RichTextEditor';
+import NearbyAreasPreview from '@/components/admin/NearbyAreasPreview';
 import { Wrench, Car } from 'lucide-react';
 import '../../../../../styles/admin.css';
 
@@ -799,6 +800,30 @@ export default function EditAreaPage() {
                                             </>
                                         ) : 'Update Area'}
                                     </button>
+                                </div>
+                            </div>
+
+                            {/* Internal-linking preview */}
+                            <div className="cms-sidebar-box">
+                                <div className="cms-sidebar-box-header">
+                                    <h3>Internal Links</h3>
+                                </div>
+                                <div className="cms-sidebar-box-body">
+                                    {(() => {
+                                        const lat = parseFloat(formData.latitude);
+                                        const lng = parseFloat(formData.longitude);
+                                        const hasGeo = !Number.isNaN(lat) && !Number.isNaN(lng) && lat !== 0 && lng !== 0;
+                                        return hasGeo ? (
+                                            <>
+                                                <NearbyAreasPreview slug={formData.slug} lat={lat} lng={lng} />
+                                                <p style={{ fontSize: 12, color: '#666', marginTop: 8 }}>
+                                                    When published, this page will automatically link to these areas, and they will link back to this page.
+                                                </p>
+                                            </>
+                                        ) : (
+                                            <p style={{ fontSize: 13, color: '#888' }}>Add latitude and longitude to preview nearby area links.</p>
+                                        );
+                                    })()}
                                 </div>
                             </div>
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Map, FileEdit, Loader2, CheckCircle2, XCircle } from 'lucide-react';
+import { LinkStatusBadge } from '@/components/admin/NearbyAreasPreview';
 import '../../../styles/admin.css';
 
 const AUTOSAVE_KEY = 'area_form_autosave';
@@ -313,8 +314,11 @@ export default function AdminDashboard() {
                                         {area.is_active !== false ? 'Active' : 'Inactive'}
                                     </span>
                                 </div>
-                                <div className="area-card-meta">
-
+                                <div className="area-card-meta" style={{ display: 'flex', gap: 6 }}>
+                                    <LinkStatusBadge
+                                        outbound={area.nearby_areas_slugs?.length ?? 0}
+                                        inbound={area.internal_links_from?.length ?? 0}
+                                    />
                                 </div>
                                 <div className="area-card-actions">
                                     <a
@@ -362,6 +366,7 @@ export default function AdminDashboard() {
                                 <th>Name</th>
                                 <th>Slug</th>
                                 <th>Status</th>
+                                <th>Links</th>
                                 <th onClick={() => handleSort('created_at')} style={{ cursor: 'pointer', userSelect: 'none' }}>Date Added<SortIcon field="created_at" /></th>
                                 <th onClick={() => handleSort('updated_at')} style={{ cursor: 'pointer', userSelect: 'none' }}>Date Modified<SortIcon field="updated_at" /></th>
                                 <th style={{ textAlign: 'right' }}>Actions</th>
@@ -381,6 +386,12 @@ export default function AdminDashboard() {
                                         <span className={`area-card-status ${area.is_active !== false ? 'active' : 'inactive'}`}>
                                             {area.is_active !== false ? 'Active' : 'Inactive'}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <LinkStatusBadge
+                                            outbound={area.nearby_areas_slugs?.length ?? 0}
+                                            inbound={area.internal_links_from?.length ?? 0}
+                                        />
                                     </td>
                                     <td style={{ fontSize: '0.85rem', color: '#666' }}>
                                         {area.created_at ? new Date(area.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}

@@ -93,25 +93,34 @@ export default function NearbyAreasPreview({ slug, lat, lng }) {
 
 export function LinkStatusBadge({ outbound = 0, inbound = 0 }) {
     let color = "#c00";
-    let label = "No links";
+    let status = "Not linked";
     if (outbound >= 6 && inbound >= 3) {
         color = "#0a7d2e";
-        label = `${outbound} out · ${inbound} in`;
+        status = "Fully linked";
     } else if (outbound > 0 || inbound > 0) {
         color = "#b58105";
-        label = `${outbound} out · ${inbound} in`;
+        status = "Partially linked";
     }
+    const tooltip =
+        `${status} — ${outbound} outbound, ${inbound} inbound\n` +
+        `Green = ≥6 outbound + ≥3 inbound\n` +
+        `Yellow = some links but not full\n` +
+        `Red = no internal links yet`;
     return (
-        <span style={{
-            display: "inline-block",
-            padding: "2px 8px",
-            background: color,
-            color: "#fff",
-            borderRadius: 999,
-            fontSize: 11,
-            fontWeight: 600,
-        }}>
-            {label}
+        <span
+            title={tooltip}
+            style={{
+                display: "inline-block",
+                padding: "2px 8px",
+                background: color,
+                color: "#fff",
+                borderRadius: 999,
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: "help",
+            }}
+        >
+            {outbound} out · {inbound} in
         </span>
     );
 }

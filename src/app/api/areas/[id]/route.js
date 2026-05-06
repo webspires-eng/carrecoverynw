@@ -3,6 +3,7 @@ import { ObjectId } from 'mongodb';
 import { connectToDatabase } from '@/lib/db';
 import { submitAndTrack, buildAreaUrl } from '@/lib/googleIndexing';
 import { logActivity } from '@/lib/logger';
+import { runPublishPipeline } from '@/lib/publishPipeline';
 
 // GET single area by ID
 export async function GET(request, { params }) {
@@ -77,23 +78,52 @@ export async function PUT(request, { params }) {
         }
 
         const { db } = await connectToDatabase();
+
+        // Read previous state to detect a draft→published transition.
+        const previous = await db
+            .collection('areas')
+            .findOne({ _id: new ObjectId(id) }, { projection: { is_active: 1, slug: 1 } });
+        const wasInactive = previous ? previous.is_active === false : false;
+        const nowActive = updateData.is_active === true;
+
         await db.collection('areas').updateOne(
             { _id: new ObjectId(id) },
             { $set: { ...updateData, updated_at: new Date() } }
         );
 
-        // Submit updated area URL to Google Indexing API (fire-and-forget)
-        const updatedArea = await db.collection('areas').findOne({ _id: new ObjectId(id) }, { projection: { slug: 1, name: 1 } });
-        if (updatedArea?.slug) {
+        const updatedArea = await db
+            .collection('areas')
+            .findOne({ _id: new ObjectId(id) }, { projection: { slug: 1, name: 1 } });
+
+        // Fire the full internal-linking pipeline only on draft → published.
+        // Run in background so the user gets the PUT response immediately.
+        if (wasInactive && nowActive && updatedArea?.slug) {
+            runPublishPipeline(updatedArea.slug).catch((err) => {
+                console.error('[publish-pipeline] background run failed:', err);
+            });
+        } else if (updatedArea?.slug) {
+            // Standard re-save: still ping Google for the single URL.
             submitAndTrack(buildAreaUrl(updatedArea.slug), 'URL_UPDATED').catch(err => {
                 console.error('[Google Indexing] Auto-submit failed for updated area:', err.message);
             });
-            await logActivity('AREA_UPDATED', { id, slug: updatedArea.slug, name: updatedArea.name }, 'success');
+        }
+
+        if (updatedArea?.slug) {
+            await logActivity('AREA_UPDATED', {
+                id,
+                slug: updatedArea.slug,
+                name: updatedArea.name,
+                published: wasInactive && nowActive,
+            }, 'success');
         } else {
             await logActivity('AREA_UPDATED', { id }, 'success');
         }
 
-        return NextResponse.json({ success: true, message: 'Area updated successfully' });
+        return NextResponse.json({
+            success: true,
+            message: 'Area updated successfully',
+            publishPipelineQueued: wasInactive && nowActive,
+        });
     } catch (error) {
         console.error('Database error:', error);
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
