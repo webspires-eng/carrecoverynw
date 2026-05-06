@@ -79,7 +79,7 @@ export async function PUT(request, { params }) {
 
         const { db } = await connectToDatabase();
 
-        // Read previous state to detect a draft→published transition.
+        // Read previous state for transition detection + audit log.
         const previous = await db
             .collection('areas')
             .findOne({ _id: new ObjectId(id) }, { projection: { is_active: 1, slug: 1 } });
@@ -95,14 +95,17 @@ export async function PUT(request, { params }) {
             .collection('areas')
             .findOne({ _id: new ObjectId(id) }, { projection: { slug: 1, name: 1 } });
 
-        // Fire the full internal-linking pipeline only on draft → published.
-        // Run in background so the user gets the PUT response immediately.
-        if (wasInactive && nowActive && updatedArea?.slug) {
+        // Fire the full internal-linking pipeline on ANY save of an active area.
+        // Re-saves re-trigger linking so neighbour relationships stay current
+        // when lat/lng or other fields change. Runs in background so the PUT
+        // response returns immediately.
+        if (nowActive && updatedArea?.slug) {
+            console.log('[PUBLISH HOOK] Triggered for:', updatedArea.slug);
             runPublishPipeline(updatedArea.slug).catch((err) => {
-                console.error('[publish-pipeline] background run failed:', err);
+                console.error('[PUBLISH HOOK] Pipeline failed for', updatedArea.slug, err);
             });
         } else if (updatedArea?.slug) {
-            // Standard re-save: still ping Google for the single URL.
+            // Inactive save — only ping Google for URL update.
             submitAndTrack(buildAreaUrl(updatedArea.slug), 'URL_UPDATED').catch(err => {
                 console.error('[Google Indexing] Auto-submit failed for updated area:', err.message);
             });
@@ -114,6 +117,7 @@ export async function PUT(request, { params }) {
                 slug: updatedArea.slug,
                 name: updatedArea.name,
                 published: wasInactive && nowActive,
+                pipelineQueued: nowActive,
             }, 'success');
         } else {
             await logActivity('AREA_UPDATED', { id }, 'success');
@@ -122,7 +126,7 @@ export async function PUT(request, { params }) {
         return NextResponse.json({
             success: true,
             message: 'Area updated successfully',
-            publishPipelineQueued: wasInactive && nowActive,
+            publishPipelineQueued: nowActive,
         });
     } catch (error) {
         console.error('Database error:', error);

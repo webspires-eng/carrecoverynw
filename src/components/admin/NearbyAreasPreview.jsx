@@ -1,21 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * Drop into Add/Edit area forms. Pass either:
  *   <NearbyAreasPreview slug={existingSlug} />
  *   <NearbyAreasPreview lat={lat} lng={lng} />
  *
- * When `lat`/`lng` change the panel auto-refreshes (debounced).
+ * On initial mount with valid props the fetch fires immediately (no debounce)
+ * so existing areas show their preview without the admin having to interact.
+ * Subsequent prop changes (typing in lat/lng) are debounced 400ms.
  */
 export default function NearbyAreasPreview({ slug, lat, lng }) {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const isFirstFetchRef = useRef(true);
 
     useEffect(() => {
-        const hasGeo = typeof lat === "number" && typeof lng === "number" && !Number.isNaN(lat) && !Number.isNaN(lng);
+        const hasGeo =
+            typeof lat === "number" &&
+            typeof lng === "number" &&
+            !Number.isNaN(lat) &&
+            !Number.isNaN(lng) &&
+            lat !== 0 &&
+            lng !== 0;
         if (!slug && !hasGeo) return;
 
         const params = new URLSearchParams();
@@ -28,9 +37,10 @@ export default function NearbyAreasPreview({ slug, lat, lng }) {
         }
 
         const ctrl = new AbortController();
-        const timer = setTimeout(async () => {
-            setLoading(true);
-            setError(null);
+        setLoading(true);
+        setError(null);
+
+        const doFetch = async () => {
             try {
                 const res = await fetch(
                     `/api/admin/internal-links/preview?${params.toString()}`,
@@ -44,11 +54,19 @@ export default function NearbyAreasPreview({ slug, lat, lng }) {
             } finally {
                 setLoading(false);
             }
-        }, 400);
+        };
+
+        let timer;
+        if (isFirstFetchRef.current) {
+            isFirstFetchRef.current = false;
+            doFetch();
+        } else {
+            timer = setTimeout(doFetch, 400);
+        }
 
         return () => {
             ctrl.abort();
-            clearTimeout(timer);
+            if (timer) clearTimeout(timer);
         };
     }, [slug, lat, lng]);
 

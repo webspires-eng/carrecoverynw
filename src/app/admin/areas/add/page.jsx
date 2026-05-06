@@ -56,6 +56,64 @@ export default function AddAreaPage() {
         recoveries: null
     });
 
+    const [geocodeStatus, setGeocodeStatus] = useState(''); // '', 'looking', 'found', 'notfound'
+
+    // Auto-geocode the area name (debounced) when lat/lng are empty.
+    // Manual edits to lat/lng are preserved — we only fill blanks.
+    useEffect(() => {
+        const name = formData.name?.trim();
+        if (!name || name.length < 2) return;
+        if (formData.latitude !== '' || formData.longitude !== '') return;
+
+        const ctrl = new AbortController();
+        const timer = setTimeout(async () => {
+            setGeocodeStatus('looking');
+            try {
+                const res = await fetch(`/api/admin/geocode?q=${encodeURIComponent(name)}`, {
+                    signal: ctrl.signal,
+                    credentials: 'include',
+                });
+                if (!res.ok) {
+                    setGeocodeStatus('notfound');
+                    return;
+                }
+                const json = await res.json();
+                setFormData((prev) => {
+                    if (prev.latitude !== '' || prev.longitude !== '') return prev;
+                    return { ...prev, latitude: String(json.lat), longitude: String(json.lng) };
+                });
+                setGeocodeStatus('found');
+            } catch (err) {
+                if (err.name !== 'AbortError') setGeocodeStatus('notfound');
+            }
+        }, 800);
+
+        return () => {
+            ctrl.abort();
+            clearTimeout(timer);
+        };
+    }, [formData.name, formData.latitude, formData.longitude]);
+
+    const triggerGeocode = async () => {
+        const name = formData.name?.trim();
+        if (!name) return;
+        setGeocodeStatus('looking');
+        try {
+            const res = await fetch(`/api/admin/geocode?q=${encodeURIComponent(name)}`, {
+                credentials: 'include',
+            });
+            if (!res.ok) {
+                setGeocodeStatus('notfound');
+                return;
+            }
+            const json = await res.json();
+            setFormData((prev) => ({ ...prev, latitude: String(json.lat), longitude: String(json.lng) }));
+            setGeocodeStatus('found');
+        } catch {
+            setGeocodeStatus('notfound');
+        }
+    };
+
     const toggleItem = (section, index) => {
         setExpandedItems(prev => ({
             ...prev,
@@ -672,6 +730,45 @@ export default function AddAreaPage() {
                                                         onChange={(e) => setFormData({ ...formData, nearby_areas: e.target.value })}
                                                         placeholder="Solihull, Sutton Coldfield" />
                                                     <span className="input-hint">Comma-separated</span>
+                                                </div>
+                                                <div className="form-grid">
+                                                    <div className="form-group">
+                                                        <label htmlFor="latitude">Latitude</label>
+                                                        <input
+                                                            id="latitude"
+                                                            type="number"
+                                                            name="latitude"
+                                                            step="0.0001"
+                                                            placeholder="51.5033"
+                                                            value={formData.latitude}
+                                                            onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                                                            required
+                                                        />
+                                                    </div>
+                                                    <div className="form-group">
+                                                        <label htmlFor="longitude">Longitude</label>
+                                                        <input
+                                                            id="longitude"
+                                                            type="number"
+                                                            name="longitude"
+                                                            step="0.0001"
+                                                            placeholder="-0.1817"
+                                                            value={formData.longitude}
+                                                            onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                                                            required
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: -4 }}>
+                                                    <button type="button" className="btn btn-secondary" onClick={triggerGeocode} disabled={!formData.name || geocodeStatus === 'looking'}>
+                                                        {geocodeStatus === 'looking' ? 'Looking up…' : 'Auto-fill from name'}
+                                                    </button>
+                                                    <span className="input-hint" style={{ margin: 0 }}>
+                                                        {geocodeStatus === 'found' && 'Coordinates filled from OpenStreetMap.'}
+                                                        {geocodeStatus === 'notfound' && 'Could not auto-locate — enter manually.'}
+                                                        {geocodeStatus === '' && 'Auto-fills ~1s after you type the name.'}
+                                                        {geocodeStatus === 'looking' && 'Looking up coordinates…'}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
