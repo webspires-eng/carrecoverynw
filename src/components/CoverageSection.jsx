@@ -1,9 +1,14 @@
-"use client";
-
 import Link from "next/link";
+import { buildSubAreasHTML } from "@/lib/slugMatcher";
 import "../styles/sections/coverage.css";
 
-export default function CoverageSection({ location, majorRoads, nearbyAreas }) {
+export default function CoverageSection({
+    location,
+    majorRoads,
+    nearbyAreas,
+    allActiveSlugs = [],
+    currentSlug = "",
+}) {
     const defaultAreas = [
         "Birmingham", "Coventry", "Wolverhampton", "Walsall",
         "Dudley", "Solihull", "West Bromwich", "Sutton Coldfield",
@@ -15,6 +20,8 @@ export default function CoverageSection({ location, majorRoads, nearbyAreas }) {
     const displayedAreas = (nearbyAreas && nearbyAreas.length > 0) ? nearbyAreas : defaultAreas;
     const displayedRoads = (majorRoads && majorRoads.length > 0) ? majorRoads : defaultRoads;
 
+    const { html: subAreaItems } = buildSubAreasHTML(displayedAreas, allActiveSlugs, currentSlug);
+
     return (
         <section className="coverage-section">
             <div className="coverage-content">
@@ -25,8 +32,21 @@ export default function CoverageSection({ location, majorRoads, nearbyAreas }) {
                 </p>
 
                 <div className="priority-areas">
-                    {displayedAreas.map((area) => (
-                        <div key={area} className="area-tag">{area}</div>
+                    {subAreaItems.map((item) => (
+                        item.slug ? (
+                            <Link
+                                key={item.name}
+                                href={`/areas/${item.slug}`}
+                                aria-label={`Car recovery service in ${item.name}`}
+                                className="area-tag linked"
+                            >
+                                {item.name}
+                            </Link>
+                        ) : (
+                            <span key={item.name} className="area-tag">
+                                {item.name}
+                            </span>
+                        )
                     ))}
                 </div>
 

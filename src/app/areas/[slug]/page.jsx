@@ -2,12 +2,14 @@ import { connectToDatabase } from '@/lib/db';
 import { getServices } from "@/lib/services";
 import { getRecoveries } from "@/lib/recoveries";
 import { getSettings } from "@/lib/settings";
+import { getAllActiveSlugs } from "@/lib/areas";
 import { notFound } from 'next/navigation';
 import HeroSection from "@/components/HeroSection";
 import ImmediateHelpSection from "@/components/ImmediateHelpSection";
 import StepsSection from "@/components/StepsSection";
 import ServicesSection from "@/components/ServicesSection";
 import CoverageSection from "@/components/CoverageSection";
+import NearbyAreasSection from "@/components/NearbyAreasSection";
 import MapSection from "@/components/MapSection";
 import AreaSchemaMarkup from "@/components/AreaSchemaMarkup";
 import TestimonialsSection from "@/components/TestimonialsSection";
@@ -101,10 +103,13 @@ export async function generateMetadata({ params }) {
 
 export default async function AreaPage({ params }) {
     const { slug } = await params;
-    const area = await getAreaBySlug(slug);
-    const services = await getServices();
-    const recoveries = await getRecoveries();
-    const settings = await getSettings();
+    const [area, services, recoveries, settings, allActiveSlugs] = await Promise.all([
+        getAreaBySlug(slug),
+        getServices(),
+        getRecoveries(),
+        getSettings(),
+        getAllActiveSlugs(),
+    ]);
 
     if (!area) {
         notFound();
@@ -155,7 +160,20 @@ export default async function AreaPage({ params }) {
             <ServicesSection location={location} majorRoads={majorRoads} services={displayServices} />
 
             {/* 5. Areas We Cover */}
-            <CoverageSection location={location} majorRoads={majorRoads} nearbyAreas={nearbyAreas} />
+            <CoverageSection
+                location={location}
+                majorRoads={majorRoads}
+                nearbyAreas={nearbyAreas}
+                allActiveSlugs={allActiveSlugs}
+                currentSlug={slug}
+            />
+
+            {/* 5b. Auto-linked nearest neighbours (computed at publish time) */}
+            <NearbyAreasSection
+                currentSlug={slug}
+                currentName={area.name}
+                nearbyAreasSlugs={Array.isArray(area.nearby_areas_slugs) ? area.nearby_areas_slugs : []}
+            />
 
             {/* 6. Map + NAP */}
             <MapSection location={location} />
@@ -195,4 +213,4 @@ export default async function AreaPage({ params }) {
     );
 }
 
-export const revalidate = 0; // Force dynamic for now to reflect changes immediately
+export const revalidate = 86400; // 24h ISR; call revalidatePath('/areas/<slug>') for instant updates

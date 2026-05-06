@@ -47,6 +47,12 @@
     color: #fff;
 }
 
+a.area-tag.linked {
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+
 .roads-list {
     display: flex;
     flex-wrap: wrap;
