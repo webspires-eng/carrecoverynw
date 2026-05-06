@@ -68,10 +68,12 @@ export default function FAQSection({ customFaqs = [], location, majorRoads = [] 
 
     const usedFaqs = (customFaqs && customFaqs.length > 0) ? customFaqs : defaultFaqs;
 
-    const displayFaqs = usedFaqs.map(f => ({
-        q: (f.question || f.q)?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr),
-        a: (f.answer || f.a)?.replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr)
-    }));
+    const displayFaqs = usedFaqs
+        .map(f => ({
+            q: (f.question || f.q || '').replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr),
+            a: (f.answer || f.a || '').replace(/{{location}}/g, location || 'West Midlands').replace(/{{majorRoads}}/g, majorRoadsStr)
+        }))
+        .filter(f => f.q && f.a);
 
     const toggleFAQ = (index) => {
         setActiveIndex(activeIndex === index ? null : index);
