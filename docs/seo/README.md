@@ -8,6 +8,7 @@ Record of work done across four related tasks. Each report covers what changed, 
 | 2 | [Redirect cleanup](./02-redirect-cleanup.md) | Tooling shipped, fixes pending audit |
 | 3 | [Crawl-budget optimisation](./03-crawl-budget.md) | Implemented |
 | 4 | [Publish-time linking pipeline](./04-publish-pipeline.md) | Implemented, needs admin wire-up |
+| 5 | [Redirect fixes applied](./05-redirect-fixes-applied.md) | Code fix shipped; one Vercel-side action remaining |
 
 ## Run order for a fresh deploy
 
