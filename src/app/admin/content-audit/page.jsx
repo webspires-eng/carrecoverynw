@@ -10,7 +10,7 @@ const PAGE_LIMIT = 50;
 export default function ContentAuditAdmin() {
     const [stats, setStats] = useState(null);
     const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [running, setRunning] = useState(false);
     const [filter, setFilter] = useState('thin'); // all | thin | clean
     const [search, setSearch] = useState('');
@@ -45,7 +45,7 @@ export default function ContentAuditAdmin() {
         setLoading(false);
     };
 
-    useEffect(() => { fetchAudit(); }, []);
+    // Note: no auto-load — audit runs only when the user clicks "Refresh audit".
 
     const appendLog = (line) => {
         setLog(prev => [`[${new Date().toLocaleTimeString()}] ${line}`, ...prev].slice(0, 200));
