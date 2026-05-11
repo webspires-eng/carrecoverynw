@@ -167,7 +167,7 @@ export default function ContentAuditAdmin() {
                             color: '#78350f',
                         }}>
                             <strong>How it works:</strong> Each thin area is rebuilt with the EAV templater (using the area's own
-                            major_roads / nearby_areas / county), then each block is rewritten by <strong>claude-sonnet-4-6</strong>
+                            major_roads / nearby_areas / county), then each block is rewritten by <strong>Qwen (DashScope)</strong>
                             with the locked-down system prompt. Bottom content is revalidated automatically. Recommended:
                             run with batch size <strong>3</strong> first and spot-check a page before scaling up.
                         </div>

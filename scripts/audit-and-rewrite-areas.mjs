@@ -29,8 +29,8 @@ const USE_LLM = !args.includes('--no-llm');
 const limitArg = args.indexOf('--limit');
 const REWRITE_LIMIT = limitArg !== -1 ? parseInt(args[limitArg + 1], 10) : Infinity;
 
-if (REWRITE && USE_LLM && !process.env.ANTHROPIC_API_KEY) {
-    console.error('Missing ANTHROPIC_API_KEY in .env.local (or pass --no-llm to skip the LLM step).');
+if (REWRITE && USE_LLM && !process.env.DASHSCOPE_API_KEY) {
+    console.error('Missing DASHSCOPE_API_KEY in .env.local (or pass --no-llm to skip the LLM step).');
     process.exit(1);
 }
 

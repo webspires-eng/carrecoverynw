@@ -63,9 +63,9 @@ export async function POST(request) {
         const slugs = Array.isArray(body.slugs) ? body.slugs : null;
         const useLlm = body.useLlm !== false;
 
-        if (useLlm && !process.env.ANTHROPIC_API_KEY) {
+        if (useLlm && !process.env.DASHSCOPE_API_KEY) {
             return NextResponse.json(
-                { success: false, error: 'ANTHROPIC_API_KEY is not configured on the server.' },
+                { success: false, error: 'DASHSCOPE_API_KEY is not configured on the server.' },
                 { status: 500 },
             );
         }

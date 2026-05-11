@@ -1,7 +1,8 @@
 // Shared content-audit and LLM-rewrite logic.
 // Used by both /admin/content-audit (admin UI + API route) and scripts/audit-and-rewrite-areas.mjs.
-
-import Anthropic from '@anthropic-ai/sdk';
+//
+// LLM provider: Alibaba Qwen via the DashScope OpenAI-compatible endpoint.
+// Env: DASHSCOPE_API_KEY (required for rewrite step), DASHSCOPE_BASE_URL (optional override).
 
 export const THRESHOLDS = {
     serviceMinWords: 150,
@@ -9,7 +10,9 @@ export const THRESHOLDS = {
     minFaqs: 5,
 };
 
-const CLAUDE_MODEL = 'claude-sonnet-4-6';
+const QWEN_MODEL = process.env.QWEN_MODEL || 'qwen-plus';
+const DASHSCOPE_BASE_URL =
+    process.env.DASHSCOPE_BASE_URL || 'https://dashscope-intl.aliyuncs.com/compatible-mode/v1';
 
 const REWRITE_SYSTEM_PROMPT =
     "You are rewriting car recovery service page content for a specific UK location. " +
@@ -246,28 +249,40 @@ export function buildBottomContent({ area, county, majorRoads, nearbyAreas }) {
 }
 
 // ───────────────────────────────────────────────────────────────────────────
-// LLM rewrite step
+// LLM rewrite step — Qwen via DashScope (OpenAI-compatible endpoint)
 // ───────────────────────────────────────────────────────────────────────────
-function getClient() {
-    if (!process.env.ANTHROPIC_API_KEY) {
-        throw new Error('ANTHROPIC_API_KEY is not set');
-    }
-    return new Anthropic();
-}
+async function callQwen({ system, userPrompt }) {
+    const apiKey = process.env.DASHSCOPE_API_KEY;
+    if (!apiKey) throw new Error('DASHSCOPE_API_KEY is not set');
 
-async function callClaude({ system, userPrompt }) {
-    const client = getClient();
-    const response = await client.messages.create({
-        model: CLAUDE_MODEL,
-        max_tokens: 16000,
-        system,
-        messages: [{ role: 'user', content: userPrompt }],
+    const res = await fetch(`${DASHSCOPE_BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            model: QWEN_MODEL,
+            messages: [
+                { role: 'system', content: system },
+                { role: 'user', content: userPrompt },
+            ],
+            max_tokens: 8192,
+            temperature: 0.7,
+        }),
     });
-    return response.content
-        .filter(b => b.type === 'text')
-        .map(b => b.text)
-        .join('')
-        .trim();
+
+    if (!res.ok) {
+        const errText = await res.text().catch(() => '');
+        throw new Error(`Qwen API ${res.status}: ${errText.slice(0, 400)}`);
+    }
+
+    const data = await res.json();
+    const text = data?.choices?.[0]?.message?.content;
+    if (!text) {
+        throw new Error('Qwen API returned no content');
+    }
+    return text.trim();
 }
 
 export async function llmRewriteJson({ instruction, draftObject, area }) {
@@ -278,7 +293,7 @@ export async function llmRewriteJson({ instruction, draftObject, area }) {
         `Do not wrap in code fences. Do not add commentary.\n\n` +
         `Draft:\n${JSON.stringify(draftObject, null, 2)}`;
 
-    const raw = await callClaude({ system: REWRITE_SYSTEM_PROMPT, userPrompt });
+    const raw = await callQwen({ system: REWRITE_SYSTEM_PROMPT, userPrompt });
     const cleaned = raw.replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
     try {
         return JSON.parse(cleaned);
@@ -295,7 +310,7 @@ export async function llmRewriteHtml({ instruction, draftHtml, area }) {
         `Do not wrap in code fences. Do not add commentary or a preamble.\n\n` +
         `Draft HTML:\n${draftHtml}`;
 
-    const raw = await callClaude({ system: REWRITE_SYSTEM_PROMPT, userPrompt });
+    const raw = await callQwen({ system: REWRITE_SYSTEM_PROMPT, userPrompt });
     return raw.replace(/^```(?:html)?\s*/i, '').replace(/```\s*$/, '').trim();
 }
 
