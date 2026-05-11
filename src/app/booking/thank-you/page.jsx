@@ -13,19 +13,6 @@ export default function ThankYouPage() {
 
     return (
         <main className="booking-page">
-            {/* Header */}
-            <header className="booking-header">
-                <Link href="/" className="booking-header-logo">
-                    CAR <span>RECOVERY</span>
-                </Link>
-                <nav className="booking-header-nav">
-                    <Link href="/">← Home</Link>
-                    <Link href={`tel:${linkPhone}`} className="booking-header-call">
-                        <Phone size={18} />
-                        <span>{displayPhone}</span>
-                    </Link>
-                </nav>
-            </header>
 
             {/* Thank You Content */}
             <section style={{

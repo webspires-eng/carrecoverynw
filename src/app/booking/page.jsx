@@ -159,18 +159,6 @@ export default function BookingPage() {
 
     return (
         <main className="booking-page">
-            <header className="booking-header">
-                <Link href="/" className="booking-header-logo">
-                    CAR <span>RECOVERY</span>
-                </Link>
-                <nav className="booking-header-nav">
-                    <Link href="/">Home</Link>
-                    <Link href={`tel:${linkPhone}`} className="booking-header-call">
-                        <Phone size={18} />
-                        <span>{displayPhone}</span>
-                    </Link>
-                </nav>
-            </header>
 
             <section className="booking-hero booking-hero--compact">
                 <div className="booking-hero-content">
