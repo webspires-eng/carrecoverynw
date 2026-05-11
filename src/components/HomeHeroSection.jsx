@@ -95,7 +95,7 @@ export default function HomeHeroSection({ location = "United Kingdom" }) {
 
                 <div className="container-hero">
                     <Image
-                        src="/tow-truck-hero.png"
+                        src="https://storage.googleapis.com/msgsndr/XC3tce6DM0fYi7gpF790/media/6983318545998675693c6ba8.jpg"
                         alt="24/7 car recovery service in the United Kingdom"
                         width={800}
                         height={600}

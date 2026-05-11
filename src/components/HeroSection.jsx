@@ -94,7 +94,7 @@ export default function HeroSection({ location = "West Midlands" }) {
 
                 <div className="container-hero">
                     <Image
-                        src="/tow-truck-hero.png"
+                        src="https://storage.googleapis.com/msgsndr/XC3tce6DM0fYi7gpF790/media/6983318545998675693c6ba8.jpg"
                         alt={`Car recovery service in ${location}`}
                         width={800}
                         height={600}

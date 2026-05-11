@@ -16,10 +16,15 @@ export default function SiteHeader() {
     return (
         <header className="site-header" role="banner">
             <div className="site-header__inner">
-                <Link href="/" className="site-header__logo" aria-label="Car Recovery UK home">
-                    <span className="site-header__logo-mark">CAR</span>
-                    <span className="site-header__logo-text">RECOVERY <em>UK</em></span>
-                </Link>
+                <button
+                    type="button"
+                    className="site-header__toggle"
+                    aria-label={open ? 'Close menu' : 'Open menu'}
+                    aria-expanded={open}
+                    onClick={() => setOpen(prev => !prev)}
+                >
+                    {open ? <X size={22} /> : <Menu size={22} />}
+                </button>
 
                 <nav
                     className={`site-header__nav ${open ? 'is-open' : ''}`}
@@ -43,16 +48,6 @@ export default function SiteHeader() {
                     <Phone size={16} />
                     <span>{displayPhone}</span>
                 </Link>
-
-                <button
-                    type="button"
-                    className="site-header__toggle"
-                    aria-label={open ? 'Close menu' : 'Open menu'}
-                    aria-expanded={open}
-                    onClick={() => setOpen(prev => !prev)}
-                >
-                    {open ? <X size={22} /> : <Menu size={22} />}
-                </button>
             </div>
         </header>
     );
