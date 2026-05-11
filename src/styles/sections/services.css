@@ -70,3 +70,20 @@
         line-height: 1.3em;
     }
 }
+.service-read-more {
+    display: inline;
+    background: none;
+    border: 0;
+    padding: 0;
+    margin-left: 4px;
+    color: var(--primary-orange);
+    font-weight: 700;
+    font-size: inherit;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.service-read-more:hover {
+    color: var(--primary-blue);
+}

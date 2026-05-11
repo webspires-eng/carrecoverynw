@@ -1,7 +1,40 @@
 "use client";
 
+import { useState } from "react";
 import { CircleCheck } from "lucide-react";
 import HighlightedText from "@/components/HighlightedText";
+
+const PREVIEW_WORDS = 60;
+
+function truncateWords(text, n) {
+    const words = (text || '').trim().split(/\s+/).filter(Boolean);
+    if (words.length <= n) return { preview: text, isTruncated: false };
+    return { preview: words.slice(0, n).join(' ') + '…', isTruncated: true };
+}
+
+function ServiceDescription({ text, location }) {
+    const [expanded, setExpanded] = useState(false);
+    const { preview, isTruncated } = truncateWords(text, PREVIEW_WORDS);
+    const shown = expanded || !isTruncated ? text : preview;
+
+    return (
+        <p>
+            <HighlightedText text={shown} location={location} />
+            {isTruncated && (
+                <>
+                    {' '}
+                    <button
+                        type="button"
+                        onClick={() => setExpanded(v => !v)}
+                        className="service-read-more"
+                    >
+                        {expanded ? 'Read less' : 'Read more'}
+                    </button>
+                </>
+            )}
+        </p>
+    );
+}
 
 export default function ServicesSection({ location = "West Midlands", majorRoads = [], services: dynamicServices = [] }) {
     const majorRoadsStr = (majorRoads && majorRoads.length > 0)
@@ -65,7 +98,7 @@ export default function ServicesSection({ location = "West Midlands", majorRoads
                                 <CircleCheck size={22} color="white" fill="#3ec56c" />
                                 <h2><HighlightedText text={service.title} location={location} /></h2>
                             </div>
-                            <p><HighlightedText text={service.description} location={location} /></p>
+                            <ServiceDescription text={service.description} location={location} />
                         </div>
                     ))}
                 </div>
