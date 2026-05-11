@@ -58,6 +58,14 @@ export default function PageSchemaMarkup({ pageType, settings = {} }) {
                 addressCountry: 'GB',
             },
             areaServed: { '@type': 'Country', name: 'United Kingdom' },
+            aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: '5.0',
+                bestRating: '5',
+                worstRating: '1',
+                ratingCount: '1207',
+                reviewCount: '1207',
+            },
             openingHoursSpecification: [{
                 '@type': 'OpeningHoursSpecification',
                 dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],

@@ -5,8 +5,7 @@ import { getSiteUrl } from "@/lib/siteUrl";
 import { canonicalUrl, getCustomSchemaMarkup } from "@/lib/seoSettings";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+import SiteHeader from "@/components/SiteHeader";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -121,10 +120,9 @@ export default async function RootLayout({ children }) {
       </head>
       <body className={`${rubik.variable} font-sans antialiased`} suppressHydrationWarning>
         <SettingsProvider settings={settings}>
+          <SiteHeader />
           {children}
           <FloatingActions />
-          <Analytics />
-          <SpeedInsights />
         </SettingsProvider>
       </body>
     </html>

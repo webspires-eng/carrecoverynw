@@ -71,15 +71,23 @@ export async function generateMetadata({ params }) {
     const baseUrl = getSiteUrl();
     const canonical = await canonicalUrl(`/areas/${slug}`);
 
+    const BRAND_SUFFIX = "| Car Recovery UK";
+    const rawTitle = area.meta_title?.trim() || `24/7 Car Recovery in ${area.name}`;
+    const fullTitle = rawTitle.toLowerCase().includes("car recovery uk")
+        ? rawTitle
+        : `${rawTitle} ${BRAND_SUFFIX}`;
+    const description = area.meta_description
+        || `Fast and reliable 24/7 car recovery in ${area.name}. Emergency breakdown assistance, towing, and vehicle transport across ${area.name} and surrounding areas.`;
+
     return {
-        title: area.meta_title || `24/7 Car Recovery in ${area.name} | Car Recovery UK`,
-        description: area.meta_description || `Fast and reliable car recovery services in ${area.name}. Available 24/7 for breakdowns, accidents, and vehicle transport.`,
+        title: fullTitle,
+        description: description,
         alternates: {
             canonical: canonical,
         },
         openGraph: {
-            title: area.meta_title || `24/7 Car Recovery in ${area.name}`,
-            description: area.meta_description,
+            title: fullTitle,
+            description: description,
             url: canonical,
             siteName: "Car Recovery UK",
             images: [
@@ -95,8 +103,8 @@ export async function generateMetadata({ params }) {
         },
         twitter: {
             card: 'summary_large_image',
-            title: area.meta_title || `24/7 Car Recovery in ${area.name}`,
-            description: area.meta_description,
+            title: fullTitle,
+            description: description,
             images: [`/api/og?city=${encodeURIComponent(area.name)}`],
         },
     };

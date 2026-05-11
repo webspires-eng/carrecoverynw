@@ -61,7 +61,7 @@ export default async function AreasArchive({ searchParams }) {
             <PageSchemaMarkup pageType="areas" settings={settings} />
             <div className="areas-hero">
                 <h1>Areas We Cover</h1>
-                <p>24/7 Car Recovery Services Across the West Midlands & Beyond</p>
+                <p>24/7 Car Recovery & Emergency Towing Across the United Kingdom</p>
 
                 <form className="areas-search" action="/areas" method="GET">
                     <input

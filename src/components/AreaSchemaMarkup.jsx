@@ -88,6 +88,14 @@ export default function AreaSchemaMarkup({ area, faqs = [], settings = {} }) {
             },
             geoRadius: '30000',
         },
+        aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: '5.0',
+            bestRating: '5',
+            worstRating: '1',
+            ratingCount: '1207',
+            reviewCount: '1207',
+        },
         hasOfferCatalog: {
             '@type': 'OfferCatalog',
             name: 'Car Recovery Services',
