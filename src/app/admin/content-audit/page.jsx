@@ -22,12 +22,20 @@ export default function ContentAuditAdmin() {
 
     const fetchAudit = async () => {
         setLoading(true);
+        appendLog('Refreshing audit…');
         try {
-            const res = await fetch('/api/admin/content-audit');
+            const res = await fetch('/api/admin/content-audit', { cache: 'no-store' });
+            if (!res.ok) {
+                const errText = await res.text().catch(() => '');
+                appendLog(`HTTP ${res.status}: ${errText.slice(0, 200) || 'no body'}`);
+                setLoading(false);
+                return;
+            }
             const data = await res.json();
             if (data.success) {
                 setStats(data.counts);
                 setItems(data.items);
+                appendLog(`Loaded ${data.counts.total} areas (${data.counts.thin} flagged).`);
             } else {
                 appendLog(`Error loading audit: ${data.error}`);
             }
@@ -202,9 +210,12 @@ export default function ContentAuditAdmin() {
                                         : <><Rocket size={14} />Rewrite Next {Math.min(batchSize, stats?.thin ?? 0)}</>}
                                 </span>
                             </button>
-                            <button className="btn btn-secondary" disabled={running || loading} onClick={fetchAudit}>
+                            <button className="btn btn-secondary" disabled={running} onClick={fetchAudit}>
                                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                                    <RefreshCw size={14} />Refresh audit
+                                    {loading
+                                        ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} />
+                                        : <RefreshCw size={14} />}
+                                    {loading ? 'Refreshing…' : 'Refresh audit'}
                                 </span>
                             </button>
                         </div>
