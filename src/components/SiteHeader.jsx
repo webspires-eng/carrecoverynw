@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Phone, Menu, X, CalendarCheck } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
@@ -9,6 +10,11 @@ import "../styles/sections/site-header.css";
 export default function SiteHeader() {
     const { phone } = useSettings();
     const [open, setOpen] = useState(false);
+    const pathname = usePathname() || "";
+
+    if (pathname === "/admin" || pathname.startsWith("/admin/") || pathname === "/signin") {
+        return null;
+    }
 
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
