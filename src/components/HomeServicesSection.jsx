@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CircleCheck } from "lucide-react";
 import HighlightedText from "@/components/HighlightedText";
 
-const PREVIEW_WORDS = 60;
+const PREVIEW_WORDS = 30;
 
 function truncateWords(text, n) {
     const words = (text || '').trim().split(/\s+/).filter(Boolean);
