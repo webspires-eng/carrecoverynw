@@ -113,7 +113,7 @@ export default async function RootLayout({ children }) {
               var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
               c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
               })(document);
-              smartlook('init', 'cac1e5ababc522cc96b9954552c1a72cb45df01f', { region: 'eu' });
+              smartlook('init', 'aed7ca16f366541caca55245c4f60e6dd364a9aa', { region: 'eu' });
             `
           }}
         />
