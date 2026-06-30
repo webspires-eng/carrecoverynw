@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -49,9 +49,11 @@ export async function POST(request) {
     }
 
     try {
+        revalidateTag('areas'); // refresh cached active-slug list (getAllActiveSlugs)
         revalidatePath('/areas');
         revalidatePath('/');
         revalidatePath('/sitemap.xml');
+        revalidatePath('/sitemap-html');
         revalidatePath('/robots.txt');
     } catch (err) {
         errors.push(`root paths: ${err.message}`);

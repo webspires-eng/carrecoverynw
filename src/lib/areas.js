@@ -14,8 +14,12 @@ async function fetchAllActiveSlugs() {
     }
 }
 
+// revalidate: false — never time-expire. Consumed by area pages during render,
+// so a numeric revalidate here would force their effective ISR revalidate down
+// and drive ISR writes. Invalidated on demand via revalidateTag('areas') when an
+// area is published (see publishPipeline / api/admin/revalidate-all).
 export const getAllActiveSlugs = unstable_cache(
     fetchAllActiveSlugs,
     ['all-active-area-slugs'],
-    { revalidate: 3600, tags: ['areas'] }
+    { revalidate: false, tags: ['areas'] }
 );

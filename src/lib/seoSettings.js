@@ -15,9 +15,14 @@ async function fetchSeoDoc() {
     }
 }
 
+// revalidate: false — never time-expire. This cache is consumed by every page's
+// generateMetadata (via canonicalUrl), so a numeric revalidate here drags EVERY
+// page's effective ISR revalidate down to that value and forces constant
+// regeneration (= ISR writes). It is invalidated on demand via
+// revalidateTag(SEO_CACHE_TAG) whenever SEO settings are saved (api/seo PUT).
 const getCachedSeoDoc = unstable_cache(fetchSeoDoc, ['seo-settings-doc'], {
     tags: [SEO_CACHE_TAG],
-    revalidate: 300,
+    revalidate: false,
 });
 
 export async function getCanonicalBaseUrl() {

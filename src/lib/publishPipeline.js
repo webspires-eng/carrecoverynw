@@ -1,4 +1,4 @@
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
 import { submitAndTrack, buildAreaUrl } from '@/lib/googleIndexing';
 import { logActivity } from '@/lib/logger';
@@ -117,6 +117,7 @@ export async function runPublishPipeline(slug, opts = {}) {
     }
 
     await safe('STEP 9 revalidate sitemap', () => {
+        revalidateTag('areas'); // refresh cached active-slug list (getAllActiveSlugs)
         revalidatePath('/sitemap.xml');
         revalidatePath('/sitemap-html');
     });
