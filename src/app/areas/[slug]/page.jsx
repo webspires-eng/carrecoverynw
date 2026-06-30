@@ -222,4 +222,13 @@ export default async function AreaPage({ params }) {
     );
 }
 
-export const revalidate = 86400; // 24h ISR; call revalidatePath('/areas/<slug>') for instant updates
+// Fully static: area content (town name, phone, copy) only changes on a code
+// edit + redeploy, so there is NO time-based ISR. Each page is rebuilt only at
+// deploy time. For content edits without a deploy, call
+// revalidatePath('/areas/<slug>') on demand (see /api/admin/revalidate-all).
+export const revalidate = false;
+
+// Only slugs returned by generateStaticParams() are valid. Unknown/bot-generated
+// URLs (e.g. /areas/random-junk) return 404 instead of triggering on-demand ISR
+// generation + a write. generateStaticParams() already returns every active slug.
+export const dynamicParams = false;

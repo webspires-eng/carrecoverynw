@@ -104,4 +104,6 @@ export default async function HtmlSitemap() {
     );
 }
 
-export const revalidate = 3600; // Revalidate every hour
+// Fully static; refreshed on demand when an area is published
+// (publishPipeline calls revalidatePath('/sitemap-html')) and at deploy time.
+export const revalidate = false;

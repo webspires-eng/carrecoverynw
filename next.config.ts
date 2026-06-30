@@ -53,15 +53,11 @@ const nextConfig: NextConfig = {
           { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
-      {
-        source: '/areas/:slug*',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, s-maxage=86400, stale-while-revalidate=3600',
-          },
-        ],
-      },
+      // NOTE: We intentionally do NOT set a manual Cache-Control on /areas/:slug*.
+      // Those pages are statically prerendered (revalidate = false) and Vercel sets
+      // the correct long-lived cache headers automatically. A manual
+      // stale-while-revalidate here would fight Next's ISR cache and drive
+      // unnecessary background revalidations (= ISR writes).
     ];
   },
   images: {

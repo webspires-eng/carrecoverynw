@@ -118,6 +118,7 @@ export async function runPublishPipeline(slug, opts = {}) {
 
     await safe('STEP 9 revalidate sitemap', () => {
         revalidatePath('/sitemap.xml');
+        revalidatePath('/sitemap-html');
     });
 
     await safe('STEP 10 logActivity', () =>
