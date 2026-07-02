@@ -2,25 +2,97 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
-// PATCH update booking status
+// Fields that must not be blanked out if provided
+const REQUIRED_FIELDS = ['name', 'phone', 'pickupLocation', 'serviceType'];
+// Optional free-text fields (empty string is stored as null)
+const OPTIONAL_FIELDS = ['email', 'dropoffLocation', 'registrationNumber', 'vehicleMake', 'vehicleModel', 'message'];
+
+// PATCH update booking (any editable field, status and/or price)
 export async function PATCH(request, { params }) {
     try {
         const { id } = await params;
         const body = await request.json();
-        const { status } = body;
+        const { status, price } = body;
 
-        const validStatuses = ['new', 'confirmed', 'dispatched', 'completed', 'cancelled'];
-        if (!validStatuses.includes(status)) {
+        const updates = {};
+
+        for (const field of REQUIRED_FIELDS) {
+            if (body[field] !== undefined) {
+                const value = String(body[field]).trim();
+                if (!value) {
+                    return NextResponse.json(
+                        { success: false, error: `${field} cannot be empty` },
+                        { status: 400 }
+                    );
+                }
+                updates[field] = value;
+            }
+        }
+
+        for (const field of OPTIONAL_FIELDS) {
+            if (body[field] !== undefined) {
+                const value = body[field] === null ? '' : String(body[field]).trim();
+                updates[field] = value || null;
+            }
+        }
+
+        if (status !== undefined) {
+            const validStatuses = ['new', 'confirmed', 'dispatched', 'completed', 'cancelled', 'lost'];
+            if (!validStatuses.includes(status)) {
+                return NextResponse.json(
+                    { success: false, error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` },
+                    { status: 400 }
+                );
+            }
+            updates.status = status;
+        }
+
+        if (price !== undefined) {
+            const parsed = price === null || price === '' ? null : Number(price);
+            if (parsed !== null && (Number.isNaN(parsed) || parsed < 0)) {
+                return NextResponse.json(
+                    { success: false, error: 'Price must be a positive number' },
+                    { status: 400 }
+                );
+            }
+            updates.price = parsed;
+        }
+
+        const bookingDate = body.bookingDate;
+        if (bookingDate !== undefined && bookingDate && Number.isNaN(new Date(bookingDate).getTime())) {
             return NextResponse.json(
-                { success: false, error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` },
+                { success: false, error: 'Invalid booking date' },
+                { status: 400 }
+            );
+        }
+
+        if (Object.keys(updates).length === 0 && !bookingDate) {
+            return NextResponse.json(
+                { success: false, error: 'Nothing to update' },
                 { status: 400 }
             );
         }
 
         const { db } = await connectToDatabase();
+
+        // Date-only value: change the date but keep the booking's original time of day
+        if (bookingDate) {
+            const date = new Date(bookingDate);
+            if (/^\d{4}-\d{2}-\d{2}$/.test(String(bookingDate))) {
+                const existing = await db.collection('bookings').findOne(
+                    { _id: new ObjectId(id) },
+                    { projection: { created_at: 1 } }
+                );
+                if (existing?.created_at) {
+                    const prev = new Date(existing.created_at);
+                    date.setHours(prev.getHours(), prev.getMinutes(), prev.getSeconds(), 0);
+                }
+            }
+            updates.created_at = date;
+        }
         const result = await db.collection('bookings').updateOne(
             { _id: new ObjectId(id) },
-            { $set: { status, updated_at: new Date() } }
+            { $set: { ...updates, updated_at: new Date() } }
         );
 
         if (result.matchedCount === 0) {
