@@ -6,9 +6,35 @@ import {
     MapPin, Wrench, MessageSquare, Trash2, Phone, Mail,
     Search, LogOut, Settings, Globe, ClipboardList,
     Sparkles, CheckCheck, Truck, CheckCircle2, XCircle,
-    ChevronDown, ChevronUp
+    ChevronDown, ChevronUp, Plus, X, AlertCircle
 } from 'lucide-react';
 import '../../../styles/admin.css';
+
+const SERVICE_TYPES = [
+    "Car Recovery",
+    "Breakdown Assistance",
+    "Accident Recovery",
+    "Flat Tyre Change",
+    "Jump Start / Battery",
+    "Vehicle Transport",
+    "Long Distance Towing",
+    "Motorcycle Recovery",
+    "Other",
+];
+
+const EMPTY_BOOKING = {
+    name: '',
+    phone: '',
+    email: '',
+    pickupLocation: '',
+    dropoffLocation: '',
+    serviceType: '',
+    registrationNumber: '',
+    vehicleMake: '',
+    vehicleModel: '',
+    message: '',
+    status: 'new',
+};
 
 const STATUS_META = {
     new:        { label: 'New',        color: '#ea580c', bg: '#fff7ed', border: '#fed7aa', Icon: Sparkles },
@@ -42,6 +68,12 @@ export default function AdminBookings() {
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
     const [expandedId, setExpandedId] = useState(null);
+
+    // Manual booking modal
+    const [showModal, setShowModal] = useState(false);
+    const [form, setForm] = useState(EMPTY_BOOKING);
+    const [saving, setSaving] = useState(false);
+    const [formError, setFormError] = useState('');
 
     const fetchBookings = async () => {
         setLoading(true);
@@ -91,6 +123,51 @@ export default function AdminBookings() {
         }
     };
 
+    const openModal = () => {
+        setForm(EMPTY_BOOKING);
+        setFormError('');
+        setShowModal(true);
+    };
+
+    const closeModal = () => {
+        if (saving) return;
+        setShowModal(false);
+    };
+
+    const handleFormChange = (e) => {
+        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        if (formError) setFormError('');
+    };
+
+    const handleCreate = async (e) => {
+        e.preventDefault();
+        if (!form.name.trim() || !form.phone.trim() || !form.pickupLocation.trim() || !form.serviceType) {
+            setFormError('Name, phone, pickup location and service type are required.');
+            return;
+        }
+        setSaving(true);
+        try {
+            const res = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...form, manual: true }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setShowModal(false);
+                setStatusFilter('all');
+                setSearch('');
+                setPage(1);
+                fetchBookings();
+            } else {
+                setFormError(data.error || 'Failed to create booking.');
+            }
+        } catch {
+            setFormError('Something went wrong. Please try again.');
+        }
+        setSaving(false);
+    };
+
     const handleLogout = async () => {
         await fetch('/api/auth/logout', { method: 'POST' });
         window.location.href = '/signin';
@@ -119,6 +196,10 @@ export default function AdminBookings() {
                         <p>Manage all car recovery booking requests</p>
                     </div>
                     <div className="admin-header-actions">
+                        <button onClick={openModal} className="btn btn-primary">
+                            <Plus size={16} />
+                            New Booking
+                        </button>
                         <Link href="/admin/areas" className="btn btn-secondary">
                             <MapPin size={16} />
                             Areas
@@ -354,6 +435,107 @@ export default function AdminBookings() {
                     </div>
                 )}
             </div>
+
+            {showModal && (
+                <div className="modal-overlay" onClick={closeModal}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <div className="settings-card-header" style={{ marginBottom: 20 }}>
+                            <div className="settings-card-icon">
+                                <ClipboardList size={18} />
+                            </div>
+                            <h2 style={{ flex: 1 }}>New Booking</h2>
+                            <button
+                                type="button"
+                                onClick={closeModal}
+                                className="btn btn-secondary"
+                                style={{ padding: 8 }}
+                                aria-label="Close"
+                            >
+                                <X size={16} />
+                            </button>
+                        </div>
+
+                        {formError && (
+                            <div className="booking-status error" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, color: '#dc2626' }}>
+                                <AlertCircle size={16} />
+                                {formError}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleCreate}>
+                            <div className="form-group">
+                                <label htmlFor="mb-name">Full Name *</label>
+                                <input id="mb-name" name="name" type="text" placeholder="John Smith"
+                                    value={form.name} onChange={handleFormChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-phone">Phone / WhatsApp *</label>
+                                <input id="mb-phone" name="phone" type="tel" placeholder="07XXX XXXXXX"
+                                    value={form.phone} onChange={handleFormChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-email">Email</label>
+                                <input id="mb-email" name="email" type="email" placeholder="john@example.com"
+                                    value={form.email} onChange={handleFormChange} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-pickup">Pickup Location *</label>
+                                <input id="mb-pickup" name="pickupLocation" type="text" placeholder="e.g. M6 Junction 7, Birmingham"
+                                    value={form.pickupLocation} onChange={handleFormChange} required />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-dropoff">Drop-off Location</label>
+                                <input id="mb-dropoff" name="dropoffLocation" type="text" placeholder="e.g. Home address or garage"
+                                    value={form.dropoffLocation} onChange={handleFormChange} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-service">Service Type *</label>
+                                <select id="mb-service" name="serviceType" value={form.serviceType} onChange={handleFormChange} required>
+                                    <option value="">Select a service…</option>
+                                    {SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-reg">Registration Number</label>
+                                <input id="mb-reg" name="registrationNumber" type="text" placeholder="AB12 CDE"
+                                    value={form.registrationNumber}
+                                    onChange={e => setForm(prev => ({ ...prev, registrationNumber: e.target.value.toUpperCase() }))}
+                                    style={{ textTransform: 'uppercase' }} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-make">Vehicle Make</label>
+                                <input id="mb-make" name="vehicleMake" type="text" placeholder="BMW, Ford, Toyota"
+                                    value={form.vehicleMake} onChange={handleFormChange} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-model">Vehicle Model</label>
+                                <input id="mb-model" name="vehicleModel" type="text" placeholder="3 Series, Focus, Corolla"
+                                    value={form.vehicleModel} onChange={handleFormChange} />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-status">Status</label>
+                                <select id="mb-status" name="status" value={form.status} onChange={handleFormChange}>
+                                    {STATUS_KEYS.map(k => <option key={k} value={k}>{STATUS_META[k].label}</option>)}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="mb-message">Notes</label>
+                                <textarea id="mb-message" name="message" placeholder="Any extra details…"
+                                    value={form.message} onChange={handleFormChange} />
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn btn-secondary" onClick={closeModal} disabled={saving}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary" disabled={saving}>
+                                    {saving ? 'Saving…' : (<><Plus size={16} /> Create Booking</>)}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

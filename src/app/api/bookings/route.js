@@ -66,7 +66,7 @@ export async function GET(request) {
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message } = body;
+        const { name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message, manual, status } = body;
 
         if (!name || !phone || !pickupLocation || !serviceType) {
             return NextResponse.json(
@@ -88,15 +88,19 @@ export async function POST(request) {
             vehicleMake: vehicleMake || null,
             vehicleModel: vehicleModel || null,
             message: message || null,
-            status: 'new',
+            status: manual && status ? status : 'new',
+            source: manual ? 'manual' : 'website',
             created_at: new Date(),
             updated_at: new Date(),
         });
 
-        // Send email notification (fire-and-forget)
-        sendBookingEmail({ name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message }).catch(err => {
-            console.error('[Bookings] Email notification failed:', err.message);
-        });
+        // Send email notification (fire-and-forget).
+        // Skip for admin-entered manual bookings — the business already knows about them.
+        if (!manual) {
+            sendBookingEmail({ name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message }).catch(err => {
+                console.error('[Bookings] Email notification failed:', err.message);
+            });
+        }
 
         return NextResponse.json({
             success: true,
