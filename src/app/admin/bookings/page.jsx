@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-    MapPin, Wrench, MessageSquare, Trash2, Phone,
+    MapPin, Wrench, MessageSquare, Trash2,
     Search, LogOut, Settings, Globe, ClipboardList,
     Sparkles, CheckCheck, Truck, CheckCircle2, XCircle,
     ChevronDown, ChevronUp, Plus, X, AlertCircle,
