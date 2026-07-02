@@ -9,8 +9,14 @@ export async function GET() {
     let areas = [];
     try {
         const { db } = await connectToDatabase();
+        // Only canonical, indexable pages belong in the sitemap: active areas
+        // that are not flagged noindex (thin pages pending unique content).
+        // Every slug here is in generateStaticParams(), so every URL returns 200.
         areas = await db.collection('areas')
-            .find({ is_active: true }, { projection: { slug: 1, updated_at: 1, created_at: 1 } })
+            .find(
+                { is_active: true, noindex: { $ne: true } },
+                { projection: { slug: 1, updated_at: 1, created_at: 1 } }
+            )
             .toArray();
     } catch (e) {
         console.error('Sitemap DB error:', e);

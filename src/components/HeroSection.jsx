@@ -7,7 +7,7 @@ import { CircleCheck, CalendarCheck } from "lucide-react";
 
 import { useSettings } from "@/components/SettingsProvider";
 
-export default function HeroSection({ location = "West Midlands" }) {
+export default function HeroSection({ location = "West Midlands", title = "", intro = "" }) {
     const { phone } = useSettings();
     const [isSticky, setIsSticky] = useState(false);
 
@@ -58,7 +58,12 @@ export default function HeroSection({ location = "West Midlands" }) {
             <section className="layout1">
                 <div className="title-info">
                     <h4>24 Hours</h4>
-                    <h1>Car Recovery Service In <span className="location-name">{location}</span> & Outskirts</h1>
+                    {title ? (
+                        <h1>{title}</h1>
+                    ) : (
+                        <h1>Car Recovery Service In <span className="location-name">{location}</span> & Outskirts</h1>
+                    )}
+                    {intro ? <p className="hero-intro">{intro}</p> : null}
 
                     <ul className="service-list">
                         {features.map((feature, index) => (

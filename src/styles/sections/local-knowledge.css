@@ -1,0 +1,61 @@
+.local-knowledge-section {
+    padding: 60px 5%;
+    background-color: #fafafa;
+}
+
+.local-knowledge-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.local-knowledge-section h2 {
+    color: var(--primary-orange);
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 24px;
+    font-family: 'Rubik', sans-serif;
+    text-align: center;
+}
+
+.local-knowledge-section .location-name {
+    color: var(--primary-blue);
+}
+
+.local-notes p {
+    font-size: 1.05rem;
+    color: var(--dark-text);
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+
+.local-block {
+    margin-top: 28px;
+}
+
+.local-block h3 {
+    font-size: 1.2rem;
+    color: var(--primary-blue);
+    margin-bottom: 14px;
+    font-weight: 700;
+}
+
+.local-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.local-tag {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--dark-text);
+}
+
+.local-tag.postcode {
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}

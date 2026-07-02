@@ -44,3 +44,9 @@ google-key*.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated audit/fix outputs (keep locally, don't commit — includes DB backups)
+scripts/output/geo-*.json
+scripts/output/geo-*.csv
+scripts/output/prune-recommendations.*
+scripts/output/content-worksheet.csv

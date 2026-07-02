@@ -5,6 +5,7 @@ import { getSettings } from "@/lib/settings";
 import { getAllActiveSlugs } from "@/lib/areas";
 import { notFound } from 'next/navigation';
 import HeroSection from "@/components/HeroSection";
+import LocalKnowledgeSection from "@/components/LocalKnowledgeSection";
 import ImmediateHelpSection from "@/components/ImmediateHelpSection";
 import StepsSection from "@/components/StepsSection";
 import ServicesSection from "@/components/ServicesSection";
@@ -85,6 +86,9 @@ export async function generateMetadata({ params }) {
         alternates: {
             canonical: canonical,
         },
+        // Thin pages can be excluded from the index (but still crawled/followed)
+        // by setting noindex: true on the area doc — see scripts/set-noindex.mjs.
+        ...(area.noindex ? { robots: { index: false, follow: true } } : {}),
         openGraph: {
             title: fullTitle,
             description: description,
@@ -156,8 +160,12 @@ export default async function AreaPage({ params }) {
             {/* Schema Markup — all structured data for this area page */}
             <AreaSchemaMarkup area={area} faqs={schemaFaqs} settings={settings} />
 
-            {/* 1. HERO + CTAs + Trust strip */}
-            <HeroSection location={location} />
+            {/* 1. HERO + CTAs + Trust strip — unique per-city H1 + intro when set */}
+            <HeroSection
+                location={location}
+                title={area.h1_title || ""}
+                intro={area.intro_text || ""}
+            />
 
             {/* 2. Broken Down Now? - Emergency micro-section */}
             <ImmediateHelpSection />
@@ -182,6 +190,15 @@ export default async function AreaPage({ params }) {
                 currentSlug={slug}
                 currentName={area.name}
                 nearbyAreasSlugs={Array.isArray(area.nearby_areas_slugs) ? area.nearby_areas_slugs : []}
+            />
+
+            {/* 5c. Genuinely local knowledge (postcodes, landmarks, unique copy).
+                Renders nothing until the fields are filled via the content worksheet. */}
+            <LocalKnowledgeSection
+                location={location}
+                postcodeDistricts={Array.isArray(area.postcode_districts) ? area.postcode_districts : []}
+                landmarks={Array.isArray(area.local_landmarks) ? area.local_landmarks : []}
+                localNotes={area.local_notes || ""}
             />
 
             {/* 6. Map + NAP */}
