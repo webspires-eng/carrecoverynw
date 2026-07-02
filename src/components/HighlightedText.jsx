@@ -1,5 +1,3 @@
-"use client";
-
 export default function HighlightedText({ text, location, className = "location-name" }) {
     if (!text) return null;
     if (!location) return text;

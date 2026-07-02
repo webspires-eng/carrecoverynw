@@ -1,5 +1,3 @@
-"use client";
-
 import { Battery, Car, Route, Lock, TriangleAlert, Truck, CheckCircle2, MapPin } from "lucide-react";
 import HighlightedText from "@/components/HighlightedText";
 import "../styles/sections/real-recoveries.css";

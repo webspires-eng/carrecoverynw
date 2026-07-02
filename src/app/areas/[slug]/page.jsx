@@ -37,8 +37,11 @@ async function getAreaBySlug(slug) {
         }
         return area || null;
     } catch (error) {
-        console.error('Database error:', error);
-        return null;
+        // Rethrow rather than returning null: a transient DB failure during
+        // static generation must fail the build, not silently prerender this
+        // slug as a 404 page that then deploys.
+        console.error('Database error for slug', slug, error);
+        throw error;
     }
 }
 
@@ -168,10 +171,10 @@ export default async function AreaPage({ params }) {
             />
 
             {/* 2. Broken Down Now? - Emergency micro-section */}
-            <ImmediateHelpSection />
+            <ImmediateHelpSection settings={settings} />
 
             {/* 3. Get Your Car Recovered in 3 Easy Steps */}
-            <StepsSection />
+            <StepsSection settings={settings} />
 
             {/* 4. Services - What we do */}
             <ServicesSection location={location} majorRoads={majorRoads} services={displayServices} />
@@ -202,19 +205,19 @@ export default async function AreaPage({ params }) {
             />
 
             {/* 6. Map + NAP */}
-            <MapSection location={location} />
+            <MapSection location={location} settings={settings} />
 
             {/* 7. Reviews + Testimonials (unified) */}
             <TestimonialsSection location={location} />
 
             {/* 8. Why Choose Us */}
-            <WhyChooseUsSection />
+            <WhyChooseUsSection settings={settings} />
 
             {/* 9. Before We Dispatch - Service Boundaries */}
             <ServiceBoundaries />
 
             {/* 10. Transparent Pricing */}
-            <PricingSection />
+            <PricingSection settings={settings} />
 
             {/* 11. Real Recoveries */}
             <RealRecoveriesSection location={location} majorRoads={majorRoads} recoveries={displayRecoveries} />
@@ -232,9 +235,9 @@ export default async function AreaPage({ params }) {
             <FAQSection customFaqs={customFaqs} location={location} majorRoads={majorRoads} />
 
             {/* 15. Final CTA */}
-            <FinalCTASection location={location} />
+            <FinalCTASection location={location} settings={settings} />
 
-            <Footer />
+            <Footer settings={settings} />
         </main>
     );
 }

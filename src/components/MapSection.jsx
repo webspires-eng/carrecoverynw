@@ -1,11 +1,9 @@
-"use client";
-
 import "../styles/sections/map-section.css";
 import { Phone, MapPin, Clock, Building2 } from "lucide-react";
-import { useSettings } from "@/components/SettingsProvider";
+import { getSettings } from "@/lib/settings";
 
-export default function MapSection({ location }) {
-    const { business_name, phone, address } = useSettings();
+export default async function MapSection({ location, settings: settingsProp }) {
+    const { business_name, phone, address } = settingsProp || await getSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
 

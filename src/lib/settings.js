@@ -1,6 +1,10 @@
+import { cache } from 'react';
 import { connectToDatabase } from '@/lib/db';
 
-export async function getSettings() {
+// cache(): per-render-pass memoization. Several server components on a page
+// call getSettings() independently; this dedupes them to one DB read per page
+// render without introducing any staleness across requests.
+export const getSettings = cache(async function getSettings() {
     const defaultSettings = {
         business_name: 'Car Recovery UK',
         phone: '07360544819',
@@ -28,4 +32,4 @@ export async function getSettings() {
         console.error('Database error fetching settings:', error.message || error);
         return defaultSettings;
     }
-}
+});

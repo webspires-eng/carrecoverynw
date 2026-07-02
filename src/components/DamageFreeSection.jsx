@@ -1,5 +1,3 @@
-"use client";
-
 import { ShieldCheck, Truck, Anchor, Zap, CheckCircle2, XCircle, Award } from "lucide-react";
 import "../styles/sections/damage-free.css";
 

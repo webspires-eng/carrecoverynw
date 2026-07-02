@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { CarFront, MapPin, Users, Lightbulb, CheckCircle2 } from "lucide-react";
 import "../styles/sections/service-boundaries.css";

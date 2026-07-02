@@ -5,12 +5,14 @@ import { getSiteUrl } from "@/lib/siteUrl";
 import { canonicalUrl, getCustomSchemaMarkup } from "@/lib/seoSettings";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
+import DeferredAnalytics from "@/components/DeferredAnalytics";
 import SiteHeader from "@/components/SiteHeader";
 
+// Rubik is a variable font: omitting `weight` serves ONE variable-axis file
+// covering 300-900 instead of seven separate woff2 files.
 const rubik = Rubik({
   subsets: ["latin"],
   variable: "--font-rubik",
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
 });
 
 export async function generateMetadata() {
@@ -90,7 +92,6 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
@@ -105,24 +106,13 @@ export default async function RootLayout({ children }) {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(customSchema) }}
           />
         )}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.smartlook||(function(d) {
-              var o=smartlook=function(){ o.api.push(arguments)},h=d.getElementsByTagName('head')[0];
-              var c=d.createElement('script');o.api=new Array();c.async=true;c.type='text/javascript';
-              c.charset='utf-8';c.src='https://web-sdk.smartlook.com/recorder.js';h.appendChild(c);
-              })(document);
-              smartlook('init', 'aed7ca16f366541caca55245c4f60e6dd364a9aa', { region: 'eu' });
-            `
-          }}
-        />
       </head>
       <body className={`${rubik.variable} font-sans antialiased`} suppressHydrationWarning>
         <SettingsProvider settings={settings}>
           <SiteHeader />
           {children}
           <FloatingActions />
+          <DeferredAnalytics />
         </SettingsProvider>
       </body>
     </html>

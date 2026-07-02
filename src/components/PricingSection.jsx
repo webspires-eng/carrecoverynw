@@ -1,12 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import { MessageSquare, CheckCircle2, Clock, MapPin, CarFront, AlertTriangle, Home, Shield, Banknote } from "lucide-react";
 import "../styles/sections/pricing.css";
-import { useSettings } from "@/components/SettingsProvider";
+import { getSettings } from "@/lib/settings";
 
-export default function PricingSection() {
-    const { whatsapp } = useSettings();
+export default async function PricingSection({ settings: settingsProp }) {
+    const { whatsapp } = settingsProp || await getSettings();
 
     return (
         <section className="pricing-section">

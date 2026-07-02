@@ -1,11 +1,9 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useSettings } from "@/components/SettingsProvider";
+import { getSettings } from "@/lib/settings";
 
-export default function StepsSection() {
-    const { phone } = useSettings();
+export default async function StepsSection({ settings: settingsProp }) {
+    const { phone } = settingsProp || await getSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
 

@@ -1,12 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import { Phone, Clock, ShieldCheck, CalendarDays } from "lucide-react";
 
-import { useSettings } from "@/components/SettingsProvider";
+import { getSettings } from "@/lib/settings";
 
-export default function Footer() {
-    const { business_name, phone } = useSettings();
+export default async function Footer({ settings: settingsProp }) {
+    const { business_name, phone } = settingsProp || await getSettings();
     const currentYear = new Date().getFullYear();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';

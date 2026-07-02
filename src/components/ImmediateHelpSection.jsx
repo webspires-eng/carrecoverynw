@@ -1,12 +1,10 @@
-"use client";
-
 import "../styles/sections/immediate-help.css";
 import { Phone, MapPin, Truck, CalendarDays } from "lucide-react";
 import Link from "next/link";
-import { useSettings } from "@/components/SettingsProvider";
+import { getSettings } from "@/lib/settings";
 
-export default function ImmediateHelpSection() {
-    const { phone } = useSettings();
+export default async function ImmediateHelpSection({ settings: settingsProp }) {
+    const { phone } = settingsProp || await getSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0778 673 8432';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07786738432';
 

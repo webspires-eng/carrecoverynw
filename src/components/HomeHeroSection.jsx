@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { CircleCheck, CalendarCheck } from "lucide-react";
+import { CircleCheck, CalendarCheck, Phone } from "lucide-react";
 
 import { useSettings } from "@/components/SettingsProvider";
 
@@ -44,7 +44,7 @@ export default function HomeHeroSection({ location = "United Kingdom" }) {
             <div className={`call-banner ${isSticky ? "is-sticky" : ""}`}>
                 <Link href={`tel:${linkPhone}`} className="call-box">
                     <div className="phone-icon">
-                        <i className="fas fa-phone"></i>
+                        <Phone size={20} fill="currentColor" strokeWidth={0} aria-hidden="true" />
                     </div>
                     <div className="call-details">
                         <span>{displayPhone}</span>

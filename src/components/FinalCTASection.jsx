@@ -1,12 +1,10 @@
-"use client";
-
 import Link from "next/link";
 import { Phone, MessageSquare, Star, Clock, Shield, MapPin, CalendarCheck } from "lucide-react";
 import "../styles/sections/final-cta.css";
-import { useSettings } from "@/components/SettingsProvider";
+import { getSettings } from "@/lib/settings";
 
-export default function FinalCTASection({ location = "West Midlands" }) {
-    const { phone, whatsapp } = useSettings();
+export default async function FinalCTASection({ location = "West Midlands", settings: settingsProp }) {
+    const { phone, whatsapp } = settingsProp || await getSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
 

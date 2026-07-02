@@ -1,5 +1,3 @@
-"use client";
-
 import { AlertTriangle, MapPin, Shield, CheckCircle2, Lightbulb } from "lucide-react";
 import "../styles/sections/safety.css";
 

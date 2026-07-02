@@ -1,11 +1,9 @@
-"use client";
-
 import Link from "next/link";
 import { CircleCheck } from "lucide-react";
-import { useSettings } from "@/components/SettingsProvider";
+import { getSettings } from "@/lib/settings";
 
-export default function WhyChooseUsSection() {
-    const { phone } = useSettings();
+export default async function WhyChooseUsSection({ settings: settingsProp }) {
+    const { phone } = settingsProp || await getSettings();
     const displayPhone = phone ? phone.replace(/(\d{4})(\d{3})(\d{4})/, '$1 $2 $3') : '0736 054 4819';
     const linkPhone = phone ? phone.replace(/\s+/g, '') : '07360544819';
 
