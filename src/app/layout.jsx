@@ -49,6 +49,12 @@ export async function generateMetadata() {
     },
     icons: {
       icon: settings.favicon || "/truckicon.png",
+      apple: "/apple-touch-icon.png",
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "Car Recovery",
     },
   };
 }

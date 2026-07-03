@@ -3749,6 +3749,9 @@
 .bk-modal-columns {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 320px;
+    /* minmax(0,1fr) row: without it, a tall side rail expands the row past
+       the modal's overflow:hidden and the form bottom gets clipped */
+    grid-template-rows: minmax(0, 1fr);
     flex: 1;
     min-height: 0;
 }
@@ -3761,6 +3764,7 @@
     background: #fafbfc;
     border-left: 1px solid #f1f5f9;
     overflow-y: auto;
+    min-height: 0;
 }
 
 .bk-side-group {
@@ -4002,6 +4006,31 @@
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
+}
+
+/* Load more (replaces pagination) */
+.bk-load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.bk-load-more button {
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #475569;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.bk-load-more button:hover {
+    border-color: #fdba74;
+    color: #ea580c;
+    background: #fff7ed;
 }
 
 /* Footer auto-save hint */

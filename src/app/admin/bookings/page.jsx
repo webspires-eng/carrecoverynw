@@ -366,10 +366,11 @@ export default function AdminBookings() {
     const fetchBookings = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`/api/bookings?page=${page}&limit=25&search=${encodeURIComponent(search)}&status=${statusFilter}`);
+            const res = await fetch(`/api/bookings?page=${page}&limit=100&search=${encodeURIComponent(search)}&status=${statusFilter}`);
             const data = await res.json();
             if (data.success) {
-                setBookings(data.data);
+                // page 1 replaces the list; "Show more" appends the next page
+                setBookings(prev => (page > 1 ? [...prev, ...data.data] : data.data));
                 setPagination(data.pagination);
                 if (data.counts) setCounts(data.counts);
             }
@@ -511,7 +512,7 @@ export default function AdminBookings() {
         if (saving) return;
         if (!editingId && draftId) {
             const dirty = Object.keys(EMPTY_BOOKING).some(k => form[k] !== EMPTY_BOOKING[k]);
-            if (dirty && confirm('Discard this booking draft?\n\nOK — discard it · Cancel — keep it in the Drafts tab')) {
+            if (dirty && !confirm('Save this booking as a draft?\n\nOK — keep it in the Drafts tab · Cancel — discard it')) {
                 writeDrafts(readDrafts().filter(d => d.id !== draftId));
             }
         }
@@ -747,7 +748,7 @@ export default function AdminBookings() {
                             ))}
                         </div>
                     )
-                ) : loading ? (
+                ) : loading && page === 1 ? (
                     <div className="loading">
                         <div className="loading-spinner"></div>
                         <p>Loading bookings…</p>
@@ -950,24 +951,10 @@ export default function AdminBookings() {
                     </div>
                 )}
 
-                {statusFilter !== 'drafts' && bookings.length > 0 && (
-                    <div className="pagination">
-                        <button
-                            className="pagination-btn"
-                            disabled={page <= 1}
-                            onClick={() => setPage(p => p - 1)}
-                        >
-                            Previous
-                        </button>
-                        <span className="pagination-info">
-                            Page {page} of {pagination.totalPages} · {pagination.total} total
-                        </span>
-                        <button
-                            className="pagination-btn"
-                            disabled={page >= pagination.totalPages}
-                            onClick={() => setPage(p => p + 1)}
-                        >
-                            Next
+                {statusFilter !== 'drafts' && page < pagination.totalPages && (
+                    <div className="bk-load-more">
+                        <button type="button" onClick={() => setPage(p => p + 1)} disabled={loading}>
+                            {loading ? 'Loading…' : 'Show more bookings'}
                         </button>
                     </div>
                 )}
