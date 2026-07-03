@@ -2,10 +2,8 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { ObjectId } from 'mongodb';
 
-// Fields that must not be blanked out if provided
-const REQUIRED_FIELDS = ['name', 'phone', 'pickupLocation', 'serviceType'];
-// Optional free-text fields (empty string is stored as null)
-const OPTIONAL_FIELDS = ['email', 'dropoffLocation', 'registrationNumber', 'vehicleMake', 'vehicleModel', 'message'];
+// All booking fields are optional (empty string is stored as null)
+const OPTIONAL_FIELDS = ['name', 'phone', 'pickupLocation', 'serviceType', 'email', 'dropoffLocation', 'registrationNumber', 'vehicleMake', 'vehicleModel', 'message'];
 
 // PATCH update booking (any editable field, status and/or price)
 export async function PATCH(request, { params }) {
@@ -15,19 +13,6 @@ export async function PATCH(request, { params }) {
         const { status, price } = body;
 
         const updates = {};
-
-        for (const field of REQUIRED_FIELDS) {
-            if (body[field] !== undefined) {
-                const value = String(body[field]).trim();
-                if (!value) {
-                    return NextResponse.json(
-                        { success: false, error: `${field} cannot be empty` },
-                        { status: 400 }
-                    );
-                }
-                updates[field] = value;
-            }
-        }
 
         for (const field of OPTIONAL_FIELDS) {
             if (body[field] !== undefined) {

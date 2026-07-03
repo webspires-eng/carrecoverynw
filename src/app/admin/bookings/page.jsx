@@ -443,31 +443,12 @@ export default function AdminBookings() {
         setDvlaInfo(null);
     };
 
-    const validateStep = (i) => {
-        if (i === 0 && !form.pickupLocation.trim()) return 'Pickup location is required.';
-        if (i === 2 && (!form.name.trim() || !form.phone.trim())) return 'Name and phone are required.';
-        if (i === 3 && !form.serviceType) return 'Service type is required.';
-        return '';
-    };
-
     const handleNext = () => {
-        const err = validateStep(step);
-        if (err) {
-            setFormError(err);
-            return;
-        }
         setFormError('');
         setStep(s => Math.min(s + 1, FORM_STEPS.length - 1));
     };
 
     const goToStep = (i) => {
-        if (i > step) {
-            const err = validateStep(step);
-            if (err) {
-                setFormError(err);
-                return;
-            }
-        }
         setFormError('');
         setStep(i);
     };
@@ -553,20 +534,6 @@ export default function AdminBookings() {
             handleNext();
             return;
         }
-        if (!form.pickupLocation.trim()) {
-            setStep(0);
-            setFormError('Pickup location is required.');
-            return;
-        }
-        if (!form.name.trim() || !form.phone.trim()) {
-            setStep(2);
-            setFormError('Name and phone are required.');
-            return;
-        }
-        if (!form.serviceType) {
-            setFormError('Service type is required.');
-            return;
-        }
         setSaving(true);
         try {
             const url = editingId ? `/api/bookings/${editingId}` : '/api/bookings';
@@ -629,8 +596,8 @@ export default function AdminBookings() {
 
     const TABS = [
         { key: 'all', label: 'All', count: counts.total || 0 },
-        ...STATUS_KEYS.map(k => ({ key: k, label: STATUS_META[k].label, count: counts[k] || 0 })),
         { key: 'drafts', label: 'Drafts', count: drafts.length },
+        ...STATUS_KEYS.map(k => ({ key: k, label: STATUS_META[k].label, count: counts[k] || 0 })),
     ];
 
     return (
@@ -817,7 +784,7 @@ export default function AdminBookings() {
                                                 {initialsOf(booking.name)}
                                             </div>
                                             <div className="bk-customer-name">
-                                                {booking.name}
+                                                {booking.name || 'Unnamed'}
                                                 {booking.source === 'manual' && (
                                                     <span className="bk-source-tag">M</span>
                                                 )}
@@ -827,14 +794,14 @@ export default function AdminBookings() {
                                         <div className="bk-cell bk-cell--route">
                                             <div className="bk-route-from">
                                                 <MapPin size={13} />
-                                                <span>{booking.pickupLocation}</span>
+                                                <span>{booking.pickupLocation || '—'}</span>
                                             </div>
                                         </div>
 
                                         <div className="bk-cell bk-cell--service">
                                             <div className="bk-service-name">
                                                 <Wrench size={13} />
-                                                <span>{booking.serviceType}</span>
+                                                <span>{booking.serviceType || '—'}</span>
                                                 {priceLabel && (
                                                     <span className="bk-price-chip">{priceLabel}</span>
                                                 )}
@@ -1079,11 +1046,11 @@ export default function AdminBookings() {
                                         </div>
                                         <div className="bk-form-grid">
                                             <div className="bk-field bk-field--full">
-                                                <label htmlFor="mb-pickup">Pickup Location *</label>
+                                                <label htmlFor="mb-pickup">Pickup Location</label>
                                                 <input id="mb-pickup" name="pickupLocation" type="text" placeholder="e.g. M6 Junction 7, Birmingham"
                                                     ref={pickupInputRef} autoComplete="off"
                                                     onKeyDown={e => { if (e.key === 'Enter') e.preventDefault(); }}
-                                                    value={form.pickupLocation} onChange={handleFormChange} required />
+                                                    value={form.pickupLocation} onChange={handleFormChange} />
                                             </div>
                                             <div className="bk-field bk-field--full">
                                                 <label htmlFor="mb-dropoff">Drop-off Location</label>
@@ -1091,6 +1058,13 @@ export default function AdminBookings() {
                                                     ref={dropoffInputRef} autoComplete="off"
                                                     onKeyDown={e => { if (e.key === 'Enter') e.preventDefault(); }}
                                                     value={form.dropoffLocation} onChange={handleFormChange} />
+                                            </div>
+                                            <div className="bk-field bk-field--full">
+                                                <label htmlFor="mb-service">Service Type</label>
+                                                <select id="mb-service" name="serviceType" value={form.serviceType} onChange={handleFormChange}>
+                                                    <option value="">Select a service…</option>
+                                                    {SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -1104,14 +1078,14 @@ export default function AdminBookings() {
                                         </div>
                                         <div className="bk-form-grid">
                                             <div className="bk-field">
-                                                <label htmlFor="mb-name">Full Name *</label>
+                                                <label htmlFor="mb-name">Full Name</label>
                                                 <input id="mb-name" name="name" type="text" placeholder="John Smith"
-                                                    value={form.name} onChange={handleFormChange} required />
+                                                    value={form.name} onChange={handleFormChange} />
                                             </div>
                                             <div className="bk-field">
-                                                <label htmlFor="mb-phone">Phone / WhatsApp *</label>
+                                                <label htmlFor="mb-phone">Phone / WhatsApp</label>
                                                 <input id="mb-phone" name="phone" type="tel" placeholder="07XXX XXXXXX"
-                                                    value={form.phone} onChange={handleFormChange} required />
+                                                    value={form.phone} onChange={handleFormChange} />
                                             </div>
                                             <div className="bk-field bk-field--full">
                                                 <label htmlFor="mb-email">Email</label>
@@ -1189,13 +1163,6 @@ export default function AdminBookings() {
                                     </div>
                                     <div className="bk-form-grid">
                                         <div className="bk-field">
-                                            <label htmlFor="mb-service">Service Type *</label>
-                                            <select id="mb-service" name="serviceType" value={form.serviceType} onChange={handleFormChange} required>
-                                                <option value="">Select a service…</option>
-                                                {SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="bk-field">
                                             <label htmlFor="mb-date">Booking Date</label>
                                             <input id="mb-date" name="bookingDate" type="date"
                                                 value={form.bookingDate} onChange={handleFormChange} />
@@ -1254,7 +1221,8 @@ export default function AdminBookings() {
                                 </div>
                             </div>
 
-                            <aside className="bk-modal-side">
+                            <aside className={`bk-modal-side bk-modal-side--step${step}`}>
+                                <div className="bk-side-group bk-side-group--route">
                                 <div className="bk-side-title">
                                     <Route size={13} />
                                     Route Preview
@@ -1292,7 +1260,9 @@ export default function AdminBookings() {
                                     <Route size={14} />
                                     {distance?.status === 'loading' ? 'Calculating…' : 'Calculate distance'}
                                 </button>
+                                </div>
 
+                                <div className="bk-side-group bk-side-group--summary">
                                 <div className="bk-side-title">
                                     <ClipboardList size={13} />
                                     Summary
@@ -1331,6 +1301,7 @@ export default function AdminBookings() {
                                             <strong>{distance.miles}</strong>
                                         </div>
                                     )}
+                                </div>
                                 </div>
                             </aside>
                             </div>

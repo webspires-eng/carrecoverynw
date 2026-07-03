@@ -81,7 +81,8 @@ export async function POST(request) {
         const body = await request.json();
         const { name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message, manual, status, price, bookingDate } = body;
 
-        if (!name || !phone || !pickupLocation || !serviceType) {
+        // Website submissions must be complete; manual admin bookings can be partial
+        if (!manual && (!name || !phone || !pickupLocation || !serviceType)) {
             return NextResponse.json(
                 { success: false, error: 'Name, phone, pickup location, and service type are required' },
                 { status: 400 }
@@ -106,12 +107,12 @@ export async function POST(request) {
         }
 
         const result = await db.collection('bookings').insertOne({
-            name,
-            phone,
+            name: name || null,
+            phone: phone || null,
             email: email || null,
-            pickupLocation,
+            pickupLocation: pickupLocation || null,
             dropoffLocation: dropoffLocation || null,
-            serviceType,
+            serviceType: serviceType || null,
             registrationNumber: registrationNumber || null,
             vehicleMake: vehicleMake || null,
             vehicleModel: vehicleModel || null,

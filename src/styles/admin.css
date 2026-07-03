@@ -3763,6 +3763,16 @@
     overflow-y: auto;
 }
 
+.bk-side-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bk-side-group--summary {
+    margin-top: 8px;
+}
+
 .bk-side-title {
     display: flex;
     align-items: center;
@@ -3772,10 +3782,6 @@
     text-transform: uppercase;
     letter-spacing: 0.7px;
     color: #94a3b8;
-}
-
-.bk-side-title:not(:first-child) {
-    margin-top: 8px;
 }
 
 .bk-side-summary {
@@ -4029,6 +4035,29 @@
         border-top: 1px solid #f1f5f9;
         overflow-y: visible;
     }
+
+    /* Stacked below the fields, the rail is step-aware: map on the
+       Location step, summary on the Vehicle step, hidden elsewhere */
+    .bk-side-group {
+        display: none;
+    }
+
+    .bk-side-group--summary {
+        margin-top: 0;
+    }
+
+    .bk-modal-side--step0 .bk-side-group--route {
+        display: flex;
+    }
+
+    .bk-modal-side--step1 .bk-side-group--summary {
+        display: flex;
+    }
+
+    .bk-modal-side--step2,
+    .bk-modal-side--step3 {
+        display: none;
+    }
 }
 
 .bk-modal-foot {
@@ -4114,11 +4143,30 @@
     }
     .bk-hero-actions {
         width: 100%;
+        justify-content: space-between;
+        gap: 6px;
+    }
+    .bk-nav-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 7px 8px;
+        font-size: 0.72rem;
+        gap: 5px;
     }
     .bk-btn-new {
         width: 100%;
         justify-content: center;
         order: -1;
+    }
+    .pagination {
+        justify-content: space-between;
+        gap: 6px;
+    }
+    .pagination-info {
+        flex: 1;
+        text-align: center;
+        font-size: 0.72rem;
+        padding: 7px 6px;
     }
     .bk-card-row {
         grid-template-columns: 1fr;
@@ -4142,6 +4190,77 @@
 
 @media (max-width: 480px) {
     .bk-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .bk-stat {
+        padding: 12px;
+        gap: 10px;
+    }
+    .bk-stat-icon {
+        width: 36px;
+        height: 36px;
+    }
+    .bk-stat-label {
+        font-size: 0.62rem;
+    }
+    .bk-stat-value {
+        font-size: 1.15rem;
+    }
+}
+
+/* Booking modal & drafts on small screens */
+@media (max-width: 700px) {
+    .bk-modal-overlay {
+        padding: 10px;
+        align-items: flex-end;
+    }
+    .bk-modal--wide {
+        max-height: 96dvh;
+        border-radius: 16px;
+    }
+    .bk-modal-head {
+        padding: 14px 16px;
+    }
+    .bk-modal-columns .bk-modal-body {
+        padding: 16px;
+    }
+    .bk-modal-side {
+        padding: 16px;
+    }
+    .bk-map,
+    .bk-map-empty {
+        height: 170px;
+    }
+    .bk-modal-foot {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+    }
+    .bk-stepper {
+        gap: 4px;
+        padding: 4px;
+    }
+    .bk-stepper-item {
+        padding: 8px 4px;
+    }
+    .bk-draft-row {
+        flex-wrap: wrap;
+        gap: 10px 14px;
+    }
+    .bk-draft-row .bk-cell--route {
+        flex-basis: 100%;
+        order: 4;
+    }
+    .bk-draft-row .bk-cell--service {
+        display: none;
+    }
+    .bk-draft-actions {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .bk-foot-hint {
+        display: none;
     }
 }
