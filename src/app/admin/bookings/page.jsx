@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import {
     MapPin, Wrench, MessageSquare, Trash2,
     Search, LogOut, Settings, Globe, ClipboardList,
     Sparkles, CheckCheck, Truck, CheckCircle2, XCircle,
-    ChevronDown, ChevronUp, Plus, X, AlertCircle,
-    Ban, Pencil, PoundSterling, Car, User, StickyNote
+    ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus, X, AlertCircle,
+    Ban, Pencil, PoundSterling, Car, User, StickyNote,
+    Route, History
 } from 'lucide-react';
+import { loadGoogleMaps } from '../../../lib/googleMapsLoader';
 import '../../../styles/admin.css';
 
 const STATUS_META = {
@@ -32,6 +34,29 @@ const SERVICE_TYPES = [
     "Long Distance Towing",
     "Motorcycle Recovery",
     "Other",
+];
+
+const DRAFT_KEY = 'booking_draft';       // legacy single-draft key, migrated on load
+const DRAFTS_KEY = 'booking_drafts';
+
+function readDrafts() {
+    try {
+        const arr = JSON.parse(localStorage.getItem(DRAFTS_KEY) || 'null');
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
+}
+
+function newDraftId() {
+    return 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+const FORM_STEPS = [
+    { title: 'Location', Icon: MapPin },
+    { title: 'Vehicle', Icon: Car },
+    { title: 'Customer', Icon: User },
+    { title: 'Job & Status', Icon: Wrench },
 ];
 
 const EMPTY_BOOKING = {
@@ -105,11 +130,206 @@ export default function AdminBookings() {
     // Booking modal (create + edit)
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [step, setStep] = useState(0);
     const [form, setForm] = useState(EMPTY_BOOKING);
     const [saving, setSaving] = useState(false);
     const [formError, setFormError] = useState('');
     const [dvlaStatus, setDvlaStatus] = useState(null);
     const [dvlaInfo, setDvlaInfo] = useState(null);
+    const [draftRestored, setDraftRestored] = useState(false);
+    const [drafts, setDrafts] = useState([]);
+    const [draftId, setDraftId] = useState(null);
+
+    const writeDrafts = (arr) => {
+        localStorage.setItem(DRAFTS_KEY, JSON.stringify(arr));
+        setDrafts(arr);
+    };
+
+    // Load drafts on mount, migrating the legacy single-draft key if present
+    useEffect(() => {
+        let arr = readDrafts();
+        try {
+            const legacy = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+            if (legacy && typeof legacy === 'object') {
+                arr = [{ id: newDraftId(), form: { ...EMPTY_BOOKING, ...legacy }, updatedAt: new Date().toISOString() }, ...arr];
+                localStorage.setItem(DRAFTS_KEY, JSON.stringify(arr));
+            }
+        } catch { /* corrupt legacy draft — drop it */ }
+        localStorage.removeItem(DRAFT_KEY);
+        setDrafts(arr);
+    }, []);
+
+    // Google Maps: selected places, distance result, embedded map
+    const [mapsReady, setMapsReady] = useState(false);
+    const [pickupPlace, setPickupPlace] = useState(null);
+    const [dropoffPlace, setDropoffPlace] = useState(null);
+    const [distance, setDistance] = useState(null);
+    const pickupInputRef = useRef(null);
+    const dropoffInputRef = useRef(null);
+    const autocompletesRef = useRef([]);
+    const mapDivRef = useRef(null);
+    const mapRef = useRef(null);
+    const markersRef = useRef([]);
+
+    // Attach Places Autocomplete (UK-only) to the pickup/drop-off inputs while the modal is open
+    useEffect(() => {
+        if (!showModal) return;
+        let cancelled = false;
+
+        loadGoogleMaps()
+            .then((google) => {
+                if (cancelled || !google) return;
+                const options = {
+                    componentRestrictions: { country: 'gb' },
+                    fields: ['formatted_address', 'geometry', 'place_id', 'name'],
+                };
+                const attach = (input, fieldName, setPlace) => {
+                    if (!input) return null;
+                    const ac = new google.maps.places.Autocomplete(input, options);
+                    ac.addListener('place_changed', () => {
+                        const place = ac.getPlace();
+                        if (!place?.geometry?.location) return;
+                        const address = place.formatted_address || place.name || input.value;
+                        setForm(prev => ({ ...prev, [fieldName]: address }));
+                        setPlace({
+                            placeId: place.place_id,
+                            lat: place.geometry.location.lat(),
+                            lng: place.geometry.location.lng(),
+                            address,
+                        });
+                    });
+                    return ac;
+                };
+                autocompletesRef.current = [
+                    attach(pickupInputRef.current, 'pickupLocation', setPickupPlace),
+                    attach(dropoffInputRef.current, 'dropoffLocation', setDropoffPlace),
+                ].filter(Boolean);
+                setMapsReady(true);
+            })
+            .catch(err => console.error('Google Maps failed to load:', err));
+
+        return () => {
+            cancelled = true;
+            autocompletesRef.current.forEach(ac => window.google?.maps?.event?.clearInstanceListeners(ac));
+            autocompletesRef.current = [];
+            mapRef.current = null;
+            markersRef.current = [];
+        };
+    }, [showModal]);
+
+    // Recalculate driving distance whenever both locations have a selected place
+    useEffect(() => {
+        if (!pickupPlace || !dropoffPlace) {
+            setDistance(null);
+            return;
+        }
+        let cancelled = false;
+        setDistance({ status: 'loading' });
+        const toParam = p => (p.placeId ? `place_id:${p.placeId}` : `${p.lat},${p.lng}`);
+        fetch('/api/distance', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ origin: toParam(pickupPlace), destination: toParam(dropoffPlace) }),
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (cancelled) return;
+                if (data.success) {
+                    setDistance({ status: 'ok', miles: data.distanceText, duration: data.durationText });
+                } else {
+                    setDistance({ status: 'error', message: data.error || 'Could not calculate distance' });
+                }
+            })
+            .catch(() => {
+                if (!cancelled) setDistance({ status: 'error', message: 'Could not calculate distance' });
+            });
+        return () => { cancelled = true; };
+    }, [pickupPlace, dropoffPlace]);
+
+    // Embedded map: markers on pickup/drop-off, fit bounds to both
+    useEffect(() => {
+        if (!showModal || !mapsReady) return;
+        const google = window.google;
+        const points = [pickupPlace, dropoffPlace].filter(Boolean);
+        if (points.length === 0 || !mapDivRef.current) {
+            // Map div is unmounted when no places are selected — drop the stale instance
+            mapRef.current = null;
+            markersRef.current = [];
+            return;
+        }
+
+        if (!mapRef.current) {
+            mapRef.current = new google.maps.Map(mapDivRef.current, {
+                center: { lat: points[0].lat, lng: points[0].lng },
+                zoom: 13,
+                mapTypeControl: false,
+                streetViewControl: false,
+                fullscreenControl: false,
+            });
+        }
+        markersRef.current.forEach(m => m.setMap(null));
+        markersRef.current = points.map(p => new google.maps.Marker({
+            map: mapRef.current,
+            position: { lat: p.lat, lng: p.lng },
+            title: p.address,
+            label: {
+                text: p === pickupPlace ? 'A' : 'B',
+                color: '#ffffff', fontWeight: '700', fontSize: '12px',
+            },
+        }));
+        if (points.length === 2) {
+            const bounds = new google.maps.LatLngBounds();
+            points.forEach(p => bounds.extend({ lat: p.lat, lng: p.lng }));
+            mapRef.current.fitBounds(bounds, 48);
+        } else {
+            mapRef.current.setCenter({ lat: points[0].lat, lng: points[0].lng });
+            mapRef.current.setZoom(13);
+        }
+    }, [showModal, mapsReady, pickupPlace, dropoffPlace]);
+
+    // Manual distance calculation — also works with free-typed addresses
+    // (no autocomplete selection needed; Distance Matrix accepts plain text)
+    const handleCalcDistance = async () => {
+        const pickupText = form.pickupLocation.trim();
+        const dropoffText = form.dropoffLocation.trim();
+        if (!pickupText || !dropoffText) return;
+        const toParam = (place, text) =>
+            place ? (place.placeId ? `place_id:${place.placeId}` : `${place.lat},${place.lng}`) : text;
+        setDistance({ status: 'loading' });
+        try {
+            const res = await fetch('/api/distance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    origin: toParam(pickupPlace, pickupText),
+                    destination: toParam(dropoffPlace, dropoffText),
+                }),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setDistance({ status: 'ok', miles: data.distanceText, duration: data.durationText });
+            } else {
+                setDistance({ status: 'error', message: data.error || 'Could not calculate distance' });
+            }
+        } catch {
+            setDistance({ status: 'error', message: 'Could not calculate distance' });
+        }
+    };
+
+    // Draft auto-save: persist the New Booking form to localStorage (debounced 500ms)
+    useEffect(() => {
+        if (!showModal || editingId || !draftId) return;
+        const timer = setTimeout(() => {
+            const hasData = Object.keys(EMPTY_BOOKING).some(k => form[k] !== EMPTY_BOOKING[k]);
+            const rest = readDrafts().filter(d => d.id !== draftId);
+            if (hasData) {
+                writeDrafts([{ id: draftId, form, updatedAt: new Date().toISOString() }, ...rest]);
+            } else {
+                writeDrafts(rest);
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [form, showModal, editingId, draftId]);
 
     const handleDvlaLookup = async () => {
         if (!form.registrationNumber) return;
@@ -160,6 +380,7 @@ export default function AdminBookings() {
     };
 
     useEffect(() => {
+        if (statusFilter === 'drafts') return;   // drafts live in localStorage, not the API
         fetchBookings();
     }, [page, search, statusFilter]);
 
@@ -212,13 +433,74 @@ export default function AdminBookings() {
         }
     };
 
-    const openCreate = () => {
-        setEditingId(null);
-        setForm(EMPTY_BOOKING);
+    const resetModalExtras = () => {
+        setStep(0);
+        setPickupPlace(null);
+        setDropoffPlace(null);
+        setDistance(null);
         setFormError('');
         setDvlaStatus(null);
         setDvlaInfo(null);
+    };
+
+    const validateStep = (i) => {
+        if (i === 0 && !form.pickupLocation.trim()) return 'Pickup location is required.';
+        if (i === 2 && (!form.name.trim() || !form.phone.trim())) return 'Name and phone are required.';
+        if (i === 3 && !form.serviceType) return 'Service type is required.';
+        return '';
+    };
+
+    const handleNext = () => {
+        const err = validateStep(step);
+        if (err) {
+            setFormError(err);
+            return;
+        }
+        setFormError('');
+        setStep(s => Math.min(s + 1, FORM_STEPS.length - 1));
+    };
+
+    const goToStep = (i) => {
+        if (i > step) {
+            const err = validateStep(step);
+            if (err) {
+                setFormError(err);
+                return;
+            }
+        }
+        setFormError('');
+        setStep(i);
+    };
+
+    const openCreate = () => {
+        setEditingId(null);
+        // Resume the most recent draft if one survived a refresh / accidental close
+        const existing = readDrafts();
+        if (existing.length > 0) {
+            setForm({ ...EMPTY_BOOKING, ...existing[0].form });
+            setDraftId(existing[0].id);
+            setDraftRestored(true);
+        } else {
+            setForm({ ...EMPTY_BOOKING, bookingDate: toDateInput(new Date()) });
+            setDraftId(newDraftId());
+            setDraftRestored(false);
+        }
+        resetModalExtras();
         setShowModal(true);
+    };
+
+    const resumeDraft = (draft) => {
+        setEditingId(null);
+        setForm({ ...EMPTY_BOOKING, ...draft.form });
+        setDraftId(draft.id);
+        setDraftRestored(false);
+        resetModalExtras();
+        setShowModal(true);
+    };
+
+    const deleteDraft = (id) => {
+        if (!confirm('Delete this draft? This cannot be undone.')) return;
+        writeDrafts(readDrafts().filter(d => d.id !== id));
     };
 
     const openEdit = (booking) => {
@@ -238,26 +520,51 @@ export default function AdminBookings() {
             price: booking.price ?? '',
             bookingDate: toDateInput(booking.created_at),
         });
-        setFormError('');
-        setDvlaStatus(null);
-        setDvlaInfo(null);
+        setDraftRestored(false);
+        setDraftId(null);
+        resetModalExtras();
         setShowModal(true);
     };
 
     const closeModal = () => {
         if (saving) return;
+        if (!editingId && draftId) {
+            const dirty = Object.keys(EMPTY_BOOKING).some(k => form[k] !== EMPTY_BOOKING[k]);
+            if (dirty && confirm('Discard this booking draft?\n\nOK — discard it · Cancel — keep it in the Drafts tab')) {
+                writeDrafts(readDrafts().filter(d => d.id !== draftId));
+            }
+        }
         setShowModal(false);
     };
 
     const handleFormChange = (e) => {
-        setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+        const { name, value } = e.target;
+        setForm(prev => ({ ...prev, [name]: value }));
+        // Manual edits invalidate the previously selected place (and its distance)
+        if (name === 'pickupLocation') setPickupPlace(null);
+        if (name === 'dropoffLocation') setDropoffPlace(null);
         if (formError) setFormError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!form.name.trim() || !form.phone.trim() || !form.pickupLocation.trim() || !form.serviceType) {
-            setFormError('Name, phone, pickup location and service type are required.');
+        // Enter on an intermediate step advances instead of submitting
+        if (step < FORM_STEPS.length - 1) {
+            handleNext();
+            return;
+        }
+        if (!form.pickupLocation.trim()) {
+            setStep(0);
+            setFormError('Pickup location is required.');
+            return;
+        }
+        if (!form.name.trim() || !form.phone.trim()) {
+            setStep(2);
+            setFormError('Name and phone are required.');
+            return;
+        }
+        if (!form.serviceType) {
+            setFormError('Service type is required.');
             return;
         }
         setSaving(true);
@@ -273,6 +580,7 @@ export default function AdminBookings() {
             if (data.success) {
                 setShowModal(false);
                 if (!editingId) {
+                    if (draftId) writeDrafts(readDrafts().filter(d => d.id !== draftId));
                     setStatusFilter('all');
                     setSearch('');
                     setPage(1);
@@ -322,6 +630,7 @@ export default function AdminBookings() {
     const TABS = [
         { key: 'all', label: 'All', count: counts.total || 0 },
         ...STATUS_KEYS.map(k => ({ key: k, label: STATUS_META[k].label, count: counts[k] || 0 })),
+        { key: 'drafts', label: 'Drafts', count: drafts.length },
     ];
 
     return (
@@ -417,7 +726,58 @@ export default function AdminBookings() {
                 </div>
 
                 {/* List */}
-                {loading ? (
+                {statusFilter === 'drafts' ? (
+                    drafts.length === 0 ? (
+                        <div className="empty-state">
+                            <div className="empty-state-icon">
+                                <StickyNote size={48} strokeWidth={1.5} />
+                            </div>
+                            <h3>No drafts</h3>
+                            <p>Unfinished New Booking forms are saved here automatically.</p>
+                        </div>
+                    ) : (
+                        <div className="bk-list">
+                            {drafts.map(d => (
+                                <article key={d.id} className="bk-card bk-draft-card">
+                                    <div className="bk-draft-row">
+                                        <div className="bk-cell bk-cell--customer">
+                                            <div className="bk-avatar bk-avatar--draft">
+                                                {initialsOf(d.form?.name)}
+                                            </div>
+                                            <div className="bk-customer-name">
+                                                {d.form?.name || 'Untitled draft'}
+                                            </div>
+                                        </div>
+                                        <div className="bk-cell bk-cell--route">
+                                            <div className="bk-route-from">
+                                                <MapPin size={13} />
+                                                <span>{d.form?.pickupLocation || 'No pickup yet'}</span>
+                                            </div>
+                                        </div>
+                                        <div className="bk-cell bk-cell--service">
+                                            <div className="bk-service-name">
+                                                <Wrench size={13} />
+                                                <span>{d.form?.serviceType || '—'}</span>
+                                            </div>
+                                        </div>
+                                        <div className="bk-cell bk-cell--date">
+                                            <span>{formatDateShort(d.updatedAt)}</span>
+                                        </div>
+                                        <div className="bk-draft-actions">
+                                            <button type="button" className="bk-btn-edit" onClick={() => resumeDraft(d)}>
+                                                <Pencil size={14} />
+                                                Resume
+                                            </button>
+                                            <button type="button" className="bk-btn-delete" onClick={() => deleteDraft(d.id)}>
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    )
+                ) : loading ? (
                     <div className="loading">
                         <div className="loading-spinner"></div>
                         <p>Loading bookings…</p>
@@ -620,7 +980,7 @@ export default function AdminBookings() {
                     </div>
                 )}
 
-                {bookings.length > 0 && (
+                {statusFilter !== 'drafts' && bookings.length > 0 && (
                     <div className="pagination">
                         <button
                             className="pagination-btn"
@@ -646,7 +1006,7 @@ export default function AdminBookings() {
             {/* Create / Edit booking modal */}
             {showModal && (
                 <div className="bk-modal-overlay" onClick={closeModal}>
-                    <div className="bk-modal" onClick={e => e.stopPropagation()}>
+                    <div className="bk-modal bk-modal--wide" onClick={e => e.stopPropagation()}>
                         <div className="bk-modal-head">
                             <div className="bk-modal-head-icon">
                                 {editingId ? <Pencil size={17} /> : <Plus size={18} strokeWidth={2.5} />}
@@ -660,7 +1020,8 @@ export default function AdminBookings() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="bk-modal-form">
+                        <form onSubmit={handleSubmit} className="bk-modal-form" noValidate>
+                            <div className="bk-modal-columns">
                             <div className="bk-modal-body">
                                 {formError && (
                                     <div className="bk-modal-error">
@@ -669,72 +1030,99 @@ export default function AdminBookings() {
                                     </div>
                                 )}
 
-                                <div className="bk-form-section">
-                                    <div className="bk-form-section-title">
-                                        <User size={13} />
-                                        Customer
+                                {draftRestored && !editingId && (
+                                    <div className="bk-draft-note">
+                                        <History size={14} />
+                                        <span>Unsaved draft restored — all drafts live in the Drafts tab.</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setForm({ ...EMPTY_BOOKING, bookingDate: toDateInput(new Date()) });
+                                                setDraftId(newDraftId());
+                                                setPickupPlace(null);
+                                                setDropoffPlace(null);
+                                                setDistance(null);
+                                                setDraftRestored(false);
+                                            }}
+                                        >
+                                            Start fresh
+                                        </button>
                                     </div>
-                                    <div className="bk-form-grid">
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-name">Full Name *</label>
-                                            <input id="mb-name" name="name" type="text" placeholder="John Smith"
-                                                value={form.name} onChange={handleFormChange} required />
+                                )}
+
+                                <div className="bk-stepper">
+                                    {FORM_STEPS.map((s, i) => {
+                                        const SIcon = s.Icon;
+                                        const done = i < step;
+                                        return (
+                                            <button
+                                                key={s.title}
+                                                type="button"
+                                                className={`bk-stepper-item ${i === step ? 'bk-stepper-item--active' : ''} ${done ? 'bk-stepper-item--done' : ''}`}
+                                                onClick={() => goToStep(i)}
+                                            >
+                                                <span className="bk-stepper-num">
+                                                    {done ? <CheckCheck size={11} strokeWidth={3} /> : i + 1}
+                                                </span>
+                                                <SIcon size={13} />
+                                                <span className="bk-stepper-label">{s.title}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="bk-step-pane" hidden={step !== 0}>
+                                    <div className="bk-form-section">
+                                        <div className="bk-form-section-title">
+                                            <MapPin size={13} />
+                                            Pickup &amp; Drop-off
                                         </div>
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-phone">Phone / WhatsApp *</label>
-                                            <input id="mb-phone" name="phone" type="tel" placeholder="07XXX XXXXXX"
-                                                value={form.phone} onChange={handleFormChange} required />
-                                        </div>
-                                        <div className="bk-field bk-field--full">
-                                            <label htmlFor="mb-email">Email</label>
-                                            <input id="mb-email" name="email" type="email" placeholder="john@example.com"
-                                                value={form.email} onChange={handleFormChange} />
+                                        <div className="bk-form-grid">
+                                            <div className="bk-field bk-field--full">
+                                                <label htmlFor="mb-pickup">Pickup Location *</label>
+                                                <input id="mb-pickup" name="pickupLocation" type="text" placeholder="e.g. M6 Junction 7, Birmingham"
+                                                    ref={pickupInputRef} autoComplete="off"
+                                                    onKeyDown={e => { if (e.key === 'Enter') e.preventDefault(); }}
+                                                    value={form.pickupLocation} onChange={handleFormChange} required />
+                                            </div>
+                                            <div className="bk-field bk-field--full">
+                                                <label htmlFor="mb-dropoff">Drop-off Location</label>
+                                                <input id="mb-dropoff" name="dropoffLocation" type="text" placeholder="e.g. Home address or garage"
+                                                    ref={dropoffInputRef} autoComplete="off"
+                                                    onKeyDown={e => { if (e.key === 'Enter') e.preventDefault(); }}
+                                                    value={form.dropoffLocation} onChange={handleFormChange} />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="bk-form-section">
-                                    <div className="bk-form-section-title">
-                                        <MapPin size={13} />
-                                        Job
-                                    </div>
-                                    <div className="bk-form-grid">
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-pickup">Pickup Location *</label>
-                                            <input id="mb-pickup" name="pickupLocation" type="text" placeholder="e.g. M6 Junction 7, Birmingham"
-                                                value={form.pickupLocation} onChange={handleFormChange} required />
+                                <div className="bk-step-pane" hidden={step !== 2}>
+                                    <div className="bk-form-section">
+                                        <div className="bk-form-section-title">
+                                            <User size={13} />
+                                            Customer
                                         </div>
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-dropoff">Drop-off Location</label>
-                                            <input id="mb-dropoff" name="dropoffLocation" type="text" placeholder="e.g. Home address or garage"
-                                                value={form.dropoffLocation} onChange={handleFormChange} />
-                                        </div>
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-service">Service Type *</label>
-                                            <select id="mb-service" name="serviceType" value={form.serviceType} onChange={handleFormChange} required>
-                                                <option value="">Select a service…</option>
-                                                {SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-date">Booking Date</label>
-                                            <input id="mb-date" name="bookingDate" type="date"
-                                                value={form.bookingDate} onChange={handleFormChange} />
-                                        </div>
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-status">Status</label>
-                                            <select id="mb-status" name="status" value={form.status} onChange={handleFormChange}>
-                                                {STATUS_KEYS.map(k => <option key={k} value={k}>{STATUS_META[k].label}</option>)}
-                                            </select>
-                                        </div>
-                                        <div className="bk-field">
-                                            <label htmlFor="mb-price">Job Value (£)</label>
-                                            <input id="mb-price" name="price" type="number" min="0" step="0.01" placeholder="e.g. 120"
-                                                value={form.price} onChange={handleFormChange} />
+                                        <div className="bk-form-grid">
+                                            <div className="bk-field">
+                                                <label htmlFor="mb-name">Full Name *</label>
+                                                <input id="mb-name" name="name" type="text" placeholder="John Smith"
+                                                    value={form.name} onChange={handleFormChange} required />
+                                            </div>
+                                            <div className="bk-field">
+                                                <label htmlFor="mb-phone">Phone / WhatsApp *</label>
+                                                <input id="mb-phone" name="phone" type="tel" placeholder="07XXX XXXXXX"
+                                                    value={form.phone} onChange={handleFormChange} required />
+                                            </div>
+                                            <div className="bk-field bk-field--full">
+                                                <label htmlFor="mb-email">Email</label>
+                                                <input id="mb-email" name="email" type="email" placeholder="john@example.com"
+                                                    value={form.email} onChange={handleFormChange} />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
 
+                                <div className="bk-step-pane" hidden={step !== 1}>
                                 <div className="bk-form-section">
                                     <div className="bk-form-section-title">
                                         <Car size={13} />
@@ -791,6 +1179,29 @@ export default function AdminBookings() {
                                         </div>
                                     </div>
                                 </div>
+                                </div>
+
+                                <div className="bk-step-pane" hidden={step !== 3}>
+                                <div className="bk-form-section">
+                                    <div className="bk-form-section-title">
+                                        <Wrench size={13} />
+                                        Job
+                                    </div>
+                                    <div className="bk-form-grid">
+                                        <div className="bk-field">
+                                            <label htmlFor="mb-service">Service Type *</label>
+                                            <select id="mb-service" name="serviceType" value={form.serviceType} onChange={handleFormChange} required>
+                                                <option value="">Select a service…</option>
+                                                {SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className="bk-field">
+                                            <label htmlFor="mb-date">Booking Date</label>
+                                            <input id="mb-date" name="bookingDate" type="date"
+                                                value={form.bookingDate} onChange={handleFormChange} />
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div className="bk-form-section">
                                     <div className="bk-form-section-title">
@@ -802,19 +1213,158 @@ export default function AdminBookings() {
                                             value={form.message} onChange={handleFormChange} />
                                     </div>
                                 </div>
+
+                                <div className="bk-form-section">
+                                    <div className="bk-form-section-title">
+                                        <PoundSterling size={13} />
+                                        Value &amp; Status
+                                    </div>
+                                    <div className="bk-form-grid">
+                                        <div className="bk-field">
+                                            <label htmlFor="mb-price">Job Value (£)</label>
+                                            <input id="mb-price" name="price" type="number" min="0" step="0.01" placeholder="e.g. 120"
+                                                value={form.price} onChange={handleFormChange} />
+                                        </div>
+                                        <div className="bk-field bk-field--full">
+                                            <label>Status</label>
+                                            <div className="bk-status-picker" role="radiogroup" aria-label="Booking status">
+                                                {STATUS_KEYS.map(k => {
+                                                    const sm = STATUS_META[k];
+                                                    const SIcon = sm.Icon;
+                                                    const active = form.status === k;
+                                                    return (
+                                                        <button
+                                                            key={k}
+                                                            type="button"
+                                                            role="radio"
+                                                            aria-checked={active}
+                                                            className={`bk-status-opt ${active ? 'bk-status-opt--active' : ''}`}
+                                                            style={active ? { background: sm.bg, color: sm.color, borderColor: sm.border } : undefined}
+                                                            onClick={() => setForm(prev => ({ ...prev, status: k }))}
+                                                        >
+                                                            <SIcon size={12} strokeWidth={2.5} />
+                                                            {sm.label}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+
+                            <aside className="bk-modal-side">
+                                <div className="bk-side-title">
+                                    <Route size={13} />
+                                    Route Preview
+                                </div>
+                                {(pickupPlace || dropoffPlace) ? (
+                                    <div className="bk-map" ref={mapDivRef} />
+                                ) : (
+                                    <div className="bk-map-empty">
+                                        <MapPin size={22} strokeWidth={1.8} />
+                                        <span>Pick locations from the suggestions to preview the route on the map</span>
+                                    </div>
+                                )}
+                                {distance && (
+                                    <div className={`bk-distance-panel ${distance.status === 'error' ? 'bk-distance-panel--error' : ''}`}>
+                                        <Route size={15} />
+                                        {distance.status === 'loading' && <span>Calculating driving distance…</span>}
+                                        {distance.status === 'ok' && (
+                                            <span>
+                                                <strong>{distance.miles}</strong>
+                                                {distance.duration && (
+                                                    <span className="bk-distance-duration"> · approx {distance.duration}</span>
+                                                )}
+                                            </span>
+                                        )}
+                                        {distance.status === 'error' && <span>{distance.message}</span>}
+                                    </div>
+                                )}
+
+                                <button
+                                    type="button"
+                                    className="bk-btn-calc"
+                                    onClick={handleCalcDistance}
+                                    disabled={!form.pickupLocation.trim() || !form.dropoffLocation.trim() || distance?.status === 'loading'}
+                                >
+                                    <Route size={14} />
+                                    {distance?.status === 'loading' ? 'Calculating…' : 'Calculate distance'}
+                                </button>
+
+                                <div className="bk-side-title">
+                                    <ClipboardList size={13} />
+                                    Summary
+                                </div>
+                                <div className="bk-side-summary">
+                                    <div className="bk-side-row">
+                                        <span>Customer</span>
+                                        <strong>{form.name || '—'}</strong>
+                                    </div>
+                                    <div className="bk-side-row">
+                                        <span>Phone</span>
+                                        <strong>{form.phone || '—'}</strong>
+                                    </div>
+                                    <div className="bk-side-row">
+                                        <span>Service</span>
+                                        <strong>{form.serviceType || '—'}</strong>
+                                    </div>
+                                    <div className="bk-side-row">
+                                        <span>Date</span>
+                                        <strong>{form.bookingDate || '—'}</strong>
+                                    </div>
+                                    <div className="bk-side-row">
+                                        <span>Vehicle</span>
+                                        <strong>
+                                            {[form.vehicleMake, form.vehicleModel].filter(Boolean).join(' ')
+                                                || form.registrationNumber || '—'}
+                                        </strong>
+                                    </div>
+                                    <div className="bk-side-row">
+                                        <span>Job value</span>
+                                        <strong>{formatMoney(form.price) || '—'}</strong>
+                                    </div>
+                                    {distance?.status === 'ok' && (
+                                        <div className="bk-side-row">
+                                            <span>Distance</span>
+                                            <strong>{distance.miles}</strong>
+                                        </div>
+                                    )}
+                                </div>
+                            </aside>
                             </div>
 
                             <div className="bk-modal-foot">
+                                {!editingId && (
+                                    <span className="bk-foot-hint">
+                                        <History size={13} />
+                                        Draft saves automatically
+                                    </span>
+                                )}
                                 <button type="button" className="bk-btn-ghost" onClick={closeModal} disabled={saving}>
                                     Cancel
                                 </button>
-                                <button type="submit" className="bk-btn-save" disabled={saving}>
-                                    {saving
-                                        ? 'Saving…'
-                                        : editingId
-                                            ? <><CheckCheck size={16} /> Save Changes</>
-                                            : <><Plus size={16} strokeWidth={2.5} /> Create Booking</>}
-                                </button>
+                                {step > 0 && (
+                                    <button type="button" className="bk-btn-ghost" onClick={() => goToStep(step - 1)} disabled={saving}>
+                                        <ChevronLeft size={15} />
+                                        Back
+                                    </button>
+                                )}
+                                {step < FORM_STEPS.length - 1 ? (
+                                    <button type="button" className="bk-btn-save" onClick={handleNext}>
+                                        Next
+                                        <ChevronRight size={15} />
+                                    </button>
+                                ) : (
+                                    <button type="submit" className="bk-btn-save" disabled={saving}>
+                                        {saving
+                                            ? 'Saving…'
+                                            : editingId
+                                                ? <><CheckCheck size={16} /> Save Changes</>
+                                                : <><Plus size={16} strokeWidth={2.5} /> Create Booking</>}
+                                    </button>
+                                )}
                             </div>
                         </form>
                     </div>

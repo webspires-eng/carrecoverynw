@@ -3644,6 +3644,393 @@
     color: #059669;
 }
 
+/* Distance Matrix result (side rail) */
+.bk-distance-panel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 14px;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 10px;
+    color: #0369a1;
+    font-size: 0.84rem;
+    font-weight: 500;
+}
+
+.bk-distance-panel strong {
+    font-weight: 700;
+}
+
+.bk-distance-panel--error {
+    background: #fffbeb;
+    border-color: #fde68a;
+    color: #b45309;
+}
+
+.bk-distance-duration {
+    color: #0284c7;
+}
+
+/* Embedded pickup/drop-off map (side rail) */
+.bk-map {
+    height: 210px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.bk-map-empty {
+    height: 210px;
+    border-radius: 12px;
+    border: 1px dashed #e2e8f0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    text-align: center;
+    padding: 0 22px;
+    flex-shrink: 0;
+}
+
+/* Restored-draft notice */
+.bk-draft-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #b45309;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-bottom: 18px;
+}
+
+.bk-draft-note button {
+    margin-left: auto;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 1px solid #fcd34d;
+    background: #fff;
+    color: #b45309;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.bk-draft-note button:hover {
+    background: #fef3c7;
+}
+
+/* Google Places dropdown must sit above the modal overlay */
+.pac-container {
+    z-index: 10000 !important;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    font-family: inherit;
+}
+
+/* ---- Redesigned booking modal: two-pane layout ---- */
+.bk-modal--wide {
+    max-width: 980px;
+}
+
+.bk-modal-columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    flex: 1;
+    min-height: 0;
+}
+
+.bk-modal-side {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px 20px 24px;
+    background: #fafbfc;
+    border-left: 1px solid #f1f5f9;
+    overflow-y: auto;
+}
+
+.bk-side-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #94a3b8;
+}
+
+.bk-side-title:not(:first-child) {
+    margin-top: 8px;
+}
+
+.bk-side-summary {
+    background: #fff;
+    border: 1px solid #eef2f7;
+    border-radius: 12px;
+    padding: 4px 14px;
+}
+
+.bk-side-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px dashed #f1f5f9;
+    font-size: 0.8rem;
+}
+
+.bk-side-row:last-child {
+    border-bottom: none;
+}
+
+.bk-side-row span {
+    color: #94a3b8;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.bk-side-row strong {
+    color: #0f172a;
+    font-weight: 600;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Segmented status picker */
+.bk-status-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.bk-status-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.bk-status-opt:hover {
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+.bk-status-opt--active {
+    font-weight: 700;
+}
+
+/* Manual distance calculation button */
+.bk-btn-calc {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #334155;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.bk-btn-calc:hover:not(:disabled) {
+    background: #fff7ed;
+    border-color: #fdba74;
+    color: #ea580c;
+}
+
+.bk-btn-calc:disabled {
+    opacity: 0.55;
+    cursor: default;
+}
+
+/* Multi-step wizard */
+.bk-stepper {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    padding: 5px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 12px;
+}
+
+.bk-stepper-item {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 6px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.bk-stepper-item:hover {
+    color: #475569;
+}
+
+.bk-stepper-item--active {
+    background: #fff;
+    border-color: #fed7aa;
+    color: #ea580c;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.06);
+}
+
+.bk-stepper-item--done {
+    color: #16a34a;
+}
+
+.bk-stepper-num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    font-size: 0.66rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.bk-stepper-item--active .bk-stepper-num {
+    background: #ea580c;
+    color: #fff;
+}
+
+.bk-stepper-item--done .bk-stepper-num {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.bk-step-pane[hidden] {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .bk-stepper-label {
+        display: none;
+    }
+}
+
+/* Drafts tab cards */
+.bk-draft-card {
+    border-style: dashed;
+}
+
+.bk-draft-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 13px 18px;
+}
+
+.bk-draft-row .bk-cell--customer {
+    flex: 1.1;
+    min-width: 0;
+}
+
+.bk-draft-row .bk-cell--route {
+    flex: 1.5;
+    min-width: 0;
+}
+
+.bk-draft-row .bk-cell--service {
+    flex: 1.1;
+    min-width: 0;
+}
+
+.bk-draft-row .bk-cell--date {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.bk-avatar--draft {
+    background: #fffbeb;
+    color: #b45309;
+    border-color: #fde68a;
+}
+
+.bk-draft-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* Footer auto-save hint */
+.bk-foot-hint {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: auto;
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: #94a3b8;
+}
+
+@media (max-width: 920px) {
+    .bk-modal--wide {
+        max-width: 660px;
+    }
+
+    .bk-modal-columns {
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+
+    .bk-modal-columns .bk-modal-body {
+        overflow-y: visible;
+    }
+
+    .bk-modal-side {
+        border-left: none;
+        border-top: 1px solid #f1f5f9;
+        overflow-y: visible;
+    }
+}
+
 .bk-modal-foot {
     display: flex;
     justify-content: flex-end;
