@@ -34,3 +34,37 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Deploying
+
+Pushes to `main` normally auto-deploy via the Vercel GitHub integration
+(project: `carrecoverynw`, team: `atif-jans-projects`).
+
+**If a push doesn't trigger a deployment** (webhook failure — happened
+2026-07-02), deploy manually from the project root:
+
+```bash
+npx vercel deploy --prod
+```
+
+If auto-deploys stay broken, reconnect the repo: Vercel dashboard →
+carrecoverynw → Settings → Git → disconnect/reconnect `webspires-eng/carrecoverynw`.
+
+Note: the build **fails loudly on MongoDB timeouts** (intentional — it refuses
+to prerender area pages as empty soft-404s). If a build fails with a Mongo
+server-selection error, just retry the deploy.
+
+## SEO / content tooling (scripts/)
+
+```bash
+node scripts/validate-geo.mjs           # geography audit: nearby areas, roads, links vs real lat/lng
+node scripts/validate-links.mjs         # internal-link integrity (exit 1 on errors — CI-friendly)
+node scripts/fix-geo-data.mjs           # repair flagged geo data (dry-run; --apply writes with backup)
+node scripts/export-content-worksheet.mjs --thin-only   # CSV worksheet for unique per-city content
+node scripts/import-content-worksheet.mjs <csv> --apply # validated import of the filled worksheet
+node scripts/prune-analysis.mjs         # KEEP / IMPROVE / PRUNE verdicts per area page
+node scripts/set-noindex.mjs --from-prune-report        # noindex thin pages (dry-run; --apply writes)
+```
+
+Area pages are fully static: after any DB content change, redeploy (or call
+`/api/admin/revalidate-all`) for it to go live.
