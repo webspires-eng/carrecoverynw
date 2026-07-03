@@ -598,7 +598,10 @@ export default function AdminBookings() {
         { key: 'all', label: 'All', count: counts.total || 0 },
         { key: 'drafts', label: 'Drafts', count: drafts.length },
         ...STATUS_KEYS.map(k => ({ key: k, label: STATUS_META[k].label, count: counts[k] || 0 })),
-    ];
+    ].filter(tab =>
+        // Hide empty tabs, but always keep "All" and never hide the active tab
+        tab.key === 'all' || tab.count > 0 || statusFilter === tab.key
+    );
 
     return (
         <div className="admin-dashboard">

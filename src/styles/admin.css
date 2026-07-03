@@ -4026,14 +4026,19 @@
         overflow-y: auto;
     }
 
+    /* flex-shrink: 0 is load-bearing: without it the fixed-height columns
+       container compresses the body instead of scrolling, and the overflowing
+       fields render underneath the side rail */
     .bk-modal-columns .bk-modal-body {
         overflow-y: visible;
+        flex-shrink: 0;
     }
 
     .bk-modal-side {
         border-left: none;
         border-top: 1px solid #f1f5f9;
         overflow-y: visible;
+        flex-shrink: 0;
     }
 
     /* Stacked below the fields, the rail is step-aware: map on the
