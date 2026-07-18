@@ -21,6 +21,8 @@ export default function AdminDashboard() {
     const [sortOrder, setSortOrder] = useState('desc');
     const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
     const [indexingStatus, setIndexingStatus] = useState({}); // { [areaId]: 'loading' | 'success' | 'error' }
+    const [rebuildStatus, setRebuildStatus] = useState('idle'); // 'idle' | 'loading' | 'success' | 'error'
+    const [rebuildResult, setRebuildResult] = useState(null);
 
     // Check for saved draft
     useEffect(() => {
@@ -112,6 +114,23 @@ export default function AdminDashboard() {
         setTimeout(() => {
             setIndexingStatus(prev => ({ ...prev, [area.id]: null }));
         }, 3000);
+    };
+
+    const handleRebuildLinks = async () => {
+        if (!confirm('Rebuild internal links for ALL areas? This recalculates outbound (nearby) and inbound links from scratch and revalidates every page.')) return;
+        setRebuildStatus('loading');
+        setRebuildResult(null);
+        try {
+            const res = await fetch('/api/admin/rebuild-all-links', { method: 'POST' });
+            const data = await res.json();
+            setRebuildResult(data);
+            setRebuildStatus(data.success ? 'success' : 'error');
+            if (data.success) fetchAreas();
+        } catch (err) {
+            setRebuildResult({ errors: [err.message] });
+            setRebuildStatus('error');
+        }
+        setTimeout(() => setRebuildStatus('idle'), 6000);
     };
 
     const handleLogout = async () => {
@@ -277,6 +296,29 @@ export default function AdminDashboard() {
                         </button>
                     </div>
                     <div style={{ display: 'flex', gap: '10px' }}>
+                        <button
+                            onClick={handleRebuildLinks}
+                            disabled={rebuildStatus === 'loading'}
+                            className="btn btn-secondary"
+                            title="Recalculate outbound + inbound links for every area"
+                        >
+                            {rebuildStatus === 'loading' ? (
+                                <><Loader2 size={14} style={{ animation: 'spin 1s linear infinite', marginRight: 6 }} />Rebuilding…</>
+                            ) : rebuildStatus === 'success' ? (
+                                <><CheckCircle2 size={14} style={{ marginRight: 6 }} />Links Rebuilt</>
+                            ) : rebuildStatus === 'error' ? (
+                                <><XCircle size={14} style={{ marginRight: 6 }} />Rebuild Failed</>
+                            ) : (
+                                <>↔ Rebuild All Links</>
+                            )}
+                        </button>
+                        {rebuildResult && (
+                            <span style={{ fontSize: '0.8rem', color: rebuildStatus === 'success' ? '#16a34a' : '#dc2626' }}>
+                                {rebuildStatus === 'success'
+                                    ? `${rebuildResult.withGeo} areas linked, ${rebuildResult.noGeo} skipped (no geo)`
+                                    : rebuildResult.errors?.[0] || 'Error'}
+                            </span>
+                        )}
                         <Link href="/admin/areas/add" className="btn btn-accent">
                             Add New Area
                         </Link>
