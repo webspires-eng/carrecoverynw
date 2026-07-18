@@ -109,6 +109,83 @@ export default function NearbyAreasPreview({ slug, lat, lng }) {
     );
 }
 
+/**
+ * Relinks a single area (and only the neighbours affected by it) instead of
+ * rebuilding links for the whole site. Disabled until the area has been saved
+ * with coordinates, since the rebuild reads the stored record.
+ */
+export function RebuildAreaLinksButton({ slug, disabled = false, disabledHint }) {
+    const [status, setStatus] = useState("idle"); // idle | loading | success | error
+    const [result, setResult] = useState(null);
+
+    const isDisabled = disabled || !slug || status === "loading";
+
+    const handleClick = async () => {
+        if (isDisabled) return;
+        setStatus("loading");
+        setResult(null);
+        try {
+            const res = await fetch("/api/admin/rebuild-area-links", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({ slug }),
+            });
+            const json = await res.json();
+            setResult(json);
+            setStatus(json.success ? "success" : "error");
+        } catch (err) {
+            setResult({ error: err.message });
+            setStatus("error");
+        }
+        setTimeout(() => setStatus("idle"), 6000);
+    };
+
+    const label =
+        status === "loading"
+            ? "Rebuilding…"
+            : status === "success"
+              ? "Links Rebuilt"
+              : status === "error"
+                ? "Rebuild Failed"
+                : "↔ Rebuild This Area's Links";
+
+    return (
+        <div style={{ marginBottom: 12 }}>
+            <button
+                type="button"
+                onClick={handleClick}
+                disabled={isDisabled}
+                className="btn btn-secondary"
+                title={
+                    isDisabled && disabledHint
+                        ? disabledHint
+                        : "Recalculate outbound + inbound links for this area only"
+                }
+                style={{ width: "100%", justifyContent: "center" }}
+            >
+                {label}
+            </button>
+            {isDisabled && disabledHint && status === "idle" && (
+                <p style={{ fontSize: 12, color: "#888", marginTop: 6 }}>{disabledHint}</p>
+            )}
+            {result && status !== "loading" && (
+                <p
+                    style={{
+                        fontSize: 12,
+                        marginTop: 6,
+                        color: status === "success" ? "#16a34a" : "#dc2626",
+                    }}
+                >
+                    {status === "success"
+                        ? `${result.outbound} outbound · ${result.inbound} inbound · ${result.neighboursUpdated} neighbour page${result.neighboursUpdated === 1 ? "" : "s"} updated`
+                        : result.error || result.errors?.[0] || "Error"}
+                </p>
+            )}
+        </div>
+    );
+}
+
 export function LinkStatusBadge({ outbound = 0, inbound = 0 }) {
     let color = "#c00";
     let status = "Not linked";

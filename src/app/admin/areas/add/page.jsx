@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import RichTextEditor from '@/components/RichTextEditor';
-import NearbyAreasPreview from '@/components/admin/NearbyAreasPreview';
+import NearbyAreasPreview, { RebuildAreaLinksButton } from '@/components/admin/NearbyAreasPreview';
 import { Wrench, Car } from 'lucide-react';
 import '../../../../styles/admin.css';
 
@@ -861,6 +861,11 @@ export default function AddAreaPage() {
                                     <h3>Internal Links</h3>
                                 </div>
                                 <div className="cms-sidebar-box-body">
+                                    <RebuildAreaLinksButton
+                                        slug={formData.slug}
+                                        disabled
+                                        disabledHint="Publish the area first — then rebuild its links from the edit page."
+                                    />
                                     {(() => {
                                         const lat = parseFloat(formData.latitude);
                                         const lng = parseFloat(formData.longitude);
