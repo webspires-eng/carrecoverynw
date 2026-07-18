@@ -248,7 +248,7 @@ export default async function AreaPage({ params }) {
 // revalidatePath('/areas/<slug>') on demand (see /api/admin/revalidate-all).
 export const revalidate = false;
 
-// Only slugs returned by generateStaticParams() are valid. Unknown/bot-generated
-// URLs (e.g. /areas/random-junk) return 404 instead of triggering on-demand ISR
-// generation + a write. generateStaticParams() already returns every active slug.
-export const dynamicParams = false;
+// Slugs not pre-built at deploy time (e.g. areas added after the last build)
+// are rendered on-demand then cached. notFound() handles truly unknown slugs,
+// so no spurious ISR writes occur for bot/junk URLs.
+export const dynamicParams = true;
