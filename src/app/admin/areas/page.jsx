@@ -160,6 +160,66 @@ export default function AdminDashboard() {
         window.location.href = '/signin';
     };
 
+    // Shared by the card and table views. Called as a plain function (not
+    // rendered as a component) so the buttons never remount mid-request.
+    const renderAreaActions = (area) => (
+        <>
+            <a
+                href={`/areas/${area.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-view icon-btn"
+                title="View page"
+                aria-label="View page"
+            >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15 3 21 3 21 9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+            </a>
+            <Link
+                href={`/admin/areas/${area.id}/edit`}
+                className="btn-edit icon-btn"
+                title="Edit area"
+                aria-label="Edit area"
+            >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                </svg>
+            </Link>
+            <button
+                onClick={() => handleRelinkArea(area)}
+                className="btn-relink icon-btn"
+                disabled={relinkStatus[area.id] === 'loading'}
+                title="Rebuild links for this area"
+                aria-label="Rebuild links for this area"
+            >
+                {relinkStatus[area.id] === 'loading' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : relinkStatus[area.id] === 'success' ? <CheckCircle2 size={14} /> : relinkStatus[area.id] === 'error' ? <XCircle size={14} /> : <RefreshCw size={14} />}
+            </button>
+            <button
+                onClick={() => handleIndex(area)}
+                className="btn-index icon-btn"
+                disabled={indexingStatus[area.id] === 'loading'}
+                title="Submit to Google Indexing"
+                aria-label="Submit to Google Indexing"
+            >
+                {indexingStatus[area.id] === 'loading' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : indexingStatus[area.id] === 'success' ? <CheckCircle2 size={14} /> : indexingStatus[area.id] === 'error' ? <XCircle size={14} /> : 'G'}
+            </button>
+            <button
+                onClick={() => handleDelete(area.id)}
+                className="btn-delete icon-btn"
+                title="Delete area"
+                aria-label="Delete area"
+            >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+            </button>
+        </>
+    );
+
 
     return (
         <div className="admin-dashboard">
@@ -331,7 +391,7 @@ export default function AdminDashboard() {
                             ) : rebuildStatus === 'error' ? (
                                 <><XCircle size={14} style={{ marginRight: 6 }} />Rebuild Failed</>
                             ) : (
-                                <>↔ Rebuild All Links</>
+                                <>Rebuild All Links</>
                             )}
                         </button>
                         {rebuildResult && (
@@ -394,59 +454,7 @@ export default function AdminDashboard() {
                                     />
                                 </div>
                                 <div className="area-card-actions">
-                                    <a
-                                        href={`/areas/${area.slug}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="btn-view icon-btn"
-                                        title="View page"
-                                        aria-label="View page"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-                                            <polyline points="15 3 21 3 21 9"></polyline>
-                                            <line x1="10" y1="14" x2="21" y2="3"></line>
-                                        </svg>
-                                    </a>
-                                    <Link
-                                        href={`/admin/areas/${area.id}/edit`}
-                                        className="btn-edit icon-btn"
-                                        title="Edit area"
-                                        aria-label="Edit area"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                                        </svg>
-                                    </Link>
-                                    <button
-                                        onClick={() => handleRelinkArea(area)}
-                                        className="btn-relink icon-btn"
-                                        disabled={relinkStatus[area.id] === 'loading'}
-                                        title="Rebuild links for this area"
-                                        aria-label="Rebuild links for this area"
-                                    >
-                                        {relinkStatus[area.id] === 'loading' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : relinkStatus[area.id] === 'success' ? <CheckCircle2 size={14} /> : relinkStatus[area.id] === 'error' ? <XCircle size={14} /> : <RefreshCw size={14} />}
-                                    </button>
-                                    <button
-                                        onClick={() => handleIndex(area)}
-                                        className="btn-index icon-btn"
-                                        disabled={indexingStatus[area.id] === 'loading'}
-                                        title="Submit to Google Indexing"
-                                        aria-label="Submit to Google Indexing"
-                                    >
-                                        {indexingStatus[area.id] === 'loading' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : indexingStatus[area.id] === 'success' ? <CheckCircle2 size={14} /> : indexingStatus[area.id] === 'error' ? <XCircle size={14} /> : 'G'}
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(area.id)}
-                                        className="btn-delete icon-btn"
-                                        title="Delete area"
-                                        aria-label="Delete area"
-                                    >
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                            <polyline points="3 6 5 6 21 6"></polyline>
-                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                        </svg>
-                                    </button>
+                                    {renderAreaActions(area)}
                                 </div>
                             </div>
                         )})}
@@ -493,20 +501,7 @@ export default function AdminDashboard() {
                                     </td>
                                     <td>
                                         <div className="table-actions">
-                                            <Link href={`/admin/areas/${area.id}/edit`} className="btn-edit">
-                                                Edit
-                                            </Link>
-                                            <button
-                                                onClick={() => handleIndex(area)}
-                                                className="btn-index"
-                                                disabled={indexingStatus[area.id] === 'loading'}
-                                                title="Submit to Google Indexing"
-                                            >
-                                                {indexingStatus[area.id] === 'loading' ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : indexingStatus[area.id] === 'success' ? <CheckCircle2 size={14} /> : indexingStatus[area.id] === 'error' ? <XCircle size={14} /> : 'G'}
-                                            </button>
-                                            <button onClick={() => handleDelete(area.id)} className="btn-delete">
-                                                Delete
-                                            </button>
+                                            {renderAreaActions(area)}
                                         </div>
                                     </td>
                                 </tr>

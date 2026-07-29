@@ -104,7 +104,8 @@
     padding: 20px;
     border-radius: 10px;
     max-width: 1000px;
-    margin: 0 auto;
+    /* top gap keeps the strip off the "Book Online" button above it */
+    margin: 28px auto 0;
 }
 
 @media (max-width: 768px) {
