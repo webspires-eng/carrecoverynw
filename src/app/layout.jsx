@@ -6,6 +6,7 @@ import { canonicalUrl, getCustomSchemaMarkup } from "@/lib/seoSettings";
 import { SettingsProvider } from "@/components/SettingsProvider";
 import FloatingActions from "@/components/FloatingActions";
 import DeferredAnalytics from "@/components/DeferredAnalytics";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import SiteHeader from "@/components/SiteHeader";
 
 // Rubik is a variable font: omitting `weight` serves ONE variable-axis file
@@ -119,6 +120,7 @@ export default async function RootLayout({ children }) {
           {children}
           <FloatingActions />
           <DeferredAnalytics />
+          <GoogleAnalytics />
         </SettingsProvider>
       </body>
     </html>
