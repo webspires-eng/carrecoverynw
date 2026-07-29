@@ -264,6 +264,48 @@
     cursor: not-allowed;
 }
 
+.btn-relink {
+    padding: 5px 10px;
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: var(--admin-radius);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.btn-relink:hover:not(:disabled) {
+    background: #8b5cf6;
+    color: var(--admin-white);
+    border-color: #8b5cf6;
+}
+
+.btn-relink:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Icon-only action button: square, label lives in title/aria-label */
+.icon-btn {
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    flex: 0 0 auto;
+    gap: 0;
+    justify-content: center;
+}
+
+/* Delete sits apart from the rest, hard right, so it is harder to mis-click. */
+.area-card-actions .btn-delete {
+    margin-left: auto;
+}
+
 /* Stats Cards */
 .stats-row {
     display: grid;
@@ -1108,14 +1150,9 @@
         gap: 8px;
     }
 
+    /* Icon-only buttons stay on one row on mobile — no need to stack. */
     .area-card-actions {
-        flex-direction: column;
-    }
-
-    .area-card-actions .btn-edit,
-    .area-card-actions .btn-delete {
-        width: 100%;
-        justify-content: center;
+        flex-wrap: wrap;
     }
 
     /* Hide table on mobile, show cards */

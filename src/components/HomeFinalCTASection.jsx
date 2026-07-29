@@ -73,7 +73,7 @@ export default function HomeFinalCTASection() {
                     </div>
                     <div className="proof-text">
                         <span className="rating">5.0</span>
-                        <span className="reviews">1207+ Google Reviews</span>
+                        <span className="reviews">1000+ Google Reviews</span>
                     </div>
                 </div>
 

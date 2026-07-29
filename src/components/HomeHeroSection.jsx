@@ -88,7 +88,7 @@ export default function HomeHeroSection({ location = "United Kingdom" }) {
                         <div className="reviews-wrapper">
                             <span style={{ color: '#ffb400', fontSize: '18px' }}>★★★★★</span>
                             <span style={{ fontWeight: '700', color: 'var(--primary-blue)' }}>5.0</span>
-                            <span style={{ color: '#666', fontSize: '14px' }}>| 1207 Google Reviews</span>
+                            <span style={{ color: '#666', fontSize: '14px' }}>| 1000+ Google Reviews</span>
                         </div>
                     </div>
                 </div>

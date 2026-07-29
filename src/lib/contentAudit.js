@@ -166,7 +166,7 @@ Trust signals to weave in naturally (not as bullet lists):
 - transparent pricing — no hidden fees
 - no work starts until you approve the cost
 - damage-free loading guaranteed
-- 5.0 rated on Google across 1207 verified reviews
+- 5.0 rated on Google across 1000+ verified reviews
 - local knowledge advantage
 - direct dispatch — no third-party relay
 
@@ -303,7 +303,7 @@ export function buildServices({ area, county, majorRoads, nearbyAreas }) {
                 `We cover everything from cars and vans to motorcycles, electric vehicles, hybrids, SUVs, 4x4s, and low clearance vehicles. ` +
                 `Common breakdown call-outs in ${area} include flat batteries, engine failure, clutch failure, overheating, and seized brakes. ` +
                 `If you are stranded on ${primaryRoad} or any of ${roadList}, our recovery vehicle is the closest unit dispatched — not a national hotline that subcontracts the job. ` +
-                `Every recovery operator is fully insured, trained, and DBS-checked, and we hold a 5.0 rating on Google from 1207 verified reviews. ` +
+                `Every recovery operator is fully insured, trained, and DBS-checked, and we hold a 5.0 rating on Google from 1000+ verified reviews. ` +
                 `Send your location pin via WhatsApp and we dispatch immediately — no work starts until you approve the price. ` +
                 `Call now for emergency tow truck available now in ${area}, ${countyLabel}.`,
         },
@@ -337,7 +337,7 @@ export function buildServices({ area, county, majorRoads, nearbyAreas }) {
                 `Each recovery truck carries a safety beacon, traffic cones, loading ramp, tow strap, and wheel skates so we can recover almost any vehicle condition — including write-offs, side-impact damage, and rolled vehicles. ` +
                 `We support insurance claims with photo evidence, scene clearance reports, and direct garage referral if your insurer has not nominated a repairer. ` +
                 `Whether the recovery is police-instructed or self-arranged, our driver in ${area} liaises with you, the traffic officer, and your insurer to keep the process simple. ` +
-                `Trained operators, transparent pricing, and a 5.0 rating on Google from 1207 verified reviews mean you are dealing with a professional local recovery operator. ` +
+                `Trained operators, transparent pricing, and a 5.0 rating on Google from 1000+ verified reviews mean you are dealing with a professional local recovery operator. ` +
                 `Send your location pin now for fastest accident recovery in ${area}, ${countyLabel}.`,
         },
         {
@@ -415,7 +415,7 @@ export function buildFaqs({ area, county, majorRoads }) {
                 `A local recovery operator in ${area} reaches you faster than national breakdown cover providers because we dispatch our own driver instead of subcontracting the job. ` +
                 `National providers route your call to a central dispatch, then re-quote it to whichever third-party operator covers ${countyLabel} — adding 30 to 90 minutes to your wait. ` +
                 `We know the side streets, the traffic patterns on ${roadList}, and the known breakdown hotspots in and around ${area}. ` +
-                `Local knowledge, transparent pricing, and a 5.0 Google rating from 1207 verified reviews are why drivers in ${area} call us first.`,
+                `Local knowledge, transparent pricing, and a 5.0 Google rating from 1000+ verified reviews are why drivers in ${area} call us first.`,
         },
         {
             question: `Can you recover a car with locked wheels or seized brakes in ${area}?`,
@@ -441,7 +441,7 @@ export function buildBottomContent({ area, county, majorRoads, nearbyAreas }) {
 <p>Our coverage from ${area} includes emergency breakdown recovery, accident recovery, flatbed recovery, jump start service, wrong fuel recovery, motorway clearance on ${roadList}, non-runner collection, winch recovery for ditched vehicles, and pre-booked vehicle transport across ${countyLabel} or nationwide. We recover cars, vans, motorcycles, electric vehicles, hybrids, SUVs, 4x4s, and low clearance vehicles using the correct method for each — flatbed tow with hydraulic loading and soft-strap tie-down for EVs and damaged cars, wheel-lift recovery for short transfers, and wheel skates for vehicles with seized brakes or locked wheels.</p>
 
 <h3>Why Drivers in ${area} Choose Us Over National Breakdown Cover</h3>
-<p>National recovery companies route your call to a central dispatch desk, then re-quote the job out to whichever local operator covers ${area} that day. That handover usually costs you 30 to 90 minutes. As an independent recovery operator based near ${area}, we own the recovery trucks, employ the drivers, and answer the phone ourselves. The result is a faster response than national breakdown cover, transparent pricing with no hidden fees, and a recovery operator who knows the side streets, the rush-hour traffic on ${primaryRoad}, the known breakdown hotspots, and the local garages in ${countyLabel}. We hold a 5.0 rating on Google from 1207 verified reviews, every operator is fully insured and trained, and every recovery comes with a damage-free guarantee in writing.</p>
+<p>National recovery companies route your call to a central dispatch desk, then re-quote the job out to whichever local operator covers ${area} that day. That handover usually costs you 30 to 90 minutes. As an independent recovery operator based near ${area}, we own the recovery trucks, employ the drivers, and answer the phone ourselves. The result is a faster response than national breakdown cover, transparent pricing with no hidden fees, and a recovery operator who knows the side streets, the rush-hour traffic on ${primaryRoad}, the known breakdown hotspots, and the local garages in ${countyLabel}. We hold a 5.0 rating on Google from 1000+ verified reviews, every operator is fully insured and trained, and every recovery comes with a damage-free guarantee in writing.</p>
 
 <h3>Where We Cover Around ${area}</h3>
 <p>We service ${area} town and the nearby towns of ${towns}, plus every postcode in between. Our recovery vehicles routinely cover ${roadList} and the surrounding A-roads, with priority dispatch for any breakdown on a live motorway lane or hard shoulder. If you have moved to ${area} from elsewhere and your existing breakdown cover is slow to respond, you can call us directly for a one-off recovery without joining a membership.</p>
