@@ -101,6 +101,26 @@ export async function runPublishPipeline(slug, opts = {}) {
         reverseLink_UpdateExistingPages(slug, area.name, area.latitude, area.longitude)
     )) || { updatedPages: [], skippedPages: [], errors: [] };
 
+    // STEP 6b: recompute THIS area's own inbound set.
+    // reverseLink_UpdateExistingPages only maintains the *other* areas' records —
+    // it skips `newSlug` itself, so without this the area's internal_links_from
+    // stays stale and the admin badge under-reports inbound links after a
+    // single-area rebuild. Definition matches /api/admin/rebuild-all-links:
+    // inbound = every active area whose nearby_areas_slugs contains this slug.
+    await safe('STEP 6b recompute internal_links_from', async () => {
+        const linkers = await db
+            .collection('areas')
+            .find(
+                { is_active: true, nearby_areas_slugs: slug },
+                { projection: { _id: 0, slug: 1 } }
+            )
+            .toArray();
+        const inbound = linkers.map((d) => d.slug).filter((s) => s && s !== slug);
+        await db
+            .collection('areas')
+            .updateOne({ slug }, { $set: { internal_links_from: inbound } });
+    });
+
     const toRevalidate = [slug, ...reverse.updatedPages];
     await safe('STEP 7 triggerISRRevalidation', () => triggerISRRevalidation(toRevalidate));
 
