@@ -36,13 +36,26 @@ X-API-Key: <key>
 Authorization: Bearer <key>
 ```
 
-Both endpoints require it. Missing or wrong key returns `401` with
-`{"message": "Missing API key."}` / `{"message": "Invalid API key."}`.
+Both endpoints require it. Missing, wrong, and revoked keys all return `401`
+with `{"message": "Missing API key."}` / `{"message": "Invalid API key."}`.
 
-> **Test credential:** ask the site owner for the key — it is set as the
-> `MOBILE_API_KEY` environment variable on the server and is deliberately not
-> committed to the repo. It is a single shared secret, so treat it as a secret:
-> keep it out of source control and out of client-side logs.
+> **Test credential:** ask the site owner. Keys are issued from the admin
+> dashboard (**Settings → Mobile API Keys**), one per app or device, and are
+> shown only once at creation — they're stored hashed, so nobody can look an
+> existing key up afterwards. If you lose it, ask for a new one; that's normal
+> and cheap.
+
+Two things that follow from keys being per-device and revocable:
+
+- **A key can be revoked at any time**, and takes effect on the next request
+  with no deploy. Treat a sudden `401` as "this key is dead" — surface it as
+  *"This device is no longer authorised — contact the office"* rather than
+  retrying in a loop.
+- **Keys can be read-only.** A read-only key can `GET /bookings` but gets `403`
+  on `POST`. If your build only reads, ask for a read-only key. Otherwise ask
+  for read & write.
+
+Keep the key out of source control and out of any client-side logging.
 
 ---
 
@@ -227,11 +240,30 @@ Always this shape, with a message written for a human — safe to show as-is:
 | Status | When |
 | --- | --- |
 | `400` | Missing a required field, unparseable `scheduled_at`, negative/non-numeric `total`, or malformed JSON. |
-| `401` | Missing or invalid API key. |
+| `401` | Missing, invalid, or revoked API key. Don't retry — the key needs replacing. |
+| `403` | The key is read-only and tried to create a booking. Don't retry. |
+| `429` | Rate limit exceeded. Honour the `Retry-After` header (seconds) and back off. |
 | `500` | Server-side failure. Message is generic; retry is reasonable. |
-| `503` | The server is missing its API key configuration. Not retryable — tell the site owner. |
+| `503` | The server couldn't verify the key (database trouble). Retry with backoff. |
 
 There is **no `409`/slot-conflict response** — see the caveats.
+
+### Rate limiting
+
+Roughly **100 requests per minute per key**. Over that you get `429` with a
+`Retry-After` header in seconds:
+
+```
+HTTP/1.1 429 Too Many Requests
+Retry-After: 43
+```
+```json
+{ "message": "Too many requests. Please wait a moment and try again." }
+```
+
+Normal app use won't come close. You'll only hit it if you poll aggressively or
+loop on an error — so back off on `429` rather than retrying immediately, and
+don't refetch the whole list on a timer faster than once a minute.
 
 ---
 
@@ -326,16 +358,24 @@ first, and delete it from the admin dashboard afterwards.
 
 ## Server-side setup checklist
 
-For whoever deploys this:
+For whoever runs the website:
 
-1. Generate a key: `openssl rand -hex 32`
-2. Add it as `MOBILE_API_KEY` in the Vercel project's environment variables
-   (Production, and Preview if the app tests against previews).
-3. Redeploy — env vars are read at runtime, but the deploy picks up the new var.
-4. Verify with the `curl` above. Until the var is set, both endpoints return
-   `503`; the API never falls open when the key is missing.
+1. Sign in to the admin dashboard → **Settings** → **Mobile API Keys**.
+2. **Generate key**, label it after the device or app it's for
+   ("Atif's iPhone"), and tick **Read-only** if that client should not be able
+   to create bookings.
+3. Copy the key from the one-time reveal and send it to the app developer over
+   something private. It cannot be retrieved later — if it's lost, revoke and
+   generate another.
+4. Verify with the `curl` above.
 
-Implementation lives in `src/app/api/mobile/bookings/route.js`, with the key
-check in `src/lib/apiAuth.js`. It reads and writes the same `bookings`
-collection as the website form and the admin dashboard — it is a translation
-layer, not a separate store.
+No deploy is needed to issue or revoke a key, and revoking takes effect on the
+next request. The **Last used** column shows which keys are still in play, so
+anything reading "Never" long after it was issued can be revoked safely.
+
+Implementation: `src/app/api/mobile/bookings/route.js` (endpoints),
+`src/lib/apiAuth.js` (key check), `src/lib/apiKeys.js` (storage — keys are held
+as SHA-256 hashes, never plaintext), `src/lib/rateLimit.js` (throttling), and
+`src/components/admin/ApiKeysCard.jsx` (the dashboard UI). Bookings read and
+write the same `bookings` collection as the website form and the admin
+dashboard — this is a translation layer, not a separate store.
