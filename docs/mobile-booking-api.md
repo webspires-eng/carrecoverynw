@@ -275,6 +275,180 @@ don't refetch the whole list on a timer faster than once a minute.
 
 ---
 
+## 3. `GET /vehicle/{registration}` — DVLA lookup
+
+```
+GET /api/mobile/vehicle/MA19XKR
+```
+
+The plate is normalised server-side — spaces and punctuation stripped,
+uppercased — so `ma19 xkr`, `MA19XKR` and `MA19%20XKR` all resolve to the same
+lookup. Send it however the user typed it.
+
+### Response — `200`
+
+```json
+{
+  "registration_number": "MA19XKR",
+  "make": "VAUXHALL",
+  "model": "ASTRA",
+  "colour": "BLUE",
+  "fuel_type": "PETROL",
+  "year_of_manufacture": 2019,
+  "engine_capacity": 1399,
+  "wheelplan": "2 AXLE RIGID BODY",
+  "tax_status": "Taxed",
+  "tax_due_date": "2026-11-01",
+  "mot_status": "Valid",
+  "mot_expiry_date": "2026-09-14"
+}
+```
+
+Every field except `registration_number` can be `null` — DVLA does not hold
+everything for every vehicle. Render around missing values rather than assuming
+presence.
+
+**About `model`:** you were right that DVLA's Vehicle Enquiry Service doesn't
+return it. This site already had a second source wired up — the DVSA MOT History
+API — and the endpoint uses it to fill the gap when DVLA leaves `model` empty.
+That enrichment only runs if the MOT credentials are configured on the server
+(`MOT_TOKEN_URL`, `MOT_CLIENT_ID`, `MOT_CLIENT_SECRET`, `MOT_API_KEY`). **Ask the
+site owner to confirm they're set** — if they aren't, everything else still works
+and `model` simply comes back `null`. Never fail a booking over it.
+
+### Errors
+
+| Status | When |
+| --- | --- |
+| `400` | Empty or implausible registration (illegal characters, or not 2–8 alphanumerics). |
+| `404` | `{"message": "No vehicle found for that registration."}` |
+| `502` | DVLA failed, timed out, or isn't configured. Let staff type the details by hand. |
+
+Results are **cached for 24 hours** per plate. Not longer, because `tax_status`
+and `mot_status` genuinely change — but it does mean repeat lookups of a regular
+customer's vehicle are free and instant.
+
+---
+
+## 4. `GET /places/autocomplete` — address suggestions
+
+```
+GET /api/mobile/places/autocomplete?q=M60%20junction&session=abc123
+```
+
+| Param | Required | Notes |
+| --- | --- | --- |
+| `q` | yes | Fewer than 3 characters returns `[]` without calling Google. |
+| `session` | no | Passed straight through as Google's `sessiontoken`. |
+
+Results are biased to the UK (`components=country:gb`).
+
+### Response — `200`
+
+```json
+{
+  "data": [
+    {
+      "place_id": "ChIJ...",
+      "description": "M60 Junction 18, Manchester, UK",
+      "main_text": "M60 Junction 18",
+      "secondary_text": "Manchester, UK"
+    }
+  ]
+}
+```
+
+`secondary_text` can be `null` on some results; `main_text` falls back to the
+full description if Google omits the structured form.
+
+**Please do send `session`.** Generate one token per address-entry session
+(a UUID is fine), send it on every keystroke request, then send the *same* token
+to `/places/details` when the user taps a result. That's what makes a series of
+keystrokes bill as one lookup instead of eight.
+
+Errors: `502` if Google is unreachable. An empty result set is a normal `200`
+with `"data": []`, not an error.
+
+---
+
+## 5. `GET /places/details` — resolve a suggestion
+
+```
+GET /api/mobile/places/details?place_id=ChIJ...&session=abc123
+```
+
+### Response — `200`
+
+```json
+{
+  "place_id": "ChIJ...",
+  "address": "M60 Junction 18, Manchester M27 8UP, UK",
+  "lat": 53.5123,
+  "lng": -2.3456,
+  "postcode": "M27 8UP"
+}
+```
+
+`postcode` is `null` when Google doesn't return one (common for road junctions
+and other non-addressable points). `lat`/`lng` are what let you show the job on a
+map and hand off to directions.
+
+| Status | When |
+| --- | --- |
+| `400` | No `place_id`. |
+| `404` | Google doesn't recognise that `place_id` — it may have expired. Search again. |
+| `502` | Google unreachable. |
+
+**Call this exactly once per suggestion tapped**, with the same `session` token
+you used for autocomplete. This response is deliberately not cached: the details
+call is what closes a Google billing session, so short-circuiting it would make
+Google bill every keystroke separately — caching here would cost *more*, not
+less.
+
+---
+
+## 6. `GET /distance` — distance and drive time
+
+```
+GET /api/mobile/distance?from_lat=53.5123&from_lng=-2.3456&to_lat=53.5769&to_lng=-2.4282
+```
+
+Free-text addresses also work, though coordinates are preferred since you
+already have them from `/places/details`:
+
+```
+GET /api/mobile/distance?from=Manchester&to=Bolton
+```
+
+Send either all four coordinates or both text fields — a partial set of
+coordinates is a `400`, so you can't accidentally route from half a point.
+
+### Response — `200`
+
+```json
+{
+  "distance_metres": 18234,
+  "distance_text": "18.2 miles",
+  "duration_seconds": 1500,
+  "duration_text": "25 mins"
+}
+```
+
+Imperial units, since this is a UK road business. `distance_text` is Google's
+own formatting with `mi` spelled out to `miles` (and `mile` at exactly 1);
+very short distances come back in feet.
+
+| Status | When |
+| --- | --- |
+| `400` | Missing or invalid coordinates, or a partial coordinate set. |
+| `404` | `{"message": "No driving route found between those two places."}` |
+| `502` | Google unreachable. |
+
+Cached for an hour, keyed on the coordinate pair rounded to ~11 m, so repeated
+quoting of the same job doesn't re-bill.
+
+---
+
 ## Things that differ from the brief
 
 Three that will affect your implementation.
@@ -381,9 +555,30 @@ No deploy is needed to issue or revoke a key, and revoking takes effect on the
 next request. The **Last used** column shows which keys are still in play, so
 anything reading "Never" long after it was issued can be revoked safely.
 
-Implementation: `src/app/api/mobile/bookings/route.js` (endpoints),
-`src/lib/apiAuth.js` (key check), `src/lib/apiKeys.js` (storage — keys are held
-as SHA-256 hashes, never plaintext), `src/lib/rateLimit.js` (throttling), and
-`src/components/admin/ApiKeysCard.jsx` (the dashboard UI). Bookings read and
-write the same `bookings` collection as the website form and the admin
-dashboard — this is a translation layer, not a separate store.
+### Upstream keys the lookups need
+
+These already exist on the server for the website's own features; the lookup
+endpoints reuse them. Nothing is exposed to the app.
+
+| Variable | Powers | If missing |
+| --- | --- | --- |
+| `DVLA_API_KEY` | `/vehicle/{reg}` | `502`, staff type details manually |
+| `GOOGLE_MAPS_API_KEY` | `/places/*`, `/distance` | `502`, staff type addresses manually |
+| `MOT_TOKEN_URL`, `MOT_CLIENT_ID`, `MOT_CLIENT_SECRET`, `MOT_API_KEY` | the `model` field only | `model` is `null`, everything else works |
+
+The MOT set is the one worth checking — it's optional, free to register for at
+<https://documentation.history.mot.api.gov.uk/>, and it's the only reason
+`model` is ever populated.
+
+### Files
+
+`src/app/api/mobile/` holds the six endpoints. Supporting libraries:
+`mobileApi.js` (shared auth, CORS and error shape), `apiAuth.js` (key check),
+`apiKeys.js` (storage — SHA-256 hashes, never plaintext), `rateLimit.js`
+(throttling), `vehicleLookup.js` (DVLA + MOT), `googleMaps.js` (Places and
+Distance Matrix), `lookupCache.js` (the Mongo-backed TTL cache), and
+`src/components/admin/ApiKeysCard.jsx` (the dashboard UI).
+
+Bookings read and write the same `bookings` collection as the website form and
+the admin dashboard — a translation layer, not a separate store. The lookups
+store nothing except cached upstream responses.

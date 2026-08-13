@@ -16,7 +16,18 @@ export async function GET(request, { params }) {
     if (denied) return denied;
 
     const { registration } = await params;
-    const plate = normalizeRegistration(decodeURIComponent(registration || ''));
+
+    // Next already decodes route params, but a stray "%" in the URL makes a
+    // second decodeURIComponent throw — so try it, and fall back to the raw
+    // value rather than 500-ing on a typo.
+    let raw = registration || '';
+    try {
+        raw = decodeURIComponent(raw);
+    } catch {
+        /* keep the undecoded value; normalising strips the junk anyway */
+    }
+
+    const plate = normalizeRegistration(raw);
 
     if (!plate) {
         return fail('Enter a registration number.', 400);
