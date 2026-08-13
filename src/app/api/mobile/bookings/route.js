@@ -14,6 +14,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
 import { verifyApiKey } from '@/lib/apiAuth';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';   // never cache customer data
 
@@ -44,13 +45,46 @@ const CORS_HEADERS = {
     'Access-Control-Max-Age': '86400',
 };
 
-function json(body, status = 200) {
-    return NextResponse.json(body, { status, headers: CORS_HEADERS });
+function json(body, status = 200, extraHeaders = {}) {
+    return NextResponse.json(body, { status, headers: { ...CORS_HEADERS, ...extraHeaders } });
 }
 
 /** Human-readable error, in the shape the app displays to the user. */
 function fail(message, status) {
     return json({ message }, status);
+}
+
+/**
+ * Authenticate the key, throttle it, and check it carries `scope`.
+ *
+ * @returns {Promise<Response|null>} A response to return as-is, or null when
+ *          the request may proceed.
+ */
+async function guard(request, scope) {
+    const auth = await verifyApiKey(request);
+    if (!auth.ok) return fail(auth.message, auth.status);
+
+    // Throttle per key, so one leaked key can't quietly scrape every record.
+    // Legacy env-var auth has no key id — give it its own bucket.
+    const limit = checkRateLimit(auth.keyId ? auth.keyId.toString() : 'legacy-env-key');
+    if (!limit.ok) {
+        return json(
+            { message: 'Too many requests. Please wait a moment and try again.' },
+            429,
+            { 'Retry-After': String(limit.retryAfter) }
+        );
+    }
+
+    if (!auth.scopes.includes(scope)) {
+        return fail(
+            scope === 'write'
+                ? 'This API key is read-only and cannot create bookings.'
+                : 'This API key does not have permission to read bookings.',
+            403
+        );
+    }
+
+    return null;
 }
 
 function toIso(value) {
@@ -123,8 +157,8 @@ export async function OPTIONS() {
 
 // GET — list bookings, newest first.
 export async function GET(request) {
-    const auth = verifyApiKey(request);
-    if (!auth.ok) return fail(auth.message, auth.status);
+    const denied = await guard(request, 'read');
+    if (denied) return denied;
 
     try {
         const { searchParams } = new URL(request.url);
@@ -152,8 +186,8 @@ export async function GET(request) {
 
 // POST — create a booking.
 export async function POST(request) {
-    const auth = verifyApiKey(request);
-    if (!auth.ok) return fail(auth.message, auth.status);
+    const denied = await guard(request, 'write');
+    if (denied) return denied;
 
     let body;
     try {

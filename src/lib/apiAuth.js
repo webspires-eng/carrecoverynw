@@ -1,9 +1,10 @@
 import { timingSafeEqual } from 'node:crypto';
+import { findActiveKey, touchLastUsed } from '@/lib/apiKeys';
 
-// Shared secret for the mobile app's booking API.
-// Set MOBILE_API_KEY in the Vercel project env vars; without it the API
-// refuses every request rather than falling open.
-const ENV_KEY = 'MOBILE_API_KEY';
+// Legacy single-secret fallback, kept only for the migration window.
+// Once a key issued from the admin dashboard is live in the mobile app,
+// delete MOBILE_API_KEY from the environment and this branch goes dead.
+const LEGACY_ENV_KEY = 'MOBILE_API_KEY';
 
 function safeEquals(a, b) {
     const left = Buffer.from(String(a));
@@ -14,40 +15,70 @@ function safeEquals(a, b) {
     return timingSafeEqual(left, right);
 }
 
+/** Pull the key out of either accepted header. */
+function extractKey(request) {
+    const headerKey = request.headers.get('x-api-key');
+    if (headerKey) return headerKey.trim();
+
+    const bearer = request.headers.get('authorization');
+    if (bearer?.toLowerCase().startsWith('bearer ')) {
+        return bearer.slice(7).trim();
+    }
+
+    return null;
+}
+
 /**
- * Verify the caller's API key.
+ * Verify the caller's API key against the `apiKeys` collection.
  *
  * Accepts either header, so the app can use whichever its HTTP client
  * makes easiest:
  *   X-API-Key: <key>
  *   Authorization: Bearer <key>
  *
- * @returns {{ ok: true } | { ok: false, status: number, message: string }}
+ * Unknown, revoked, and malformed keys all fail identically — the response
+ * must never reveal whether a key ever existed.
+ *
+ * @returns {Promise<{ ok: true, keyId: ObjectId|null, label: string, scopes: string[] }
+ *                 | { ok: false, status: number, message: string }>}
  */
-export function verifyApiKey(request) {
-    const expected = process.env[ENV_KEY];
-
-    if (!expected) {
-        // Misconfiguration, not a client error — never fall open.
-        console.error(`[apiAuth] ${ENV_KEY} is not set; rejecting request.`);
-        return { ok: false, status: 503, message: 'The API is not configured yet. Please contact support.' };
-    }
-
-    const headerKey = request.headers.get('x-api-key');
-    const bearer = request.headers.get('authorization');
-    const bearerKey = bearer?.toLowerCase().startsWith('bearer ')
-        ? bearer.slice(7).trim()
-        : null;
-
-    const supplied = headerKey || bearerKey;
+export async function verifyApiKey(request) {
+    const supplied = extractKey(request);
 
     if (!supplied) {
         return { ok: false, status: 401, message: 'Missing API key.' };
     }
 
-    if (!safeEquals(supplied, expected)) {
-        return { ok: false, status: 401, message: 'Invalid API key.' };
+    let record;
+    try {
+        record = await findActiveKey(supplied);
+    } catch (error) {
+        // Database trouble is our problem, not the caller's — don't report it
+        // as an auth failure, and never fall open.
+        console.error('[apiAuth] Key lookup failed:', error.message);
+        return { ok: false, status: 503, message: 'Could not verify the API key right now. Please try again.' };
     }
 
-    return { ok: true };
+    if (record) {
+        touchLastUsed(record._id);   // fire-and-forget
+        return {
+            ok: true,
+            keyId: record._id,
+            label: record.label,
+            scopes: record.scopes?.length ? record.scopes : ['read', 'write'],
+        };
+    }
+
+    // --- migration fallback -------------------------------------------------
+    const legacy = process.env[LEGACY_ENV_KEY];
+    if (legacy && safeEquals(supplied, legacy)) {
+        console.warn(
+            `[apiAuth] Request authenticated with the legacy ${LEGACY_ENV_KEY} env var. ` +
+            'Issue a key from Admin → Settings → Mobile API keys, then remove this variable.'
+        );
+        return { ok: true, keyId: null, label: 'legacy-env-key', scopes: ['read', 'write'] };
+    }
+    // ------------------------------------------------------------------------
+
+    return { ok: false, status: 401, message: 'Invalid API key.' };
 }

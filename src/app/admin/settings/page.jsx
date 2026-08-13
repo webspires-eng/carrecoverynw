@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import ApiKeysCard from '@/components/admin/ApiKeysCard';
 import '../../../styles/admin.css';
 
 export default function SettingsPage() {
@@ -290,6 +291,11 @@ export default function SettingsPage() {
                         </button>
                     </div>
                 </form>
+
+                {/* Kept outside the settings form — it submits on its own */}
+                <div className="settings-grid" style={{ marginTop: '24px' }}>
+                    <ApiKeysCard />
+                </div>
             </div>
         </div>
     );
