@@ -10,11 +10,9 @@
 // dashboard use; it only renames fields into the shape the app expects.
 // The internal field names (name/phone/serviceType/price/message) are kept
 // alongside the app-facing ones so nothing is lost in translation.
-import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
-import { verifyApiKey } from '@/lib/apiAuth';
-import { checkRateLimit } from '@/lib/rateLimit';
+import { guard, fail, json, preflight } from '@/lib/mobileApi';
 
 export const dynamic = 'force-dynamic';   // never cache customer data
 
@@ -35,59 +33,6 @@ const STATUS_MAP = {
     cancelled: 'cancelled',
     lost: 'cancelled',         // enquiry that never converted
 };
-
-// Native apps don't enforce CORS, but a webview/Expo-web build does.
-// Safe to allow broadly: auth is a header key, not a cookie.
-const CORS_HEADERS = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, X-API-Key, Authorization',
-    // Without this a browser/webview client cannot read Retry-After on a 429.
-    'Access-Control-Expose-Headers': 'Retry-After',
-    'Access-Control-Max-Age': '86400',
-};
-
-function json(body, status = 200, extraHeaders = {}) {
-    return NextResponse.json(body, { status, headers: { ...CORS_HEADERS, ...extraHeaders } });
-}
-
-/** Human-readable error, in the shape the app displays to the user. */
-function fail(message, status) {
-    return json({ message }, status);
-}
-
-/**
- * Authenticate the key, throttle it, and check it carries `scope`.
- *
- * @returns {Promise<Response|null>} A response to return as-is, or null when
- *          the request may proceed.
- */
-async function guard(request, scope) {
-    const auth = await verifyApiKey(request);
-    if (!auth.ok) return fail(auth.message, auth.status);
-
-    // Throttle per key, so one leaked key can't quietly scrape every record.
-    // Legacy env-var auth has no key id — give it its own bucket.
-    const limit = checkRateLimit(auth.keyId ? auth.keyId.toString() : 'legacy-env-key');
-    if (!limit.ok) {
-        return json(
-            { message: 'Too many requests. Please wait a moment and try again.' },
-            429,
-            { 'Retry-After': String(limit.retryAfter) }
-        );
-    }
-
-    if (!auth.scopes.includes(scope)) {
-        return fail(
-            scope === 'write'
-                ? 'This API key is read-only and cannot create bookings.'
-                : 'This API key does not have permission to read bookings.',
-            403
-        );
-    }
-
-    return null;
-}
 
 function toIso(value) {
     if (!value) return null;
@@ -154,7 +99,7 @@ function serialize(row) {
 }
 
 export async function OPTIONS() {
-    return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+    return preflight();
 }
 
 // GET — list bookings, newest first.

@@ -1,6 +1,7 @@
-# Booking API — for the mobile app
+# Mobile API — bookings, vehicle and address lookups
 
-Two endpoints, as requested: list bookings and create a booking.
+Six endpoints: read and create bookings, plus four read-only proxies over DVLA
+and Google so their keys stay on the server.
 
 Everything below reflects what the website actually stores. Where the original
 brief's field names didn't exist on this site, this document gives you the real
@@ -15,12 +16,19 @@ section, there are three that will affect your code.
 https://www.cartowingnearme.co.uk/api/mobile
 ```
 
-So the two endpoints are:
+So the endpoints are:
 
-| Method | URL |
-| --- | --- |
-| `GET` | `https://www.cartowingnearme.co.uk/api/mobile/bookings` |
-| `POST` | `https://www.cartowingnearme.co.uk/api/mobile/bookings` |
+| Method | URL | Needs |
+| --- | --- | --- |
+| `GET` | `/api/mobile/bookings` | read |
+| `POST` | `/api/mobile/bookings` | write |
+| `GET` | `/api/mobile/vehicle/{registration}` | read |
+| `GET` | `/api/mobile/places/autocomplete` | read |
+| `GET` | `/api/mobile/places/details` | read |
+| `GET` | `/api/mobile/distance` | read |
+
+All four lookups are read-only — a read-only key can call every one of them.
+They never create or modify anything.
 
 HTTPS only. JSON in, JSON out. Send `Content-Type: application/json` on POST.
 
