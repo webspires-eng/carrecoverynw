@@ -77,7 +77,11 @@ export default function ApiKeysCard() {
         setLoading(false);
     }, []);
 
-    useEffect(() => { fetchKeys(); }, [fetchKeys]);
+    // Load on mount. Wrapped in an async IIFE so no state update sits on the
+    // effect's synchronous path — they all run after the fetch resolves.
+    useEffect(() => {
+        (async () => { await fetchKeys(); })();
+    }, [fetchKeys]);
 
     const handleGenerate = async (e) => {
         e.preventDefault();
