@@ -10,8 +10,10 @@
 // dashboard use; it only renames fields into the shape the app expects.
 // The internal field names (name/phone/serviceType/price/message) are kept
 // alongside the app-facing ones so nothing is lost in translation.
+import { after } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
+import { sendBookingPush } from '@/lib/push';
 import { guard, fail, json, preflight } from '@/lib/mobileApi';
 import { serializeBooking, toNumber } from '@/lib/bookingSerializer';
 
@@ -153,6 +155,12 @@ export async function POST(request) {
         }).catch(err => {
             console.error('[Mobile API] Email notification failed:', err.message);
         });
+
+        // And the same push the website form sends, so a booking taken in the
+        // app still reaches the phones that aren't looking at it. Runs after
+        // the response, so the app never waits on it.
+        const bookingId = result.insertedId.toString();
+        after(() => sendBookingPush({ id: bookingId, name, pickupLocation, serviceType }));
 
         // Return the created booking, including its id, so the app can show
         // it immediately and recognise it on the next sync.

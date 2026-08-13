@@ -655,8 +655,60 @@ curl -s -X POST \
   "https://www.cartowingnearme.co.uk/api/mobile/bookings" | jq
 ```
 
-Note that a test POST creates a **real booking** and emails the office. Tell them
-first, and delete it from the admin dashboard afterwards.
+Note that a test POST creates a **real booking**, emails the office and pushes
+to every registered phone. Tell them first, and delete it from the admin
+dashboard afterwards.
+
+---
+
+## Push notifications on new bookings
+
+The website pushes to the office phones the moment a booking is created — from
+the website form, the admin dashboard, and the app's own `POST /bookings`
+alike. Nothing polls; the app is told.
+
+**Where the tokens come from.** The app registers each phone in Supabase
+(`device_tokens`). The website reads that table with the project's anon key and
+hands the tokens straight to Expo — one request, up to 100 tokens. Rows with
+`enabled = false` are skipped.
+
+**What arrives:**
+
+```json
+{
+  "title": "New booking — Car Recovery",
+  "body": "James Whitfield · M60 Junction 18, Manchester",
+  "sound": "default",
+  "channelId": "leads",
+  "priority": "high",
+  "data": { "bookingId": "6710c3f2a1b4c98e7d2f0a11" }
+}
+```
+
+Two things the app can rely on:
+
+- **`data.bookingId`** is the same `id` that `GET /bookings` returns, so a tap
+  can open straight to that booking.
+- **`channelId` is `leads`** on every message. The app must create that
+  Android channel or the notification lands silent and unranked.
+
+Service in the title, customer and pickup location in the body — nothing else.
+No phone number, no email, no notes: these payloads pass through Apple's and
+Google's infrastructure and show on locked screens.
+
+**Dead tokens.** When Expo answers `DeviceNotRegistered` — app uninstalled, or
+the phone was reset and reissued — the website sets `enabled = false` on that
+row itself. The app doesn't need to clean up after itself, but it should
+re-register on every launch, since the row it wrote may since have been muted.
+
+**Failures are silent by design.** The push runs after the booking response has
+already been sent, and every error is logged and swallowed. A booking is never
+lost, delayed, or failed because an alert didn't send — so a missing
+notification is never a missing booking. `GET /bookings` remains the source of
+truth; the push is a nudge to look at it.
+
+Status changes don't push. Only creation does, deliberately — an alert people
+learn to ignore is worse than none.
 
 ---
 
@@ -700,6 +752,12 @@ The MOT set is the one worth checking — it's optional, free to register for at
 (throttling), `vehicleLookup.js` (DVLA + MOT), `googleMaps.js` (Places and
 Distance Matrix), `lookupCache.js` (the Mongo-backed TTL cache), and
 `src/components/admin/ApiKeysCard.jsx` (the dashboard UI).
+
+Push lives in `src/lib/push.js`, called from both booking-creation routes
+(`src/app/api/bookings/route.js` and `src/app/api/mobile/bookings/route.js`)
+alongside the existing email. It needs `SUPABASE_ANON_KEY` on the server — ask
+the app developer for the project's anon key. Without it the push is skipped
+with a logged warning and bookings carry on unaffected.
 
 Bookings read and write the same `bookings` collection as the website form and
 the admin dashboard — a translation layer, not a separate store. The lookups

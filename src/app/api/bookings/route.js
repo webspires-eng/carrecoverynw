@@ -1,6 +1,7 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
+import { sendBookingPush } from '@/lib/push';
 
 // GET all bookings
 export async function GET(request) {
@@ -124,6 +125,8 @@ export async function POST(request) {
             updated_at: new Date(),
         });
 
+        const bookingId = result.insertedId.toString();
+
         // Send email notification (fire-and-forget).
         // Skip for admin-entered manual bookings — the business already knows about them.
         if (!manual) {
@@ -132,9 +135,15 @@ export async function POST(request) {
             });
         }
 
+        // Push the lead to the office phones. Unlike the email this also runs
+        // for manual bookings — whoever took the call isn't necessarily whoever
+        // is holding the phone. after() runs it once the response has gone back,
+        // so the customer never waits on it, and never sees it fail.
+        after(() => sendBookingPush({ id: bookingId, name, pickupLocation, serviceType }));
+
         return NextResponse.json({
             success: true,
-            id: result.insertedId.toString(),
+            id: bookingId,
             message: 'Booking created successfully'
         });
     } catch (error) {
