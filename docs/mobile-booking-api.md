@@ -1,7 +1,7 @@
 # Mobile API — bookings, vehicle and address lookups
 
-Six endpoints: read and create bookings, plus four read-only proxies over DVLA
-and Google so their keys stay on the server.
+Seven endpoints: read, create and update bookings, plus four read-only
+proxies over DVLA and Google so their keys stay on the server.
 
 Everything below reflects what the website actually stores. Where the original
 brief's field names didn't exist on this site, this document gives you the real
@@ -22,6 +22,7 @@ So the endpoints are:
 | --- | --- | --- |
 | `GET` | `/api/mobile/bookings` | read |
 | `POST` | `/api/mobile/bookings` | write |
+| `PATCH` | `/api/mobile/bookings/{id}` | write |
 | `GET` | `/api/mobile/vehicle/{registration}` | read |
 | `GET` | `/api/mobile/places/autocomplete` | read |
 | `GET` | `/api/mobile/places/details` | read |
@@ -275,7 +276,128 @@ don't refetch the whole list on a timer faster than once a minute.
 
 ---
 
-## 3. `GET /vehicle/{registration}` — DVLA lookup
+## 3. `PATCH /bookings/{id}` — update a booking
+
+`PATCH`, not `PUT` — this is a partial update.
+
+```
+PATCH /api/mobile/bookings/6710c3f2a1b4c98e7d2f0a11
+```
+
+### Request
+
+**Send only what changed.** Anything absent is left exactly as it is.
+
+```json
+{
+  "status": "confirmed",
+  "dropoff_location": "Kwik Fit, Bolton BL1 4RQ",
+  "total": 180.00
+}
+```
+
+Every field from `POST /bookings` is editable, under any of the same spellings
+(`snake_case`, `camelCase`, or the website's own names): `status`,
+`customer_name`, `customer_phone`, `customer_email`, `service_name`,
+`pickup_location`, `dropoff_location`, `registration_number`, `vehicle_make`,
+`vehicle_model`, `notes`, `total`, `scheduled_at`.
+
+**`null` clears, omitted leaves alone** — these are different:
+
+```json
+{ "dropoff_location": null }   // clears the dropoff address
+{ }                            // changes nothing (returns 400)
+```
+
+An empty string is treated the same as `null`, since that's what a cleared text
+box sends. A request with no recognised fields returns `400` rather than
+silently doing nothing.
+
+### Status mapping, in reverse
+
+The four app statuses map back to `new` / `confirmed` / `completed` /
+`cancelled` — **except** when the stored status is already a more specific form
+of what you're sending, in which case it's left alone:
+
+| Stored | You send | Result | Why |
+| --- | --- | --- | --- |
+| `dispatched` | `confirmed` | stays `dispatched` | a driver is already out; you're not un-dispatching them |
+| `lost` | `cancelled` | stays `lost` | already cancelled, more specifically |
+| `new` | `confirmed` | `confirmed` | a real transition |
+| `dispatched` | `completed` | `completed` | a real transition |
+
+`canceled`, `done` and `approved` are accepted as aliases. You can also send the
+website's own values (`new`, `dispatched`, `lost`) directly if you ever want to
+set them exactly — those are applied verbatim.
+
+### Response — `200`
+
+The **full updated booking**, identical in shape to a row from `GET /bookings`,
+so you can write it straight into your local store:
+
+```json
+{
+  "id": "6710c3f2a1b4c98e7d2f0a11",
+  "service_name": "Car Recovery",
+  "status": "confirmed",
+  "website_status": "dispatched",
+  "customer_name": "James Whitfield",
+  "total": 180,
+  "currency": "GBP",
+  "updated_at": "2026-08-13T11:22:04.000Z"
+}
+```
+
+(abbreviated — every field listed under `GET /bookings` is present)
+
+### Conflicting edits — implemented
+
+Someone in the office can be editing the same booking on the dashboard. This is
+**opt-in**: send either an `If-Unmodified-Since` header or an `updated_at` field
+in the body, carrying the `updated_at` you last saw.
+
+```
+If-Unmodified-Since: Thu, 13 Aug 2026 11:20:00 GMT
+```
+```json
+{ "updated_at": "2026-08-13T11:20:00.000Z", "status": "confirmed" }
+```
+
+If the record changed after that moment you get `409`:
+
+```json
+{ "message": "Someone else updated this booking first. Reload it and try again." }
+```
+
+Reload the booking and let the user decide. **Send nothing and you get
+last-write-wins**, which is a valid choice for a small team — but prefer the
+`updated_at` form: it has millisecond precision, where the HTTP header format
+only carries whole seconds and so is very slightly coarser.
+
+The check is enforced at the write itself, not just read-then-write, so a change
+landing in the gap is still caught.
+
+### Errors
+
+| Status | When |
+| --- | --- |
+| `400` | Unknown status, unparseable date, non-numeric or negative total, malformed JSON, or no recognised fields. |
+| `401` | Missing, invalid or revoked key. |
+| `403` | Read-only key. |
+| `404` | No booking with that id (also returned for a malformed id). |
+| `409` | Someone else updated it first — only when you send a precondition. |
+| `429` | Rate limited. |
+
+### No delete
+
+There is no `DELETE`, deliberately, and we agree with your reasoning:
+`status: "cancelled"` covers the real case and keeps the record. A mis-tap on a
+phone is much easier than on a desktop, and a cancelled booking is recoverable
+where a deleted one isn't. Ask if you genuinely need hard deletes.
+
+---
+
+## 4. `GET /vehicle/{registration}` — DVLA lookup
 
 ```
 GET /api/mobile/vehicle/MA19XKR
@@ -330,7 +452,7 @@ customer's vehicle are free and instant.
 
 ---
 
-## 4. `GET /places/autocomplete` — address suggestions
+## 5. `GET /places/autocomplete` — address suggestions
 
 ```
 GET /api/mobile/places/autocomplete?q=M60%20junction&session=abc123
@@ -371,7 +493,7 @@ with `"data": []`, not an error.
 
 ---
 
-## 5. `GET /places/details` — resolve a suggestion
+## 6. `GET /places/details` — resolve a suggestion
 
 ```
 GET /api/mobile/places/details?place_id=ChIJ...&session=abc123
@@ -407,7 +529,7 @@ less.
 
 ---
 
-## 6. `GET /distance` — distance and drive time
+## 7. `GET /distance` — distance and drive time
 
 ```
 GET /api/mobile/distance?from_lat=53.5123&from_lng=-2.3456&to_lat=53.5769&to_lng=-2.4282

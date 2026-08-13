@@ -12,8 +12,8 @@ import { checkRateLimit } from '@/lib/rateLimit';
 // Safe to allow broadly: auth is a header key, not a cookie.
 export const CORS_HEADERS = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, X-API-Key, Authorization',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-API-Key, Authorization, If-Unmodified-Since',
     // Without this a browser/webview client cannot read Retry-After on a 429.
     'Access-Control-Expose-Headers': 'Retry-After',
     'Access-Control-Max-Age': '86400',
@@ -58,7 +58,7 @@ export async function guard(request, scope) {
     if (!auth.scopes.includes(scope)) {
         return fail(
             scope === 'write'
-                ? 'This API key is read-only and cannot create bookings.'
+                ? 'This API key is read-only and cannot create or change bookings.'
                 : 'This API key does not have permission to read data.',
             403
         );

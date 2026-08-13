@@ -13,38 +13,12 @@
 import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
 import { guard, fail, json, preflight } from '@/lib/mobileApi';
+import { serializeBooking, toNumber } from '@/lib/bookingSerializer';
 
 export const dynamic = 'force-dynamic';   // never cache customer data
 
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 500;
-
-// This site is a UK vehicle recovery business — all prices are pounds.
-const CURRENCY = 'GBP';
-
-// The website tracks a richer job lifecycle than the app understands, so
-// map onto the four statuses the app supports. The original value is still
-// returned as `website_status` for anything that wants the real state.
-const STATUS_MAP = {
-    new: 'pending',
-    confirmed: 'confirmed',
-    dispatched: 'confirmed',   // job accepted, driver on the way
-    completed: 'completed',
-    cancelled: 'cancelled',
-    lost: 'cancelled',         // enquiry that never converted
-};
-
-function toIso(value) {
-    if (!value) return null;
-    const date = value instanceof Date ? value : new Date(value);
-    return Number.isNaN(date.getTime()) ? null : date.toISOString();
-}
-
-function toNumber(value) {
-    if (value === null || value === undefined || value === '') return null;
-    const num = Number(value);
-    return Number.isNaN(num) ? null : num;
-}
 
 /** First non-empty value among the accepted spellings of a field. */
 function pick(body, ...keys) {
@@ -55,47 +29,6 @@ function pick(body, ...keys) {
         }
     }
     return null;
-}
-
-/**
- * Map a stored booking onto the app's payload.
- *
- * `scheduled_at` needs a note: this business is on-demand recovery, so most
- * bookings have no appointment time — the job is "now". Bookings created
- * through the app can carry a requested time (`scheduledAt`); everything
- * else falls back to when the booking was placed, so the field is always
- * present and always a real timestamp.
- */
-function serialize(row) {
-    return {
-        id: row._id.toString(),
-
-        service_name: row.serviceType || null,
-        scheduled_at: toIso(row.scheduledAt || row.created_at),
-        status: STATUS_MAP[row.status] || 'pending',
-        website_status: row.status || 'new',
-
-        customer_name: row.name || null,
-        customer_email: row.email || null,
-        customer_phone: row.phone || null,
-
-        total: toNumber(row.price),
-        currency: CURRENCY,
-        notes: row.message || null,
-
-        // Recovery-specific fields with no equivalent in the app's spec.
-        // Send them through anyway — the pickup location is the single most
-        // important field on a recovery job.
-        pickup_location: row.pickupLocation || null,
-        dropoff_location: row.dropoffLocation || null,
-        registration_number: row.registrationNumber || null,
-        vehicle_make: row.vehicleMake || null,
-        vehicle_model: row.vehicleModel || null,
-
-        source: row.source || 'website',
-        created_at: toIso(row.created_at),
-        updated_at: toIso(row.updated_at),
-    };
 }
 
 export async function OPTIONS() {
@@ -124,7 +57,7 @@ export async function GET(request) {
             .limit(limit)
             .toArray();
 
-        return json({ data: rows.map(serialize), count: rows.length, limit });
+        return json({ data: rows.map(serializeBooking), count: rows.length, limit });
     } catch (error) {
         console.error('[Mobile API] GET /bookings failed:', error);
         return fail('Could not load bookings right now. Please try again.', 500);
@@ -223,7 +156,7 @@ export async function POST(request) {
 
         // Return the created booking, including its id, so the app can show
         // it immediately and recognise it on the next sync.
-        return json(serialize({ ...doc, _id: result.insertedId }), 201);
+        return json(serializeBooking({ ...doc, _id: result.insertedId }), 201);
     } catch (error) {
         console.error('[Mobile API] POST /bookings failed:', error);
         return fail('Could not create the booking right now. Please try again.', 500);
