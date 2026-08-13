@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(openssl rand *)",
+      "Bash(echo \"KEY=$\\(openssl rand -hex 32\\)\")",
+      "Bash(npm install *)"
     ]
   }
 }
