@@ -8,7 +8,7 @@ import {
     Sparkles, CheckCheck, Truck, CheckCircle2, XCircle,
     ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Plus, X, AlertCircle,
     Ban, Pencil, PoundSterling, Car, User, StickyNote,
-    Route, History
+    Route, History, Copy, Check
 } from 'lucide-react';
 import { loadGoogleMaps } from '../../../lib/googleMapsLoader';
 import '../../../styles/admin.css';
@@ -35,6 +35,18 @@ const SERVICE_TYPES = [
     "Motorcycle Recovery",
     "Other",
 ];
+
+// Whether the casualty vehicle rolls freely — decides whether a flatbed with a
+// winch is enough or the driver needs skates/dollies, so it belongs on the job sheet.
+const IS_ROLLING_OPTIONS = [
+    { value: 'yes', label: 'Yes' },
+    { value: 'no', label: 'No' },
+];
+
+const ROLLING_LABEL = {
+    yes: 'Yes',
+    no: 'No',
+};
 
 const DRAFT_KEY = 'booking_draft';       // legacy single-draft key, migrated on load
 const DRAFTS_KEY = 'booking_drafts';
@@ -69,6 +81,8 @@ const EMPTY_BOOKING = {
     registrationNumber: '',
     vehicleMake: '',
     vehicleModel: '',
+    isRolling: '',
+    passengers: '',
     message: '',
     status: 'new',
     price: '',
@@ -89,6 +103,25 @@ function formatMoney(n) {
     const num = Number(n);
     if (Number.isNaN(num)) return null;
     return '£' + num.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+// The job as a dispatcher pastes it into WhatsApp when farming work out to a
+// subcontractor. Every line is always present — a blank "Rolling:" tells the
+// other end nobody asked, which is information; a missing line just looks lost.
+// Price & ETA is deliberately left for the sender to finish: we know the price
+// (sometimes), never the ETA.
+function bookingSummary(booking) {
+    const val = v => (v === null || v === undefined || v === '' ? '' : String(v));
+    const price = formatMoney(booking.price);
+    return [
+        `From: ${val(booking.pickupLocation)}`,
+        `To: ${val(booking.dropoffLocation)}`,
+        `Rolling: ${ROLLING_LABEL[booking.isRolling] || ''}`,
+        `Car Reg: ${val(booking.registrationNumber).toUpperCase()}`,
+        `Details: ${[booking.vehicleMake, booking.vehicleModel].filter(Boolean).join(' ')}`,
+        `Passengers: ${val(booking.passengers)}`,
+        `Price & ETA: ${price || ''}`,
+    ].join('\n');
 }
 
 function initialsOf(name) {
@@ -124,6 +157,7 @@ export default function AdminBookings() {
     const [page, setPage] = useState(1);
     const [pagination, setPagination] = useState({ total: 0, totalPages: 1 });
     const [expandedId, setExpandedId] = useState(null);
+    const [copiedId, setCopiedId] = useState(null);
     const [priceDraft, setPriceDraft] = useState('');
     const [priceSaving, setPriceSaving] = useState(false);
 
@@ -423,6 +457,18 @@ export default function AdminBookings() {
         setPriceSaving(false);
     };
 
+    const handleCopy = async (booking) => {
+        try {
+            await navigator.clipboard.writeText(bookingSummary(booking));
+            setCopiedId(booking.id);
+            setTimeout(() => setCopiedId(cur => (cur === booking.id ? null : cur)), 1800);
+        } catch {
+            // Clipboard is blocked (insecure origin, or permission denied) —
+            // say so rather than leaving a button that silently does nothing.
+            alert('Could not copy to the clipboard. Copy the details manually from the booking.');
+        }
+    };
+
     const handleDelete = async (id) => {
         if (!confirm('Delete this booking? This cannot be undone.')) return;
         try {
@@ -497,6 +543,8 @@ export default function AdminBookings() {
             registrationNumber: booking.registrationNumber || '',
             vehicleMake: booking.vehicleMake || '',
             vehicleModel: booking.vehicleModel || '',
+            isRolling: booking.isRolling || '',
+            passengers: booking.passengers ?? '',
             message: booking.message || '',
             status: booking.status || 'new',
             price: booking.price ?? '',
@@ -774,6 +822,7 @@ export default function AdminBookings() {
                                     className={`bk-card ${isExpanded ? 'bk-card--open' : ''}`}
                                     style={{ '--bk-accent': m.color }}
                                 >
+                                    <div className="bk-card-head">
                                     <button
                                         type="button"
                                         className="bk-card-row"
@@ -823,6 +872,19 @@ export default function AdminBookings() {
                                                 : <ChevronDown size={16} className="bk-chev" />}
                                         </div>
                                     </button>
+                                    <button
+                                        type="button"
+                                        className={`bk-copy-btn ${copiedId === booking.id ? 'bk-copy-btn--done' : ''}`}
+                                        onClick={() => handleCopy(booking)}
+                                        title="Copy job details"
+                                        aria-label={`Copy job details for ${booking.name || 'this booking'}`}
+                                    >
+                                        {copiedId === booking.id
+                                            ? <Check size={15} strokeWidth={2.5} />
+                                            : <Copy size={15} strokeWidth={2} />}
+                                        <span>{copiedId === booking.id ? 'Copied' : 'Copy'}</span>
+                                    </button>
+                                    </div>
 
                                     {isExpanded && (
                                         <div className="bk-details">
@@ -859,6 +921,18 @@ export default function AdminBookings() {
                                                         <div className="bk-detail-value">
                                                             {[booking.vehicleMake, booking.vehicleModel].filter(Boolean).join(' ')}
                                                         </div>
+                                                    </div>
+                                                )}
+                                                {ROLLING_LABEL[booking.isRolling] && (
+                                                    <div className="bk-detail">
+                                                        <div className="bk-detail-label">Rolling</div>
+                                                        <div className="bk-detail-value">{ROLLING_LABEL[booking.isRolling]}</div>
+                                                    </div>
+                                                )}
+                                                {booking.passengers != null && booking.passengers !== '' && (
+                                                    <div className="bk-detail">
+                                                        <div className="bk-detail-label">Passengers</div>
+                                                        <div className="bk-detail-value">{booking.passengers}</div>
                                                     </div>
                                                 )}
                                                 <div className="bk-detail">
@@ -1140,6 +1214,21 @@ export default function AdminBookings() {
                                             <label htmlFor="mb-model">Model</label>
                                             <input id="mb-model" name="vehicleModel" type="text" placeholder="3 Series, Focus"
                                                 value={form.vehicleModel} onChange={handleFormChange} />
+                                        </div>
+                                        <div className="bk-field">
+                                            <label htmlFor="mb-rolling">Is it rolling?</label>
+                                            <select id="mb-rolling" name="isRolling" value={form.isRolling} onChange={handleFormChange}>
+                                                <option value="">Not specified</option>
+                                                {IS_ROLLING_OPTIONS.map(o => (
+                                                    <option key={o.value} value={o.value}>{o.label}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="bk-field">
+                                            <label htmlFor="mb-passengers">Passengers</label>
+                                            <input id="mb-passengers" name="passengers" type="number" min="0" max="99" step="1"
+                                                placeholder="e.g. 2"
+                                                value={form.passengers} onChange={handleFormChange} />
                                         </div>
                                     </div>
                                 </div>

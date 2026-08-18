@@ -16,6 +16,9 @@ import {
     parseStatusInput,
     resolveWebsiteStatus,
     EDITABLE_TEXT_FIELDS,
+    IS_ROLLING_ALIASES,
+    parseIsRolling,
+    parsePassengers,
 } from '@/lib/bookingSerializer';
 
 export const dynamic = 'force-dynamic';
@@ -71,6 +74,26 @@ export async function PATCH(request, { params }) {
     for (const { column, aliases } of EDITABLE_TEXT_FIELDS) {
         const field = readField(body, aliases);
         if (field) updates[column] = normalizeText(field.value);
+    }
+
+    // --- is_rolling ----------------------------------------------------------
+    const rollingField = readField(body, IS_ROLLING_ALIASES);
+    if (rollingField) {
+        const parsed = parseIsRolling(rollingField.value);
+        if (!parsed.ok) {
+            return fail(`${rollingField.key} must be "yes", "no", a boolean, or null.`, 400);
+        }
+        updates.isRolling = parsed.value;
+    }
+
+    // --- passengers ----------------------------------------------------------
+    const passengersField = readField(body, ['passengers', 'passenger_count', 'passengerCount']);
+    if (passengersField) {
+        const parsed = parsePassengers(passengersField.value);
+        if (!parsed.ok) {
+            return fail(`${passengersField.key} must be a whole number between 0 and 99.`, 400);
+        }
+        updates.passengers = parsed.value;
     }
 
     // --- total ---------------------------------------------------------------

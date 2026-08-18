@@ -15,7 +15,7 @@ import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
 import { sendBookingPush } from '@/lib/push';
 import { guard, fail, json, preflight } from '@/lib/mobileApi';
-import { serializeBooking, toNumber } from '@/lib/bookingSerializer';
+import { serializeBooking, toNumber, parseIsRolling, parsePassengers } from '@/lib/bookingSerializer';
 
 export const dynamic = 'force-dynamic';   // never cache customer data
 
@@ -94,7 +94,9 @@ export async function POST(request) {
         const registrationNumber = pick(body, 'registration_number', 'registrationNumber', 'registration');
         const vehicleMake = pick(body, 'vehicle_make', 'vehicleMake');
         const vehicleModel = pick(body, 'vehicle_model', 'vehicleModel');
+        const isRollingRaw = pick(body, 'is_rolling', 'isRolling', 'rolling');
         const message = pick(body, 'notes', 'message');
+        const passengersRaw = body.passengers ?? null;
         const scheduledAtRaw = pick(body, 'scheduled_at', 'scheduledAt');
         const totalRaw = body.total ?? body.price ?? null;
 
@@ -118,6 +120,16 @@ export async function POST(request) {
             scheduledAt = parsed;
         }
 
+        const isRolling = parseIsRolling(isRollingRaw);
+        if (!isRolling.ok) {
+            return fail('is_rolling must be "yes", "no", a boolean, or null.', 400);
+        }
+
+        const passengers = parsePassengers(passengersRaw);
+        if (!passengers.ok) {
+            return fail('passengers must be a whole number between 0 and 99.', 400);
+        }
+
         const total = toNumber(totalRaw);
         if (totalRaw !== null && totalRaw !== undefined && totalRaw !== '' && (total === null || total < 0)) {
             return fail('The total must be a positive number, without a currency symbol.', 400);
@@ -134,6 +146,8 @@ export async function POST(request) {
             registrationNumber: registrationNumber || null,
             vehicleMake: vehicleMake || null,
             vehicleModel: vehicleModel || null,
+            isRolling: isRolling.value,
+            passengers: passengers.value,
             message: message || null,
             scheduledAt,
             status: 'new',
@@ -151,7 +165,8 @@ export async function POST(request) {
         // failure must not fail the booking.
         sendBookingEmail({
             name, phone, email, pickupLocation, dropoffLocation, serviceType,
-            registrationNumber, vehicleMake, vehicleModel, message,
+            registrationNumber, vehicleMake, vehicleModel,
+            isRolling: isRolling.value, passengers: passengers.value, message,
         }).catch(err => {
             console.error('[Mobile API] Email notification failed:', err.message);
         });

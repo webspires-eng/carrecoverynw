@@ -3027,8 +3027,16 @@
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.09);
 }
 
+/* The expand toggle and the copy action are siblings — a button can't nest
+   inside a button, so the row itself stays a single clickable target. */
+.bk-card-head {
+    display: flex;
+    align-items: center;
+}
+
 .bk-card-row {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     background: transparent;
     border: none;
     text-align: left;
@@ -3040,6 +3048,36 @@
     align-items: center;
     color: inherit;
     font: inherit;
+}
+
+.bk-copy-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 14px;
+    padding: 7px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.bk-copy-btn:hover {
+    background: #eef2f7;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.bk-copy-btn--done,
+.bk-copy-btn--done:hover {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #16a34a;
 }
 
 .bk-cell {
@@ -4242,6 +4280,14 @@
     .bk-card-row {
         grid-template-columns: 1fr;
         gap: 10px;
+    }
+    .bk-card-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .bk-copy-btn {
+        margin: 0 14px 14px;
+        justify-content: center;
     }
     .bk-cell--status {
         order: -1;

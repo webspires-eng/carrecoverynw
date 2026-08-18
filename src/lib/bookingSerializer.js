@@ -117,6 +117,9 @@ export function serializeBooking(row) {
         registration_number: row.registrationNumber || null,
         vehicle_make: row.vehicleMake || null,
         vehicle_model: row.vehicleModel || null,
+        // 'yes' | 'no' | null — null means nobody has asked yet.
+        is_rolling: row.isRolling || null,
+        passengers: row.passengers ?? null,
 
         source: row.source || 'website',
         created_at: toIso(row.created_at),
@@ -128,6 +131,35 @@ export function serializeBooking(row) {
  * Text fields the app may edit, mapped to their column in the database.
  * Each entry lists every spelling accepted on input.
  */
+export const IS_ROLLING_ALIASES = ['is_rolling', 'isRolling', 'rolling'];
+
+/**
+ * Read a rolling answer the app sent.
+ *
+ * @returns {{ ok: true, value: 'yes'|'no'|null } | { ok: false }}
+ */
+export function parseIsRolling(raw) {
+    if (raw === null || raw === undefined || raw === '') return { ok: true, value: null };
+    if (raw === true) return { ok: true, value: 'yes' };
+    if (raw === false) return { ok: true, value: 'no' };
+    const value = String(raw).trim().toLowerCase();
+    if (value === 'yes' || value === 'no') return { ok: true, value };
+    return { ok: false };
+}
+
+/**
+ * How many people need moving with the vehicle — a recovery truck has a fixed
+ * number of cab seats, so this decides whether one truck can take the job.
+ *
+ * @returns {{ ok: true, value: number|null } | { ok: false }}
+ */
+export function parsePassengers(raw) {
+    if (raw === null || raw === undefined || raw === '') return { ok: true, value: null };
+    const num = Number(raw);
+    if (!Number.isInteger(num) || num < 0 || num > 99) return { ok: false };
+    return { ok: true, value: num };
+}
+
 export const EDITABLE_TEXT_FIELDS = [
     { column: 'name', aliases: ['customer_name', 'customerName', 'name'] },
     { column: 'phone', aliases: ['customer_phone', 'customerPhone', 'phone'] },

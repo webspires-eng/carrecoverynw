@@ -3,6 +3,20 @@ import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
 import { sendBookingPush } from '@/lib/push';
 
+// Whether the vehicle rolls. Anything that isn't a clear yes/no is stored as
+// null — "unknown" is a real answer for a job taken over the phone.
+function normaliseRolling(value) {
+    const v = String(value ?? '').trim().toLowerCase();
+    return v === 'yes' || v === 'no' ? v : null;
+}
+
+// Number of people travelling with the vehicle. Blank / nonsense becomes null.
+function normalisePassengers(value) {
+    if (value === null || value === undefined || value === '') return null;
+    const num = Number(value);
+    return Number.isInteger(num) && num >= 0 && num <= 99 ? num : null;
+}
+
 // GET all bookings
 export async function GET(request) {
     try {
@@ -80,7 +94,7 @@ export async function GET(request) {
 export async function POST(request) {
     try {
         const body = await request.json();
-        const { name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message, manual, status, price, bookingDate } = body;
+        const { name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, isRolling, passengers, message, manual, status, price, bookingDate } = body;
 
         // Website submissions must be complete; manual admin bookings can be partial
         if (!manual && (!name || !phone || !pickupLocation || !serviceType)) {
@@ -117,6 +131,8 @@ export async function POST(request) {
             registrationNumber: registrationNumber || null,
             vehicleMake: vehicleMake || null,
             vehicleModel: vehicleModel || null,
+            isRolling: normaliseRolling(isRolling),
+            passengers: normalisePassengers(passengers),
             message: message || null,
             status: manual && status ? status : 'new',
             source: manual ? 'manual' : 'website',
@@ -130,7 +146,7 @@ export async function POST(request) {
         // Send email notification (fire-and-forget).
         // Skip for admin-entered manual bookings — the business already knows about them.
         if (!manual) {
-            sendBookingEmail({ name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, message }).catch(err => {
+            sendBookingEmail({ name, phone, email, pickupLocation, dropoffLocation, serviceType, registrationNumber, vehicleMake, vehicleModel, isRolling: normaliseRolling(isRolling), passengers: normalisePassengers(passengers), message }).catch(err => {
                 console.error('[Bookings] Email notification failed:', err.message);
             });
         }

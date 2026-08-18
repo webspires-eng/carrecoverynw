@@ -21,6 +21,33 @@ export async function PATCH(request, { params }) {
             }
         }
 
+        if (body.isRolling !== undefined) {
+            const v = String(body.isRolling ?? '').trim().toLowerCase();
+            if (v && v !== 'yes' && v !== 'no') {
+                return NextResponse.json(
+                    { success: false, error: "isRolling must be 'yes', 'no' or empty" },
+                    { status: 400 }
+                );
+            }
+            updates.isRolling = v || null;
+        }
+
+        if (body.passengers !== undefined) {
+            const raw = body.passengers;
+            if (raw === null || raw === '') {
+                updates.passengers = null;
+            } else {
+                const num = Number(raw);
+                if (!Number.isInteger(num) || num < 0 || num > 99) {
+                    return NextResponse.json(
+                        { success: false, error: 'Passengers must be a whole number between 0 and 99' },
+                        { status: 400 }
+                    );
+                }
+                updates.passengers = num;
+            }
+        }
+
         if (status !== undefined) {
             const validStatuses = ['new', 'confirmed', 'dispatched', 'completed', 'cancelled', 'lost'];
             if (!validStatuses.includes(status)) {
