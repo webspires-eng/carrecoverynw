@@ -108,19 +108,21 @@ function formatMoney(n) {
 // The job as a dispatcher pastes it into WhatsApp when farming work out to a
 // subcontractor. Every line is always present — a blank "Rolling:" tells the
 // other end nobody asked, which is information; a missing line just looks lost.
-// Price & ETA is deliberately left for the sender to finish: we know the price
-// (sometimes), never the ETA.
+// The last line is the question being put to them, so it carries no value: the
+// job's own price is what we'd charge, not what we're offering the subbie.
 function bookingSummary(booking) {
-    const val = v => (v === null || v === undefined || v === '' ? '' : String(v));
-    const price = formatMoney(booking.price);
+    const val = v => (v === null || v === undefined || v === '' ? '' : String(v).trim());
+    // WhatsApp renders *text* as bold, but only when the asterisks hug a real
+    // character — wrapping an empty value would paste two literal asterisks.
+    const bold = v => (val(v) ? `*${val(v)}*` : '');
     return [
-        `From: ${val(booking.pickupLocation)}`,
-        `To: ${val(booking.dropoffLocation)}`,
-        `Rolling: ${ROLLING_LABEL[booking.isRolling] || ''}`,
-        `Car Reg: ${val(booking.registrationNumber).toUpperCase()}`,
-        `Details: ${[booking.vehicleMake, booking.vehicleModel].filter(Boolean).join(' ')}`,
+        `From: ${bold(booking.pickupLocation)}`,
+        `To: ${bold(booking.dropoffLocation)}`,
+        `Rolling: ${bold(ROLLING_LABEL[booking.isRolling])}`,
+        `Car Reg: ${bold(val(booking.registrationNumber).toUpperCase())}`,
+        `Details: ${val([booking.vehicleMake, booking.vehicleModel].filter(Boolean).join(' '))}`,
         `Passengers: ${val(booking.passengers)}`,
-        `Price & ETA: ${price || ''}`,
+        '*Price & ETA*',
     ].join('\n');
 }
 
@@ -173,6 +175,9 @@ export default function AdminBookings() {
     const [draftRestored, setDraftRestored] = useState(false);
     const [drafts, setDrafts] = useState([]);
     const [draftId, setDraftId] = useState(null);
+    // What the form looked like when the modal opened — the baseline for
+    // "are there unsaved changes?". A new booking compares against EMPTY_BOOKING.
+    const openedFormRef = useRef(EMPTY_BOOKING);
 
     const writeDrafts = (arr) => {
         localStorage.setItem(DRAFTS_KEY, JSON.stringify(arr));
@@ -365,6 +370,22 @@ export default function AdminBookings() {
         return () => clearTimeout(timer);
     }, [form, showModal, editingId, draftId]);
 
+    // An accidental Cmd+R / tab close while the modal is open loses the form.
+    // A new booking survives it (the draft is on disk), an edit does not — so
+    // let the browser ask before the page goes away.
+    useEffect(() => {
+        if (!showModal) return;
+        const warn = (e) => {
+            const dirty = Object.keys(EMPTY_BOOKING)
+                .some(k => form[k] !== openedFormRef.current[k]);
+            if (!dirty) return;
+            e.preventDefault();
+            e.returnValue = '';
+        };
+        window.addEventListener('beforeunload', warn);
+        return () => window.removeEventListener('beforeunload', warn);
+    }, [showModal, form]);
+
     const handleDvlaLookup = async () => {
         if (!form.registrationNumber) return;
         setDvlaStatus('looking_up');
@@ -513,12 +534,14 @@ export default function AdminBookings() {
             setDraftId(newDraftId());
             setDraftRestored(false);
         }
+        openedFormRef.current = EMPTY_BOOKING;
         resetModalExtras();
         setShowModal(true);
     };
 
     const resumeDraft = (draft) => {
         setEditingId(null);
+        openedFormRef.current = EMPTY_BOOKING;
         setForm({ ...EMPTY_BOOKING, ...draft.form });
         setDraftId(draft.id);
         setDraftRestored(false);
@@ -533,7 +556,7 @@ export default function AdminBookings() {
 
     const openEdit = (booking) => {
         setEditingId(booking.id);
-        setForm({
+        const loaded = {
             name: booking.name || '',
             phone: booking.phone || '',
             email: booking.email || '',
@@ -549,20 +572,46 @@ export default function AdminBookings() {
             status: booking.status || 'new',
             price: booking.price ?? '',
             bookingDate: toDateInput(booking.created_at),
-        });
+        };
+        openedFormRef.current = loaded;
+        setForm(loaded);
         setDraftRestored(false);
         setDraftId(null);
         resetModalExtras();
         setShowModal(true);
     };
 
+    // A plain onClick on the backdrop fires for things that aren't a click on the
+    // backdrop at all: releasing a text selection that started inside the modal,
+    // and — the one that actually bit — picking an entry from a dropdown that the
+    // browser renders outside the modal (autofill, and Google's .pac-container,
+    // which is appended to document.body). The dropdown vanishes on mousedown, so
+    // the click lands on the overlay and the whole form disappears mid-typing.
+    // Requiring the press to both start and end on the overlay fixes all three.
+    const overlayPressRef = useRef(false);
+
+    const handleOverlayMouseDown = (e) => {
+        overlayPressRef.current = e.target === e.currentTarget;
+    };
+
+    const handleOverlayClick = (e) => {
+        if (e.target !== e.currentTarget) return;
+        if (!overlayPressRef.current) return;
+        overlayPressRef.current = false;
+        closeModal();
+    };
+
+    const isDirty = () =>
+        Object.keys(EMPTY_BOOKING).some(k => form[k] !== openedFormRef.current[k]);
+
     const closeModal = () => {
         if (saving) return;
-        if (!editingId && draftId) {
-            const dirty = Object.keys(EMPTY_BOOKING).some(k => form[k] !== EMPTY_BOOKING[k]);
-            if (dirty && !confirm('Save this booking as a draft?\n\nOK — keep it in the Drafts tab · Cancel — discard it')) {
-                writeDrafts(readDrafts().filter(d => d.id !== draftId));
-            }
+        // A new booking is already auto-saved to the Drafts tab, so closing it
+        // never loses anything — don't ask, and never delete it on the way out.
+        // An edit has no such safety net, so confirm before throwing the changes
+        // away. Either way the destructive choice has to be the deliberate one.
+        if (editingId && isDirty() && !confirm('Discard your unsaved changes to this booking?')) {
+            return;
         }
         setShowModal(false);
     };
@@ -1036,7 +1085,7 @@ export default function AdminBookings() {
 
             {/* Create / Edit booking modal */}
             {showModal && (
-                <div className="bk-modal-overlay" onClick={closeModal}>
+                <div className="bk-modal-overlay" onMouseDown={handleOverlayMouseDown} onClick={handleOverlayClick}>
                     <div className="bk-modal bk-modal--wide" onClick={e => e.stopPropagation()}>
                         <div className="bk-modal-head">
                             <div className="bk-modal-head-icon">
