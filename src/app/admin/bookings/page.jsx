@@ -526,15 +526,17 @@ export default function AdminBookings() {
         // Resume the most recent draft if one survived a refresh / accidental close
         const existing = readDrafts();
         if (existing.length > 0) {
+            openedFormRef.current = EMPTY_BOOKING;
             setForm({ ...EMPTY_BOOKING, ...existing[0].form });
             setDraftId(existing[0].id);
             setDraftRestored(true);
         } else {
-            setForm({ ...EMPTY_BOOKING, bookingDate: toDateInput(new Date()) });
+            const fresh = { ...EMPTY_BOOKING, bookingDate: toDateInput(new Date()) };
+            setForm(fresh);
+            openedFormRef.current = fresh;
             setDraftId(newDraftId());
             setDraftRestored(false);
         }
-        openedFormRef.current = EMPTY_BOOKING;
         resetModalExtras();
         setShowModal(true);
     };
@@ -625,13 +627,25 @@ export default function AdminBookings() {
         if (formError) setFormError('');
     };
 
+    // Enter inside a field advances the wizard; on the last step it does nothing
+    // at all. Saving a booking has to be a deliberate click on the save button —
+    // the alternative is a job created by someone tabbing through Job Value and
+    // hitting Enter out of habit, with the modal gone before they've finished.
+    // Textareas keep Enter as a newline; real buttons keep their own activation.
+    const handleFormKeyDown = (e) => {
+        if (e.key !== 'Enter') return;
+        const tag = e.target.tagName;
+        if (tag === 'TEXTAREA' || tag === 'BUTTON') return;
+        // An input that already handled Enter itself (the pickup/drop-off fields
+        // hand it to Google's autocomplete) mustn't also advance the wizard.
+        if (e.defaultPrevented) return;
+        e.preventDefault();
+        if (step < FORM_STEPS.length - 1) handleNext();
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Enter on an intermediate step advances instead of submitting
-        if (step < FORM_STEPS.length - 1) {
-            handleNext();
-            return;
-        }
+        if (step < FORM_STEPS.length - 1) return;   // only the last step saves
         setSaving(true);
         try {
             const url = editingId ? `/api/bookings/${editingId}` : '/api/bookings';
@@ -1100,7 +1114,7 @@ export default function AdminBookings() {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="bk-modal-form" noValidate>
+                        <form onSubmit={handleSubmit} onKeyDown={handleFormKeyDown} className="bk-modal-form" noValidate>
                             <div className="bk-modal-columns">
                             <div className="bk-modal-body">
                                 {formError && (
@@ -1450,13 +1464,18 @@ export default function AdminBookings() {
                                         Back
                                     </button>
                                 )}
+                                {/* Distinct keys matter here. Without them React reuses the same
+                                    <button> node and merely flips type="button" to type="submit" —
+                                    so the Enter keypress that advanced to the last step lands on a
+                                    now-focused submit button and files the booking on the spot.
+                                    Separate keys mount a fresh node instead. */}
                                 {step < FORM_STEPS.length - 1 ? (
-                                    <button type="button" className="bk-btn-save" onClick={handleNext}>
+                                    <button key="next" type="button" className="bk-btn-save" onClick={handleNext}>
                                         Next
                                         <ChevronRight size={15} />
                                     </button>
                                 ) : (
-                                    <button type="submit" className="bk-btn-save" disabled={saving}>
+                                    <button key="save" type="submit" className="bk-btn-save" disabled={saving}>
                                         {saving
                                             ? 'Saving…'
                                             : editingId

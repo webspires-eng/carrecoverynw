@@ -82,7 +82,7 @@ function buildHtml(booking, { resend = false } = {}) {
             ${booking.registrationNumber ? row('Reg', `<span style="font-family:'Courier New',monospace;background:#fbbf24;color:#0f172a;padding:3px 10px;border-radius:4px;font-weight:700;letter-spacing:1.5px;">${esc(booking.registrationNumber.toUpperCase())}</span>`) : ''}
             ${(booking.vehicleMake || booking.vehicleModel) ? row('Vehicle', esc([booking.vehicleMake, booking.vehicleModel].filter(Boolean).join(' '))) : ''}
             ${booking.isRolling === 'no' ? row('Rolling', `<span style="display:inline-block;padding:3px 10px;border-radius:999px;background:#fef2f2;color:#dc2626;font-weight:700;font-size:12px;">NOT ROLLING</span>`) : booking.isRolling === 'yes' ? row('Rolling', 'Yes') : ''}
-            ${booking.passengers ? row('Passengers', esc(String(booking.passengers))) : ''}
+            ${booking.passengers != null ? row('Passengers', esc(String(booking.passengers))) : ''}
             ${booking.message ? row('Notes', `<span style="color:#475569;line-height:1.55;">${esc(booking.message)}</span>`) : ''}
           </table>
         </td>
@@ -155,7 +155,7 @@ function buildText(booking, { resend = false } = {}) {
             ? `Vehicle: ${[booking.vehicleMake, booking.vehicleModel].filter(Boolean).join(' ')}`
             : null,
         booking.isRolling ? `Rolling: ${booking.isRolling === 'no' ? 'NO — needs skates/dollies' : 'Yes'}` : null,
-        booking.passengers ? `Pax:     ${booking.passengers}` : null,
+        booking.passengers != null ? `Pax:     ${booking.passengers}` : null,
         booking.message ? `Notes:   ${booking.message}` : null,
         '',
         `WhatsApp: https://wa.me/${phoneDigits}`,
