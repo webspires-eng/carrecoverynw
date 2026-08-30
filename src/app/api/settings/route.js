@@ -17,6 +17,18 @@ export async function GET() {
     }
 }
 
+// Invisible Unicode format characters (bidi marks, zero-width spaces, BOM) that
+// ride along when a phone number is copied from iOS Contacts or WhatsApp.
+const INVISIBLE_CHARS = /[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g;
+
+function sanitizeValue(key, value) {
+    if (typeof value !== 'string') return value;
+    const clean = value.replace(INVISIBLE_CHARS, '').trim();
+    // wa.me links accept digits only — no "+", spaces, or dashes.
+    if (key === 'whatsapp') return clean.replace(/\D/g, '');
+    return clean;
+}
+
 // PUT update settings
 export async function PUT(request) {
     try {
@@ -27,7 +39,7 @@ export async function PUT(request) {
         const bulkOps = Object.entries(body).map(([key, value]) => ({
             updateOne: {
                 filter: { setting_key: key },
-                update: { $set: { setting_key: key, setting_value: value } },
+                update: { $set: { setting_key: key, setting_value: sanitizeValue(key, value) } },
                 upsert: true
             }
         }));
