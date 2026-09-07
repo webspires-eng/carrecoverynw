@@ -30,6 +30,17 @@ import { canonicalUrl } from '@/lib/seoSettings';
 // Fetch area data from database
 async function getAreaBySlug(slug) {
     try {
+        // Cheap guard before any DB work: unknown slugs (bot/scraper junk like
+        // /areas/wp-admin) must not reach a full render. Without this every junk
+        // URL rendered on demand and was written to the ISR cache, which is what
+        // pushed ISR Writes over the plan limit. getAllActiveSlugs is
+        // unstable_cache'd with tag 'areas', so this costs nothing per request
+        // and is invalidated the moment an area is published.
+        const activeSlugs = await getAllActiveSlugs();
+        if (activeSlugs.length > 0 && !activeSlugs.includes(slug)) {
+            return null;
+        }
+
         const { db } = await connectToDatabase();
         const area = await db.collection('areas').findOne({ slug, is_active: true });
         if (area) {
@@ -47,18 +58,21 @@ async function getAreaBySlug(slug) {
 
 // Generate static params for all active areas (for static generation)
 export async function generateStaticParams() {
-    try {
-        const { db } = await connectToDatabase();
-        const rows = await db.collection('areas')
-            .find({ is_active: true }, { projection: { slug: 1 } })
-            .toArray();
-        return rows.map((row) => ({
-            slug: row.slug,
-        }));
-    } catch (error) {
-        console.error('Error generating static params:', error);
-        return [];
-    }
+    // Deliberately NOT wrapped in try/catch. Swallowing a DB error here returns
+    // an empty param list, which "succeeds" the build and ships a deploy with
+    // zero prerendered area pages — every one of the ~674 URLs then falls
+    // through to on-demand rendering, generating an ISR write and a full origin
+    // render per request. That failure mode is invisible in the build log and
+    // is exactly how a plan's ISR/transfer limits get blown overnight.
+    // A DB outage at build time must fail the build loudly instead, matching
+    // the same reasoning in getAreaBySlug() above.
+    const { db } = await connectToDatabase();
+    const rows = await db.collection('areas')
+        .find({ is_active: true }, { projection: { slug: 1 } })
+        .toArray();
+    return rows.map((row) => ({
+        slug: row.slug,
+    }));
 }
 
 // Generate metadata for each area page
@@ -249,6 +263,7 @@ export default async function AreaPage({ params }) {
 export const revalidate = false;
 
 // Slugs not pre-built at deploy time (e.g. areas added after the last build)
-// are rendered on-demand then cached. notFound() handles truly unknown slugs,
-// so no spurious ISR writes occur for bot/junk URLs.
+// are rendered on-demand then cached — the admin publish pipeline depends on
+// this, so it must stay true. Junk URLs are cheap because getAreaBySlug()
+// rejects any slug absent from the cached active-slug list before rendering.
 export const dynamicParams = true;

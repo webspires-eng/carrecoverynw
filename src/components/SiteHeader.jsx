@@ -36,11 +36,11 @@ export default function SiteHeader() {
                     className={`site-header__nav ${open ? 'is-open' : ''}`}
                     aria-label="Primary"
                 >
-                    <Link href="/" onClick={() => setOpen(false)}>Home</Link>
-                    <Link href="/areas" onClick={() => setOpen(false)}>Areas We Cover</Link>
-                    <Link href="/about-us" onClick={() => setOpen(false)}>About</Link>
-                    <Link href="/contact-us" onClick={() => setOpen(false)}>Contact</Link>
-                    <Link
+                    <Link prefetch={false} href="/" onClick={() => setOpen(false)}>Home</Link>
+                    <Link prefetch={false} href="/areas" onClick={() => setOpen(false)}>Areas We Cover</Link>
+                    <Link prefetch={false} href="/about-us" onClick={() => setOpen(false)}>About</Link>
+                    <Link prefetch={false} href="/contact-us" onClick={() => setOpen(false)}>Contact</Link>
+                    <Link prefetch={false}
                         href="/booking"
                         className="site-header__book"
                         onClick={() => setOpen(false)}

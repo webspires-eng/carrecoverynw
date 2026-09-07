@@ -730,15 +730,15 @@ export default function AdminBookings() {
                         </div>
                     </div>
                     <div className="bk-hero-actions">
-                        <Link href="/admin/areas" className="bk-nav-btn">
+                        <Link prefetch={false} href="/admin/areas" className="bk-nav-btn">
                             <MapPin size={15} />
                             Areas
                         </Link>
-                        <Link href="/admin/seo" className="bk-nav-btn">
+                        <Link prefetch={false} href="/admin/seo" className="bk-nav-btn">
                             <Globe size={15} />
                             SEO
                         </Link>
-                        <Link href="/admin/settings" className="bk-nav-btn">
+                        <Link prefetch={false} href="/admin/settings" className="bk-nav-btn">
                             <Settings size={15} />
                             Settings
                         </Link>

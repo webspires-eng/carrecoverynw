@@ -40,7 +40,7 @@ export default async function NearbyAreasSection({ currentSlug, currentName, nea
                 </div>
                 <div className="nearby-areas-grid">
                     {items.map((a) => (
-                        <Link
+                        <Link prefetch={false}
                             key={a.slug}
                             href={`/areas/${a.slug}`}
                             aria-label={`Car recovery in ${a.name}`}

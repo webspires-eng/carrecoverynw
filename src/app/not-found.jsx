@@ -23,7 +23,7 @@ export default function NotFound() {
                     </Link>
                 </div>
 
-                <Link href="/" className="nf-btn-home">
+                <Link prefetch={false} href="/" className="nf-btn-home">
                     Back to Home Page
                 </Link>
             </div>

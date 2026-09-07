@@ -45,8 +45,8 @@ export default async function SitemapPage() {
             <div className="sitemap-section">
                 <h2 className="sitemap-h2">Main Navigation</h2>
                 <ul className="sitemap-links">
-                    <li><Link href="/">Home</Link></li>
-                    <li><Link href="/areas">Areas We Cover (Full Archive)</Link></li>
+                    <li><Link prefetch={false} href="/">Home</Link></li>
+                    <li><Link prefetch={false} href="/areas">Areas We Cover (Full Archive)</Link></li>
                 </ul>
             </div>
 
@@ -59,7 +59,7 @@ export default async function SitemapPage() {
                             <ul className="sitemap-links">
                                 {grouped[letter].map(area => (
                                     <li key={area.slug}>
-                                        <Link href={`/areas/${area.slug}`}>
+                                        <Link prefetch={false} href={`/areas/${area.slug}`}>
                                             Car Recovery {area.name}
                                         </Link>
                                     </li>

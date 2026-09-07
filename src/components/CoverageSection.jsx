@@ -34,7 +34,7 @@ export default function CoverageSection({
                 <div className="priority-areas">
                     {subAreaItems.map((item) => (
                         item.slug ? (
-                            <Link
+                            <Link prefetch={false}
                                 key={item.name}
                                 href={`/areas/${item.slug}`}
                                 aria-label={`Car recovery service in ${item.name}`}

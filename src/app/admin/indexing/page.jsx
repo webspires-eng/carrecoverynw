@@ -116,7 +116,7 @@ export default function IndexingAdmin() {
                         <p>Bulk-submit URLs to Google's Indexing API to speed up crawling</p>
                     </div>
                     <div className="admin-header-actions">
-                        <Link href="/admin/areas" className="btn btn-secondary">← Back to Areas</Link>
+                        <Link prefetch={false} href="/admin/areas" className="btn btn-secondary">← Back to Areas</Link>
                     </div>
                 </header>
 

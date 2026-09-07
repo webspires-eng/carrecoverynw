@@ -43,7 +43,7 @@ export default async function HtmlSitemap() {
                         <p className="html-sitemap-summary">
                             Browse every key page and service area from one place.
                             Looking for search engine XML data instead?
-                            <Link href="/sitemap.xml"> Open the XML sitemap</Link>.
+                            <Link prefetch={false} href="/sitemap.xml"> Open the XML sitemap</Link>.
                         </p>
                         <div className="html-sitemap-meta">
                             <span>{6} core pages</span>
@@ -55,20 +55,20 @@ export default async function HtmlSitemap() {
                         <div className="html-sitemap-card">
                             <h3>Main Pages</h3>
                             <ul className="html-sitemap-links">
-                                <li><Link href="/">Home</Link></li>
-                                <li><Link href="/about-us">About Us</Link></li>
-                                <li><Link href="/contact-us">Contact Us</Link></li>
-                                <li><Link href="/areas">Areas We Cover</Link></li>
-                                <li><Link href="/sitemap">Sitemap (Grouped)</Link></li>
-                                <li><Link href="/sitemap.xml">Sitemap XML</Link></li>
+                                <li><Link prefetch={false} href="/">Home</Link></li>
+                                <li><Link prefetch={false} href="/about-us">About Us</Link></li>
+                                <li><Link prefetch={false} href="/contact-us">Contact Us</Link></li>
+                                <li><Link prefetch={false} href="/areas">Areas We Cover</Link></li>
+                                <li><Link prefetch={false} href="/sitemap">Sitemap (Grouped)</Link></li>
+                                <li><Link prefetch={false} href="/sitemap.xml">Sitemap XML</Link></li>
                             </ul>
                         </div>
 
                         <div className="html-sitemap-card">
                             <h3>Policies and Utility Pages</h3>
                             <ul className="html-sitemap-links">
-                                <li><Link href="/privacy-policy">Privacy Policy</Link></li>
-                                <li><Link href="/terms-of-service">Terms of Service</Link></li>
+                                <li><Link prefetch={false} href="/privacy-policy">Privacy Policy</Link></li>
+                                <li><Link prefetch={false} href="/terms-of-service">Terms of Service</Link></li>
                             </ul>
                         </div>
                     </div>
@@ -89,7 +89,7 @@ export default async function HtmlSitemap() {
                                         <ul className="html-sitemap-links">
                                             {groupedAreas[letter].map((area) => (
                                                 <li key={area.slug}>
-                                                    <Link href={`/areas/${area.slug}`}>{area.name}</Link>
+                                                    <Link prefetch={false} href={`/areas/${area.slug}`}>{area.name}</Link>
                                                 </li>
                                             ))}
                                         </ul>

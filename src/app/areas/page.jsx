@@ -98,7 +98,7 @@ export default async function AreasArchive({ searchParams }) {
                             <h2>{letter}</h2>
                             <div className="areas-grid">
                                 {groupedAreas[letter].map(area => (
-                                    <Link
+                                    <Link prefetch={false}
                                         key={area.slug}
                                         href={`/areas/${area.slug}`}
                                         className="area-link"
@@ -115,7 +115,7 @@ export default async function AreasArchive({ searchParams }) {
                 {areas.length === 0 && (
                     <div className="no-results">
                         <p>No areas found for "{search}"</p>
-                        <Link href="/areas">View all areas</Link>
+                        <Link prefetch={false} href="/areas">View all areas</Link>
                     </div>
                 )}
             </div>

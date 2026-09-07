@@ -50,13 +50,13 @@ export default function FloatingActions() {
     return (
         <div style={containerStyle}>
             {/* Book Now Button */}
-            <Link href="/booking" aria-label="Book Now" style={{ textDecoration: 'none' }}>
+            <Link prefetch={false} href="/booking" aria-label="Book Now" style={{ textDecoration: 'none' }}>
                 <div style={{ ...iconWrapperBase, background: 'linear-gradient(135deg, #253d98, #1a3a8f)' }}>
                     <CalendarCheck size={28} color="white" />
                 </div>
             </Link>
             {/* WhatsApp Button */}
-            <Link href={whatsappLink} aria-label="WhatsApp" style={{ textDecoration: 'none' }}>
+            <Link prefetch={false} href={whatsappLink} aria-label="WhatsApp" style={{ textDecoration: 'none' }}>
                 <div style={{ ...iconWrapperBase, background: '#25D366' }}>
                     {/* WhatsApp glyph inline — replaces the react-icons dependency */}
                     <svg width="32" height="32" viewBox="0 0 448 512" fill="white" aria-hidden="true">

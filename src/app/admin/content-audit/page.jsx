@@ -125,7 +125,7 @@ export default function ContentAuditAdmin() {
                         <p>Flag area pages with thin content and rewrite them with the Semantic-EAV templater + Claude Sonnet.</p>
                     </div>
                     <div className="admin-header-actions">
-                        <Link href="/admin/areas" className="btn btn-secondary">← Back to Areas</Link>
+                        <Link prefetch={false} href="/admin/areas" className="btn btn-secondary">← Back to Areas</Link>
                     </div>
                 </header>
 

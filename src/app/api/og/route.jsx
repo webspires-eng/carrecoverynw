@@ -92,12 +92,21 @@ export async function GET(request) {
       {
         width: 1200,
         height: 630,
+        // Without this the image was regenerated on every crawler hit, and each
+        // generation re-fetched the 904 KB tow-truck-hero.png background from
+        // our own origin. The output is a pure function of the query string, so
+        // it can be cached hard: one render per city, then served from the CDN.
+        headers: {
+          'Cache-Control': 'public, immutable, no-transform, max-age=31536000',
+        },
       }
     );
   } catch (e) {
     console.error('OG Image generation failed:', e);
+    // Never cache a failure — a cached 500 would poison the card for a year.
     return new Response(`Failed to generate the image`, {
       status: 500,
+      headers: { 'Cache-Control': 'no-store' },
     });
   }
 }

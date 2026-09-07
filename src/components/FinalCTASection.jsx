@@ -49,7 +49,7 @@ export default async function FinalCTASection({ location = "West Midlands", sett
                             <span className="btn-number">Send Location</span>
                         </div>
                     </Link>
-                    <Link href="/booking" className="cta-btn-main" style={{ background: 'linear-gradient(135deg, #253d98, #1a3a8f)' }}>
+                    <Link prefetch={false} href="/booking" className="cta-btn-main" style={{ background: 'linear-gradient(135deg, #253d98, #1a3a8f)' }}>
                         <div className="btn-icon">
                             <CalendarCheck size={28} />
                         </div>

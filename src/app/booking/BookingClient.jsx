@@ -493,7 +493,7 @@ export default function BookingClient() {
                 <p className="popular-locations-subtitle">Quick access to our most requested service areas</p>
                 <div className="locations-grid">
                     {POPULAR_LOCATIONS.map(loc => (
-                        <Link
+                        <Link prefetch={false}
                             key={loc.slug}
                             href={`/areas/${loc.slug}`}
                             className="location-card"

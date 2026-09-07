@@ -140,7 +140,7 @@ export default function ThankYouClient() {
 
                     {/* Back Links */}
                     <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                        <Link href="/" style={{
+                        <Link prefetch={false} href="/" style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
@@ -152,7 +152,7 @@ export default function ThankYouClient() {
                             <ArrowLeft size={18} />
                             Back to Home
                         </Link>
-                        <Link href="/booking" style={{
+                        <Link prefetch={false} href="/booking" style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: '8px',
