@@ -61,12 +61,12 @@ export default async function robots() {
             {
                 userAgent: '*',
                 allow: '/',
-                disallow: ['/admin/', '/_next/static/'],
+                disallow: '/admin/',
             },
             {
                 userAgent: 'Googlebot',
                 allow: '/',
-                disallow: ['/admin/', '/_next/static/'],
+                disallow: '/admin/',
             },
         ],
         sitemap: `${baseUrl}/sitemap.xml`,
