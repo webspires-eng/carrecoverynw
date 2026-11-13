@@ -19,9 +19,13 @@ import PageSchemaMarkup from "@/components/PageSchemaMarkup";
 import { getServices } from "@/lib/services";
 import { getSettings } from "@/lib/settings";
 
-export default async function Home({ searchParams }) {
-  const params = await searchParams;
-  const location = params.loc || "United Kingdom";
+// Static and cached: reading ?loc= on the server made every home page visit run
+// a function. The hero now reads ?loc= in the browser instead, and the admin's
+// /api/admin/revalidate-all refreshes this page on demand.
+export const revalidate = 3600;
+
+export default async function Home() {
+  const location = "United Kingdom";
   const services = await getServices();
   const settings = await getSettings();
 

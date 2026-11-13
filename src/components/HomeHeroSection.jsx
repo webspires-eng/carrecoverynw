@@ -7,7 +7,14 @@ import { CircleCheck, CalendarCheck, Phone } from "lucide-react";
 
 import { useSettings } from "@/components/SettingsProvider";
 
-export default function HomeHeroSection({ location = "United Kingdom" }) {
+export default function HomeHeroSection({ location: defaultLocation = "United Kingdom" }) {
+    // ?loc= (ad landing links) personalises the headline in the browser, so the
+    // page itself can stay static.
+    const [location, setLocation] = useState(defaultLocation);
+    useEffect(() => {
+        const loc = new URLSearchParams(window.location.search).get("loc");
+        if (loc && loc.trim()) setLocation(loc.trim().slice(0, 60));
+    }, []);
     const { phone } = useSettings();
     const [isSticky, setIsSticky] = useState(false);
 
