@@ -9,6 +9,7 @@ import {
     User, Mail, Wrench, MessageSquare, Check
 } from "lucide-react";
 import { useSettings } from "@/components/SettingsProvider";
+import LocationInput from "@/components/LocationInput";
 import "../../styles/sections/booking.css";
 
 const POPULAR_LOCATIONS = [
@@ -206,30 +207,26 @@ export default function BookingClient() {
                                     <label htmlFor="pickupLocation">
                                         Pickup Location <span className="required">*</span>
                                     </label>
-                                    <input
+                                    <LocationInput
                                         id="pickupLocation"
-                                        type="text"
                                         name="pickupLocation"
                                         placeholder="e.g. M6 Junction 7, Birmingham"
                                         value={formData.pickupLocation}
                                         onChange={handleChange}
-                                        autoComplete="street-address"
                                         required
                                     />
-                                    <small className="form-hint">Postcode, road, junction, or what3words.</small>
+                                    <small className="form-hint">Start typing a postcode or town and pick from the list, or enter a road, junction, or what3words.</small>
                                 </div>
                                 <div className="form-group full-width">
                                     <label htmlFor="dropoffLocation">
                                         Drop-off Location <span className="required">*</span>
                                     </label>
-                                    <input
+                                    <LocationInput
                                         id="dropoffLocation"
-                                        type="text"
                                         name="dropoffLocation"
                                         placeholder="e.g. Home address or garage"
                                         value={formData.dropoffLocation}
                                         onChange={handleChange}
-                                        autoComplete="street-address"
                                         required
                                     />
                                 </div>

@@ -1,0 +1,145 @@
+/* ============================================================
+   Admin theme: sidebar shell + refreshed look.
+   Everything is scoped under .admin-shell so it wins over the
+   older rules in admin.css without editing them.
+   ============================================================ */
+
+.admin-shell {
+    --admin-primary: #e2572b;
+    --admin-primary-dark: #c9461d;
+    --admin-accent: #e2572b;
+    --admin-dark: #101936;
+    --admin-border: #e5e8f0;
+    --admin-radius: 10px;
+    --admin-radius-lg: 12px;
+    --admin-radius-xl: 14px;
+    --admin-shadow-sm: 0 1px 2px rgba(16, 25, 54, 0.05);
+    --admin-shadow: 0 2px 8px rgba(16, 25, 54, 0.06);
+    --admin-shadow-lg: 0 8px 24px rgba(16, 25, 54, 0.08);
+    --nav-w: 248px;
+    min-height: 100vh;
+    background: #f4f6fb;
+    color: #1e293b;
+}
+
+/* ---------- Sidebar ---------- */
+.admin-nav {
+    position: fixed; inset: 0 auto 0 0; width: var(--nav-w); z-index: 200;
+    display: flex; flex-direction: column;
+    background: #101936; color: #c7cde0;
+    padding: 18px 14px;
+    overflow-y: auto;
+}
+.admin-nav__brand {
+    display: flex; align-items: center; gap: 12px;
+    padding: 6px 8px 20px; margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.admin-nav__brand strong { display: block; color: #fff; font-size: 15px; line-height: 1.2; }
+.admin-nav__brand small { display: block; color: #8a93b2; font-size: 12px; }
+.admin-nav__logo {
+    width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+    display: grid; place-items: center;
+    background: #e2572b; color: #fff;
+}
+.admin-nav__close { display: none; margin-left: auto; background: none; border: 0; color: #c7cde0; cursor: pointer; padding: 6px; }
+.admin-nav__groups { flex: 1; }
+.admin-nav__group { margin-bottom: 18px; }
+.admin-nav__label {
+    display: block; padding: 0 12px 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #6f7a9c;
+}
+.admin-nav__link {
+    display: flex; align-items: center; gap: 11px; width: 100%;
+    padding: 10px 12px; margin-bottom: 2px;
+    border: 0; border-radius: 9px; background: none; cursor: pointer;
+    color: #c7cde0; font: inherit; font-size: 14.5px; font-weight: 500; text-decoration: none; text-align: left;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.admin-nav__link:hover { background: rgba(255, 255, 255, 0.07); color: #fff; }
+.admin-nav__link.is-active { background: #e2572b; color: #fff; }
+.admin-nav__link--danger:hover { background: rgba(239, 68, 68, 0.18); color: #fecaca; }
+.admin-nav__foot { padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.08); }
+
+.admin-shell__content { margin-left: var(--nav-w); min-width: 0; }
+.admin-topbar { display: none; }
+
+/* ---------- Page frame ---------- */
+.admin-shell .admin-dashboard { background: transparent; min-height: 100vh; }
+.admin-shell .admin-main { max-width: 1320px; padding: 28px 32px 48px; }
+
+.admin-shell .admin-header {
+    align-items: center; margin-bottom: 24px; padding-bottom: 20px;
+    border-bottom: 1px solid var(--admin-border);
+}
+.admin-shell .admin-header-left h1 { font-size: 1.6rem; letter-spacing: -0.4px; }
+.admin-shell .admin-header-left p { font-size: 0.92rem; margin: 0; }
+
+/* The sidebar replaces the old rows of navigation buttons */
+.admin-shell .admin-header-actions > a.btn-secondary[href^="/admin"],
+.admin-shell .admin-header-actions > .btn-logout,
+.admin-shell .bk-hero-actions > .bk-nav-btn { display: none; }
+
+/* ---------- Cards ---------- */
+.admin-shell .settings-card,
+.admin-shell .stat-card,
+.admin-shell .area-card,
+.admin-shell .admin-controls {
+    background: #fff;
+    border: 1px solid var(--admin-border);
+    border-radius: 14px;
+    box-shadow: var(--admin-shadow-sm);
+}
+.admin-shell .settings-card { padding: 22px 24px; }
+.admin-shell .settings-card h2 { font-size: 1.05rem; }
+.admin-shell .settings-grid { gap: 20px; }
+.admin-shell .stat-card:hover,
+.admin-shell .area-card:hover { box-shadow: var(--admin-shadow-lg); }
+.admin-shell .bk-hero {
+    background: #101936;
+    border-radius: 16px;
+    box-shadow: none;
+}
+
+/* ---------- Buttons ---------- */
+.admin-shell .btn { padding: 10px 16px; font-weight: 600; font-size: 0.875rem; border-radius: 10px; }
+.admin-shell .btn-primary { background: #e2572b; color: #fff; box-shadow: 0 4px 12px rgba(226, 87, 43, 0.25); }
+.admin-shell .btn-primary:hover { background: #c9461d; }
+.admin-shell .btn-secondary { background: #fff; color: #1e293b; border: 1px solid #d9deea; }
+.admin-shell .btn-secondary:hover { background: #f4f6fb; border-color: #c3cadb; }
+
+/* ---------- Forms ---------- */
+.admin-shell .form-group label { font-size: 0.85rem; font-weight: 600; color: #334155; }
+.admin-shell .form-group input,
+.admin-shell .form-group textarea,
+.admin-shell .form-group select {
+    border: 1px solid #d9deea; border-radius: 10px; background: #fff;
+    padding: 11px 13px; font-size: 0.95rem;
+}
+.admin-shell .form-group input:focus,
+.admin-shell .form-group textarea:focus,
+.admin-shell .form-group select:focus {
+    outline: none; border-color: #e2572b; box-shadow: 0 0 0 3px rgba(226, 87, 43, 0.15);
+}
+.admin-shell .input-hint { color: #64748b; font-size: 0.8rem; }
+.admin-shell .form-actions { padding-top: 20px; }
+.admin-shell .success-message { border-radius: 12px; }
+
+/* ---------- Tablet and phone ---------- */
+@media (max-width: 960px) {
+    .admin-topbar {
+        display: flex; align-items: center; gap: 12px;
+        position: sticky; top: 0; z-index: 150;
+        padding: 10px 16px; background: #101936; color: #fff;
+    }
+    .admin-topbar__btn { background: none; border: 0; color: #fff; padding: 6px; cursor: pointer; display: grid; place-items: center; }
+    .admin-topbar__title { font-weight: 600; }
+    .admin-nav { transform: translateX(-100%); transition: transform 0.22s ease; width: min(84vw, 300px); }
+    .admin-shell.is-open .admin-nav { transform: none; }
+    .admin-nav__close { display: block; }
+    .admin-shell__scrim { position: fixed; inset: 0; z-index: 190; background: rgba(16, 25, 54, 0.55); }
+    .admin-shell__content { margin-left: 0; }
+    .admin-shell .admin-main { padding: 20px 16px 40px; }
+    .admin-shell .admin-header { flex-direction: column; align-items: flex-start; }
+    .admin-shell .admin-header-left h1 { font-size: 1.35rem; }
+}

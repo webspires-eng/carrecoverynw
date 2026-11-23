@@ -12,8 +12,17 @@ export default function SettingsPage() {
         whatsapp: '',
         email: '',
         address: '',
-        favicon: ''
+        favicon: '',
+        smtp_host: '',
+        smtp_port: '',
+        smtp_user: '',
+        smtp_pass: '',
+        smtp_from: '',
+        booking_email: ''
     });
+    const [passSaved, setPassSaved] = useState(false);
+    const [testing, setTesting] = useState(false);
+    const [testResult, setTestResult] = useState(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -27,7 +36,9 @@ export default function SettingsPage() {
             const res = await fetch('/api/settings');
             const data = await res.json();
             if (data.success) {
-                setSettings({ ...settings, ...data.data });
+                const { smtp_pass_set, ...rest } = data.data;
+                setPassSaved(!!smtp_pass_set);
+                setSettings({ ...settings, ...rest, smtp_pass: '' });
             }
         } catch (error) {
             console.error('Error fetching settings:', error);
@@ -50,13 +61,34 @@ export default function SettingsPage() {
             const data = await res.json();
             if (data.success) {
                 setSuccess(true);
+                if (settings.smtp_pass) {
+                    setPassSaved(true);
+                    setSettings({ ...settings, smtp_pass: '' });
+                }
                 setTimeout(() => setSuccess(false), 3000);
+            } else {
+                alert(data.error || 'Error saving settings');
             }
         } catch (error) {
             alert('Error saving settings');
         }
 
         setSaving(false);
+    };
+
+    const handleTestEmail = async () => {
+        setTesting(true);
+        setTestResult(null);
+        try {
+            const res = await fetch('/api/admin/email-test', { method: 'POST' });
+            const data = await res.json();
+            setTestResult(data.success
+                ? { ok: true, text: `Test email sent to ${data.to}. Check the inbox and the spam folder.` }
+                : { ok: false, text: data.error || 'The test email could not be sent.' });
+        } catch (error) {
+            setTestResult({ ok: false, text: 'The test email could not be sent.' });
+        }
+        setTesting(false);
     };
 
     const handleLogout = async () => {
@@ -264,6 +296,98 @@ export default function SettingsPage() {
                                     onChange={(e) => setSettings({ ...settings, email: e.target.value })}
                                     placeholder="info@carrecoveryuk.co.uk"
                                 />
+                            </div>
+                        </div>
+
+                        {/* Email (SMTP) Card */}
+                        <div className="settings-card">
+                            <div className="settings-card-header">
+                                <div className="settings-card-icon">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                </div>
+                                <h2>Booking Emails (SMTP)</h2>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Send booking notifications to</label>
+                                <input
+                                    type="email"
+                                    value={settings.booking_email || ''}
+                                    onChange={(e) => setSettings({ ...settings, booking_email: e.target.value })}
+                                    placeholder="you@example.com"
+                                />
+                                <span className="input-hint">Every new booking is emailed to this address</span>
+                            </div>
+
+                            <div className="form-group">
+                                <label>SMTP Host</label>
+                                <input
+                                    type="text"
+                                    value={settings.smtp_host || ''}
+                                    onChange={(e) => setSettings({ ...settings, smtp_host: e.target.value })}
+                                    placeholder="smtp.example.com"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>SMTP Port</label>
+                                <input
+                                    type="text"
+                                    value={settings.smtp_port || ''}
+                                    onChange={(e) => setSettings({ ...settings, smtp_port: e.target.value })}
+                                    placeholder="587"
+                                    inputMode="numeric"
+                                />
+                                <span className="input-hint">Usually 587 or 2525. Use 465 for SSL</span>
+                            </div>
+
+                            <div className="form-group">
+                                <label>SMTP Username</label>
+                                <input
+                                    type="text"
+                                    value={settings.smtp_user || ''}
+                                    onChange={(e) => setSettings({ ...settings, smtp_user: e.target.value })}
+                                    placeholder="username"
+                                    autoComplete="off"
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label>SMTP Password</label>
+                                <input
+                                    type="password"
+                                    value={settings.smtp_pass || ''}
+                                    onChange={(e) => setSettings({ ...settings, smtp_pass: e.target.value })}
+                                    placeholder={passSaved ? 'Saved. Leave blank to keep it' : 'Password or API key'}
+                                    autoComplete="new-password"
+                                />
+                                <span className="input-hint">{passSaved ? 'A password is saved. Type a new one only to replace it' : 'Stored on the server and never shown again'}</span>
+                            </div>
+
+                            <div className="form-group">
+                                <label>From Address</label>
+                                <input
+                                    type="email"
+                                    value={settings.smtp_from || ''}
+                                    onChange={(e) => setSettings({ ...settings, smtp_from: e.target.value })}
+                                    placeholder="bookings@yourdomain.co.uk"
+                                />
+                                <span className="input-hint">Must be a sender your SMTP provider has verified</span>
+                            </div>
+
+                            <div className="form-group">
+                                <button type="button" className="btn btn-secondary" onClick={handleTestEmail} disabled={testing}>
+                                    {testing ? 'Sending...' : 'Send test email'}
+                                </button>
+                                <span className="input-hint">Save your changes first. The test uses the saved settings</span>
+                                {testResult && (
+                                    <p style={{ marginTop: '10px', color: testResult.ok ? '#15803d' : '#b91c1c', fontSize: '14px', wordBreak: 'break-word' }}>
+                                        {testResult.text}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>

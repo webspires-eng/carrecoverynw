@@ -1,14 +1,45 @@
 import nodemailer from 'nodemailer';
+import { connectToDatabase } from '@/lib/db';
 
-const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT || '2525'),
-    secure: false,
-    auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-    },
-});
+/**
+ * Mail settings: the admin Settings page (settings collection) wins, the
+ * server's env vars fill any blank. Read on every send so a change in the
+ * admin takes effect straight away, with no rebuild or restart.
+ */
+export async function getMailConfig() {
+    let saved = {};
+    try {
+        const { db } = await connectToDatabase();
+        const rows = await db.collection('settings')
+            .find({ setting_key: { $in: ['smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from', 'booking_email'] } })
+            .toArray();
+        rows.forEach(r => { if (r.setting_value) saved[r.setting_key] = String(r.setting_value); });
+    } catch (error) {
+        console.error('[Email] Could not read mail settings, using env:', error.message);
+    }
+
+    const port = parseInt(saved.smtp_port || process.env.SMTP_PORT || '2525', 10) || 2525;
+    return {
+        host: saved.smtp_host || process.env.SMTP_HOST,
+        port,
+        user: saved.smtp_user || process.env.SMTP_USER,
+        pass: saved.smtp_pass || process.env.SMTP_PASS,
+        from: saved.smtp_from || process.env.SMTP_FROM,
+        to: saved.booking_email || process.env.BOOKING_EMAIL,
+    };
+}
+
+function createTransport(cfg) {
+    return nodemailer.createTransport({
+        host: cfg.host,
+        port: cfg.port,
+        secure: cfg.port === 465, // 465 = TLS from the start; 587/2525 upgrade with STARTTLS
+        auth: cfg.user ? { user: cfg.user, pass: cfg.pass } : undefined,
+        connectionTimeout: 15000,
+        greetingTimeout: 15000,
+        socketTimeout: 20000,
+    });
+}
 
 const BRAND = {
     name: 'Car Recovery NW',
@@ -167,12 +198,12 @@ function buildText(booking, { resend = false } = {}) {
 }
 
 export async function sendBookingEmail(booking, options = {}) {
-    const to = process.env.BOOKING_EMAIL;
-    const from = process.env.SMTP_FROM;
+    const cfg = await getMailConfig();
+    const { to, from } = cfg;
     const resend = !!options.resend;
 
-    if (!to || !from) {
-        console.error('[Email] Missing BOOKING_EMAIL or SMTP_FROM env vars');
+    if (!to || !from || !cfg.host) {
+        console.error('[Email] Missing SMTP host, from address or notification address');
         return { ok: false, error: 'Missing email config' };
     }
 
@@ -180,7 +211,7 @@ export async function sendBookingEmail(booking, options = {}) {
     const subject = `${subjectPrefix}${booking.serviceType || 'Booking'} — ${booking.name} (${booking.pickupLocation || 'no location'})`;
 
     try {
-        await transporter.sendMail({
+        await createTransport(cfg).sendMail({
             from: `"${BRAND.name} Bookings" <${from}>`,
             to,
             subject,
@@ -191,6 +222,26 @@ export async function sendBookingEmail(booking, options = {}) {
         return { ok: true };
     } catch (error) {
         console.error('[Email] Failed to send booking notification:', error.message);
+        return { ok: false, error: error.message };
+    }
+}
+
+/** Sends a short test message with the saved settings. Used by the admin Settings page. */
+export async function sendTestEmail() {
+    const cfg = await getMailConfig();
+    if (!cfg.host || !cfg.from || !cfg.to) {
+        return { ok: false, error: 'Fill in the SMTP host, the from address and the notification address first.' };
+    }
+    try {
+        await createTransport(cfg).sendMail({
+            from: `"${BRAND.name} Bookings" <${cfg.from}>`,
+            to: cfg.to,
+            subject: `Test email from ${BRAND.domain}`,
+            text: `This is a test from the Settings page of ${BRAND.domain}. If you can read it, booking emails will arrive at this address.`,
+        });
+        return { ok: true, to: cfg.to };
+    } catch (error) {
+        console.error('[Email] Test email failed:', error.message);
         return { ok: false, error: error.message };
     }
 }

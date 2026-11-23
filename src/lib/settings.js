@@ -22,6 +22,8 @@ export const getSettings = cache(async function getSettings() {
         const settings = { ...defaultSettings };
 
         docs.forEach(doc => {
+            // Mail settings stay server-side (see lib/email.js); pages never get them.
+            if (doc.setting_key?.startsWith('smtp_') || doc.setting_key === 'booking_email') return;
             if (doc.setting_key && doc.setting_value) {
                 settings[doc.setting_key] = doc.setting_value;
             }
