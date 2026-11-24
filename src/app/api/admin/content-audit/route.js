@@ -76,10 +76,13 @@ export async function POST(request) {
         const query = { is_active: true };
         if (slugs?.length) query.slug = { $in: slugs };
 
-        const candidates = await coll.find(query).sort({ name: 1 }).toArray();
+        // Stream the cursor: full area documents are ~18 KB each, and this
+        // loop stops after `limit` rewrites, so loading all of them up front
+        // pulled ~15 MB into memory to use a handful.
+        const candidates = coll.find(query).sort({ name: 1 }).batchSize(20);
 
         const results = [];
-        for (const area of candidates) {
+        for await (const area of candidates) {
             if (results.filter(r => r.updated).length >= limit) break;
 
             const audit = auditArea(area);

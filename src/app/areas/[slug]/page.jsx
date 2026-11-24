@@ -68,7 +68,7 @@ export async function generateStaticParams() {
     // the same reasoning in getAreaBySlug() above.
     const { db } = await connectToDatabase();
     const rows = await db.collection('areas')
-        .find({ is_active: true }, { projection: { slug: 1 } })
+        .find({ is_active: true }, { projection: { _id: 0, slug: 1 } })
         .toArray();
     return rows.map((row) => ({
         slug: row.slug,

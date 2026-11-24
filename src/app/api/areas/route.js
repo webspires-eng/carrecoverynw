@@ -2,23 +2,33 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { submitAndTrack, buildAreaUrl } from '@/lib/googleIndexing';
 import { logActivity } from '@/lib/logger';
+import { requireAdmin } from '@/lib/adminSession';
+import { parsePaging, searchRegex } from '@/lib/queryGuards';
+
+// The admin list never shows these, and together they are ~15 KB of the
+// ~18 KB an area document weighs. The edit screen loads the full document
+// from /api/areas/[id].
+const LIST_EXCLUDED_FIELDS = { custom_services: 0, custom_faqs: 0, custom_recoveries: 0 };
 
 // GET all areas
 export async function GET(request) {
+    // Customer and admin data: signed-in admins only.
+    const admin = requireAdmin(request);
+    if (!admin.ok) {
+        return NextResponse.json({ success: false, error: admin.error }, { status: admin.status });
+    }
+
     try {
         const { searchParams } = new URL(request.url);
-        const page = parseInt(searchParams.get('page')) || 1;
-        const limit = parseInt(searchParams.get('limit')) || 50;
-        const search = searchParams.get('search') || '';
+        const { page, limit, offset } = parsePaging(searchParams, { defaultLimit: 50 });
+        const regex = searchRegex(searchParams.get('search'));
         const sortBy = searchParams.get('sort_by') || 'created_at';
         const sortOrder = searchParams.get('sort_order') === 'asc' ? 1 : -1;
-        const offset = (page - 1) * limit;
 
         const { db } = await connectToDatabase();
         const filter = { is_active: true };
 
-        if (search) {
-            const regex = new RegExp(search, 'i');
+        if (regex) {
             filter.$or = [{ name: regex }, { slug: regex }, { county: regex }];
         }
 
@@ -27,7 +37,7 @@ export async function GET(request) {
 
         const [rows, total] = await Promise.all([
             db.collection('areas')
-                .find(filter)
+                .find(filter, { projection: LIST_EXCLUDED_FIELDS })
                 .sort({ [sortField]: sortOrder })
                 .skip(offset)
                 .limit(limit)

@@ -15,7 +15,7 @@ async function getAreas() {
     try {
         const { db } = await connectToDatabase();
         const rows = await db.collection('areas')
-            .find({ is_active: true }, { projection: { name: 1, slug: 1 } })
+            .find({ is_active: true }, { projection: { _id: 0, name: 1, slug: 1 } })
             .sort({ name: 1 })
             .toArray();
         return rows;

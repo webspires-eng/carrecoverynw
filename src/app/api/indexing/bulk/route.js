@@ -13,7 +13,7 @@ async function buildUrlList(db) {
     const areas = await db
         .collection('areas')
         .find({ is_active: true })
-        .project({ slug: 1 })
+        .project({ _id: 0, slug: 1 })
         .toArray();
     const core = CORE_PAGES.map((p) => `${SITE_URL}${p === '/' ? '' : p}`);
     const areaUrls = areas.map((a) => `${SITE_URL}/areas/${a.slug}`);

@@ -1,13 +1,19 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
+import { requireAdmin } from '@/lib/adminSession';
+import { parsePaging } from '@/lib/queryGuards';
 
 // GET all logs
 export async function GET(request) {
+    // Customer and admin data: signed-in admins only.
+    const admin = requireAdmin(request);
+    if (!admin.ok) {
+        return NextResponse.json({ success: false, error: admin.error }, { status: admin.status });
+    }
+
     try {
         const { searchParams } = new URL(request.url);
-        const page = parseInt(searchParams.get('page')) || 1;
-        const limit = parseInt(searchParams.get('limit')) || 50;
-        const offset = (page - 1) * limit;
+        const { page, limit, offset } = parsePaging(searchParams, { defaultLimit: 50 });
 
         const { db } = await connectToDatabase();
 

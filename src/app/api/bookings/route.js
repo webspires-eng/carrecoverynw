@@ -2,6 +2,8 @@ import { NextResponse, after } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { sendBookingEmail } from '@/lib/email';
 import { sendBookingPush } from '@/lib/push';
+import { requireAdmin } from '@/lib/adminSession';
+import { parsePaging, searchRegex } from '@/lib/queryGuards';
 
 // Whether the vehicle rolls. Anything that isn't a clear yes/no is stored as
 // null — "unknown" is a real answer for a job taken over the phone.
@@ -19,19 +21,22 @@ function normalisePassengers(value) {
 
 // GET all bookings
 export async function GET(request) {
+    // Customer and admin data: signed-in admins only.
+    const admin = requireAdmin(request);
+    if (!admin.ok) {
+        return NextResponse.json({ success: false, error: admin.error }, { status: admin.status });
+    }
+
     try {
         const { searchParams } = new URL(request.url);
-        const page = parseInt(searchParams.get('page')) || 1;
-        const limit = parseInt(searchParams.get('limit')) || 25;
-        const search = searchParams.get('search') || '';
+        const { page, limit, offset } = parsePaging(searchParams, { defaultLimit: 25 });
+        const regex = searchRegex(searchParams.get('search'));
         const status = searchParams.get('status') || '';
-        const offset = (page - 1) * limit;
 
         const { db } = await connectToDatabase();
         const filter = {};
 
-        if (search) {
-            const regex = new RegExp(search, 'i');
+        if (regex) {
             filter.$or = [
                 { name: regex },
                 { phone: regex },

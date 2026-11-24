@@ -3,6 +3,7 @@ import { getSettings } from '@/lib/settings';
 import Link from 'next/link';
 import PageSchemaMarkup from '@/components/PageSchemaMarkup';
 import { canonicalUrl } from '@/lib/seoSettings';
+import { searchRegex } from '@/lib/queryGuards';
 import '../../styles/sections/areas-archive.css';
 
 // Fetch all areas
@@ -11,13 +12,15 @@ async function getAreas(search = '') {
         const { db } = await connectToDatabase();
         const filter = { is_active: true };
 
-        if (search) {
-            const regex = new RegExp(search, 'i');
+        const regex = searchRegex(search);
+        if (regex) {
             filter.$or = [{ name: regex }, { county: regex }];
         }
 
         const rows = await db.collection('areas')
-            .find(filter, { projection: { slug: 1, name: 1, county: 1, region: 1 } })
+            // _id: 0 lets the areas_active_name_cover index answer this
+            // without opening the ~18 KB area documents.
+            .find(filter, { projection: { _id: 0, slug: 1, name: 1, county: 1, region: 1 } })
             .sort({ name: 1 })
             .toArray();
         return rows;

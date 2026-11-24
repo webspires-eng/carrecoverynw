@@ -17,7 +17,7 @@ export default async function HtmlSitemap() {
     try {
         const { db } = await connectToDatabase();
         areas = await db.collection('areas')
-            .find({ is_active: true }, { projection: { slug: 1, name: 1 } })
+            .find({ is_active: true }, { projection: { _id: 0, slug: 1, name: 1 } })
             .sort({ name: 1 })
             .toArray();
     } catch (e) {

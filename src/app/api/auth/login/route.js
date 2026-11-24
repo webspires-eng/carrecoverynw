@@ -6,6 +6,12 @@ export async function POST(request) {
     try {
         const { email, password } = await request.json();
 
+        // Strings only: a JSON object here (e.g. {"$ne": ""}) would be passed
+        // to MongoDB as a query operator and match any user.
+        if (typeof email !== 'string' || typeof password !== 'string') {
+            return NextResponse.json({ success: false, error: 'Invalid email or password' }, { status: 401 });
+        }
+
         if (!email || !password) {
             return NextResponse.json({ success: false, error: 'Email and password are required' }, { status: 400 });
         }
