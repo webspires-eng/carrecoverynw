@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
-import { auditArea, rewriteArea } from '@/lib/contentAudit';
+import { auditArea, rewriteArea, llmConfigured } from '@/lib/contentAudit';
 import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
@@ -70,9 +70,9 @@ export async function POST(request) {
         const slugs = Array.isArray(body.slugs) ? body.slugs : null;
         const useLlm = body.useLlm !== false;
 
-        if (useLlm && !process.env.DASHSCOPE_API_KEY) {
+        if (useLlm && !llmConfigured()) {
             return NextResponse.json(
-                { success: false, error: 'DASHSCOPE_API_KEY is not configured on the server.' },
+                { success: false, error: 'ANTHROPIC_API_KEY is not configured on the server.' },
                 { status: 500 },
             );
         }
