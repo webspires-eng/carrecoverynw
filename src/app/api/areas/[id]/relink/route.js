@@ -2,13 +2,11 @@ import { NextResponse } from 'next/server';
 import { ObjectId } from 'mongodb';
 import { connectToDatabase } from '@/lib/db';
 import { runPublishPipeline } from '@/lib/publishPipeline';
+import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
 
-function unauthorized() {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-}
 
 /**
  * POST /api/areas/[id]/relink
@@ -18,8 +16,8 @@ function unauthorized() {
  * existing pages or fixing a borked run.
  */
 export async function POST(request, { params }) {
-    const sessionCookie = request.cookies.get('admin_session');
-    if (!sessionCookie?.value) return unauthorized();
+    const denied = await adminGuard(request);
+    if (denied) return denied;
 
     const { id } = await params;
     if (!ObjectId.isValid(id)) {

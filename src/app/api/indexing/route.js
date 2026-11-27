@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { submitUrlToGoogle, submitUrlsToGoogle } from '@/lib/googleIndexing';
+import { adminGuard } from '@/lib/adminSession';
 
 /**
  * POST /api/indexing
@@ -11,6 +12,9 @@ import { submitUrlToGoogle, submitUrlsToGoogle } from '@/lib/googleIndexing';
  *   { urls: string[], type?: 'URL_UPDATED' | 'URL_DELETED' }
  */
 export async function POST(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const body = await request.json();
         const type = body.type || 'URL_UPDATED';

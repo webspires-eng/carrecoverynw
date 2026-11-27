@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
+import { adminGuard } from '@/lib/adminSession';
 
-export async function POST() {
+export async function POST(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { db } = await connectToDatabase();
         

@@ -13,7 +13,7 @@ const LIST_EXCLUDED_FIELDS = { custom_services: 0, custom_faqs: 0, custom_recove
 // GET all areas
 export async function GET(request) {
     // Customer and admin data: signed-in admins only.
-    const admin = requireAdmin(request);
+    const admin = await requireAdmin(request);
     if (!admin.ok) {
         return NextResponse.json({ success: false, error: admin.error }, { status: admin.status });
     }

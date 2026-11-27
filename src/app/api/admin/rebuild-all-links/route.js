@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
+import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
@@ -21,9 +22,6 @@ function haversineKm(lat1, lng1, lat2, lng2) {
     return 2 * EARTH_RADIUS_KM * Math.asin(Math.min(1, Math.sqrt(a)));
 }
 
-function unauthorized() {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-}
 
 /**
  * POST /api/admin/rebuild-all-links
@@ -39,8 +37,8 @@ function unauthorized() {
  *   5. Revalidate all area pages + sitemap.
  */
 export async function POST(request) {
-    const sessionCookie = request.cookies.get('admin_session');
-    if (!sessionCookie?.value) return unauthorized();
+    const denied = await adminGuard(request);
+    if (denied) return denied;
 
     const { db } = await connectToDatabase();
 

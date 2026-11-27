@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 // POST /api/admin/email-test — sends a test message using the saved mail settings.
 export async function POST(request) {
-    const auth = requireAdmin(request);
+    const auth = await requireAdmin(request);
     if (!auth.ok) {
         return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
     }

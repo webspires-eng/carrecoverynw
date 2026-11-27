@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { submitUrlToGoogle } from '@/lib/googleIndexing';
 import { getSiteUrl } from '@/lib/siteUrl';
+import { adminGuard } from '@/lib/adminSession';
 
 const SITE_URL = getSiteUrl();
 const DAILY_LIMIT = 200;          // Google's per-project per-day cap
@@ -62,7 +63,10 @@ async function getStats(db) {
  * GET /api/indexing/bulk
  * Returns current status + per-URL detail.
  */
-export async function GET() {
+export async function GET(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { db } = await connectToDatabase();
         const stats = await getStats(db);
@@ -81,6 +85,9 @@ export async function GET() {
  * - retry-failed: mark failed URLs as pending so they're tried next run
  */
 export async function POST(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const body = await request.json().catch(() => ({}));
         const action = body.action || 'run';

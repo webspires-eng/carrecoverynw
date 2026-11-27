@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,10 +13,8 @@ export const dynamic = 'force-dynamic';
  * 1 req/sec — fine for admin form usage. Free, no API key.
  */
 export async function GET(request) {
-    const sessionCookie = request.cookies.get('admin_session');
-    if (!sessionCookie?.value) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const denied = await adminGuard(request);
+    if (denied) return denied;
 
     const q = request.nextUrl.searchParams.get('q');
     if (!q || q.trim().length < 2) {

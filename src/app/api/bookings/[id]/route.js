@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db';
 import { ObjectId } from 'mongodb';
+import { adminGuard } from '@/lib/adminSession';
 
 // All booking fields are optional (empty string is stored as null)
 const OPTIONAL_FIELDS = ['name', 'phone', 'pickupLocation', 'serviceType', 'email', 'dropoffLocation', 'registrationNumber', 'vehicleMake', 'vehicleModel', 'message'];
 
 // PATCH update booking (any editable field, status and/or price)
 export async function PATCH(request, { params }) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { id } = await params;
         const body = await request.json();
@@ -120,6 +124,9 @@ export async function PATCH(request, { params }) {
 
 // DELETE booking
 export async function DELETE(request, { params }) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { id } = await params;
         const { db } = await connectToDatabase();

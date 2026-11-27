@@ -1,16 +1,14 @@
 import { NextResponse } from 'next/server';
 import { runPublishPipeline } from '@/lib/publishPipeline';
+import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
-function unauthorized() {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-}
 
 export async function POST(request) {
-    const sessionCookie = request.cookies.get('admin_session');
-    if (!sessionCookie?.value) return unauthorized();
+    const denied = await adminGuard(request);
+    if (denied) return denied;
 
     let body;
     try {

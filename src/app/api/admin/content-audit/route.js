@@ -2,13 +2,17 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
 import { auditArea, rewriteArea } from '@/lib/contentAudit';
+import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
 // Allow plenty of headroom for the LLM rewrite step (per-area can take ~30–60s).
 export const maxDuration = 300;
 
 // GET — return the audit for every active area
-export async function GET() {
+export async function GET(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { db } = await connectToDatabase();
         const areas = await db.collection('areas')
@@ -57,6 +61,9 @@ export async function GET() {
 // POST — rewrite the next N thin areas (or specific slugs)
 //   body: { limit?: number, slugs?: string[], useLlm?: boolean }
 export async function POST(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const body = await request.json().catch(() => ({}));
         const limit = Math.max(1, Math.min(parseInt(body.limit, 10) || 1, 5));

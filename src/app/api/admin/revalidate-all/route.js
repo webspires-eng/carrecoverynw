@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
+import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;
 
 const BATCH = 10;
 
-function unauthorized() {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-}
 
 /**
  * POST /api/admin/revalidate-all
@@ -19,8 +17,8 @@ function unauthorized() {
  * pull the new nearby_areas_slugs into rendered HTML.
  */
 export async function POST(request) {
-    const sessionCookie = request.cookies.get('admin_session');
-    if (!sessionCookie?.value) return unauthorized();
+    const denied = await adminGuard(request);
+    if (denied) return denied;
 
     const { db } = await connectToDatabase();
     const slugs = (

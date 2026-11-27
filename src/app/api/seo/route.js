@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectToDatabase } from '@/lib/db';
 import { getSiteUrl } from '@/lib/siteUrl';
 import { SEO_CACHE_TAG } from '@/lib/seoSettings';
+import { adminGuard } from '@/lib/adminSession';
 
 function normalizeCanonicalBaseUrl(value, fallback) {
     const candidate = (typeof value === 'string' ? value.trim() : '') || fallback;
@@ -16,7 +17,10 @@ function normalizeCanonicalBaseUrl(value, fallback) {
 }
 
 // GET SEO settings
-export async function GET() {
+export async function GET(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const siteUrl = getSiteUrl();
         const { db } = await connectToDatabase();
@@ -54,6 +58,9 @@ export async function GET() {
 
 // PUT update SEO settings
 export async function PUT(request) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const body = await request.json();
         const siteUrl = getSiteUrl();

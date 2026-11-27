@@ -15,7 +15,7 @@ export async function GET(request) {
     try {
         const { db } = await connectToDatabase();
         const rows = await db.collection('settings').find({}).toArray();
-        const isAdmin = !!getAdminSession(request)?.email;
+        const isAdmin = !!(await getAdminSession(request));
         const settings = {};
         let passSet = false;
         rows.forEach(row => {
@@ -48,7 +48,7 @@ function sanitizeValue(key, value) {
 
 // PUT update settings
 export async function PUT(request) {
-    const auth = requireAdmin(request);
+    const auth = await requireAdmin(request);
     if (!auth.ok) {
         return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
     }

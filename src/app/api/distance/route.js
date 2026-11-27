@@ -1,9 +1,13 @@
 import { NextResponse } from 'next/server';
+import { adminGuard } from '@/lib/adminSession';
 
 // Driving distance between two places via the Distance Matrix API.
 // Called server-side so the request itself doesn't expose usage patterns
 // and works even if the browser key gets referrer-restricted later.
 export async function POST(req) {
+    const denied = await adminGuard(req);
+    if (denied) return denied;
+
     try {
         const { origin, destination } = await req.json();
 

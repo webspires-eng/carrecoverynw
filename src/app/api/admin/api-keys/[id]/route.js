@@ -11,7 +11,7 @@ import { logActivity } from '@/lib/logger';
 export const dynamic = 'force-dynamic';
 
 export async function DELETE(request, { params }) {
-    const auth = requireAdmin(request);
+    const auth = await requireAdmin(request);
     if (!auth.ok) {
         return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
     }

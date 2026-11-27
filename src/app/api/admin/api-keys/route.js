@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic';
 const MAX_LABEL = 60;
 
 export async function GET(request) {
-    const auth = requireAdmin(request);
+    const auth = await requireAdmin(request);
     if (!auth.ok) {
         return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
     }
@@ -30,7 +30,7 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-    const auth = requireAdmin(request);
+    const auth = await requireAdmin(request);
     if (!auth.ok) {
         return NextResponse.json({ success: false, error: auth.error }, { status: auth.status });
     }

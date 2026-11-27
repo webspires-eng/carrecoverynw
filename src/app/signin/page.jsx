@@ -5,8 +5,7 @@ import { useRouter } from 'next/navigation';
 import '../../styles/auth.css';
 
 export default function SignIn() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [passcode, setPasscode] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -20,17 +19,18 @@ export default function SignIn() {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ passcode })
             });
 
             const data = await res.json();
 
             if (data.success) {
                 router.push('/admin/areas');
-            } else {
-                setError(data.error || 'Invalid credentials');
+                return;
             }
-        } catch (err) {
+            setError(data.error || 'Wrong passcode');
+            setPasscode('');
+        } catch {
             setError('Something went wrong. Please try again.');
         }
 
@@ -42,35 +42,28 @@ export default function SignIn() {
             <div className="auth-card">
                 <div className="auth-header">
                     <h1>Admin Login</h1>
-                    <p>Sign in to manage area pages</p>
+                    <p>Enter your passcode to manage the site</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="auth-form">
                     {error && <div className="auth-error">{error}</div>}
 
                     <div className="form-group">
-                        <label>Email</label>
+                        <label htmlFor="passcode">Passcode</label>
                         <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="admin@gmail.com"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Password</label>
-                        <input
+                            id="passcode"
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            inputMode="numeric"
+                            autoComplete="current-password"
+                            value={passcode}
+                            onChange={(e) => setPasscode(e.target.value)}
                             placeholder="••••••••"
+                            autoFocus
                             required
                         />
                     </div>
 
-                    <button type="submit" className="auth-btn" disabled={loading}>
+                    <button type="submit" className="auth-btn" disabled={loading || !passcode}>
                         {loading ? 'Signing in...' : 'Sign In'}
                     </button>
                 </form>

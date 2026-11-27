@@ -4,9 +4,13 @@ import { connectToDatabase } from '@/lib/db';
 import { submitAndTrack, buildAreaUrl } from '@/lib/googleIndexing';
 import { logActivity } from '@/lib/logger';
 import { runPublishPipeline } from '@/lib/publishPipeline';
+import { adminGuard } from '@/lib/adminSession';
 
 // GET single area by ID
 export async function GET(request, { params }) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { id } = await params;
         if (!ObjectId.isValid(id)) {
@@ -29,6 +33,9 @@ export async function GET(request, { params }) {
 
 // PUT update area
 export async function PUT(request, { params }) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { id } = await params;
         if (!ObjectId.isValid(id)) {
@@ -136,6 +143,9 @@ export async function PUT(request, { params }) {
 
 // DELETE area
 export async function DELETE(request, { params }) {
+    const denied = await adminGuard(request);
+    if (denied) return denied;
+
     try {
         const { id } = await params;
         if (!ObjectId.isValid(id)) {

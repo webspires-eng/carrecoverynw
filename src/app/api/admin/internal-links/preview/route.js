@@ -4,14 +4,12 @@ import {
     haversineKm,
     calculateNearestAreas,
 } from '@/lib/internalLinking';
+import { adminGuard } from '@/lib/adminSession';
 
 export const dynamic = 'force-dynamic';
 
 const REVERSE_LINK_RADIUS_KM = 25;
 
-function unauthorized() {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
-}
 
 /**
  * GET /api/admin/internal-links/preview?slug=...
@@ -29,8 +27,8 @@ function unauthorized() {
  *                    pointing to this area when published.
  */
 export async function GET(request) {
-    const session = request.cookies.get('admin_session');
-    if (!session?.value) return unauthorized();
+    const denied = await adminGuard(request);
+    if (denied) return denied;
 
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
